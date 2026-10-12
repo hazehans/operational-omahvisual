@@ -57,8 +57,8 @@ class StockMovement extends Model
 
     public static function generateMovementNumber(string $type = 'MOV'): string
     {
-        $prefix = strtoupper(substr($type, 0, 3)) . '-' . date('Ym') . '-';
-        $latest = static::where('movement_number', 'LIKE', $prefix . '%')
+        $prefix = strtoupper(substr($type, 0, 3)).'-'.date('Ym').'-';
+        $latest = static::where('movement_number', 'LIKE', $prefix.'%')
             ->orderBy('movement_number', 'desc')
             ->first();
 
@@ -69,7 +69,6 @@ class StockMovement extends Model
             $nextNumber = '0001';
         }
 
-        return $prefix . $nextNumber;
+        return $prefix.$nextNumber;
     }
 }
-

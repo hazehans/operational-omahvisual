@@ -44,4 +44,3 @@ class Location extends Model
         return $this->hasMany(Asset::class, 'current_location_id');
     }
 }
-

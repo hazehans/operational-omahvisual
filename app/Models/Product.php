@@ -94,11 +94,10 @@ class Product extends Model
      */
     public function calculateTotalSqm(float $units): ?float
     {
-        if (!$this->sqm_per_unit) {
+        if (! $this->sqm_per_unit) {
             return null;
         }
 
         return round($units * (float) $this->sqm_per_unit, 2);
     }
 }
-

@@ -48,8 +48,8 @@ class InventoryCount extends Model
 
     public static function generateCountNumber(): string
     {
-        $prefix = 'OP-' . date('Ym') . '-';
-        $latest = static::where('count_number', 'LIKE', $prefix . '%')
+        $prefix = 'OP-'.date('Ym').'-';
+        $latest = static::where('count_number', 'LIKE', $prefix.'%')
             ->orderBy('count_number', 'desc')
             ->first();
 
@@ -60,7 +60,6 @@ class InventoryCount extends Model
             $nextNumber = '0001';
         }
 
-        return $prefix . $nextNumber;
+        return $prefix.$nextNumber;
     }
 }
-

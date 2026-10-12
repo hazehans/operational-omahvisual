@@ -55,4 +55,3 @@ class AuditLog extends Model
         ]);
     }
 }
-

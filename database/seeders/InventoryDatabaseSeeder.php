@@ -11,7 +11,6 @@ use App\Models\Unit;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
@@ -45,14 +44,14 @@ class InventoryDatabaseSeeder extends Seeder
         $branchManagerRole->syncPermissions([
             'view inventory', 'create product', 'edit product', 'manage locations',
             'record movement', 'request stock adjustment', 'approve stock adjustment',
-            'conduct stock count', 'verify stock count', 'view audit logs'
+            'conduct stock count', 'verify stock count', 'view audit logs',
         ]);
 
         $warehouseRole = Role::firstOrCreate(['name' => 'Warehouse']);
         $warehouseRole->syncPermissions([
             'view inventory', 'create product', 'edit product', 'manage locations',
             'record movement', 'request stock adjustment', 'conduct stock count',
-            'verify stock count'
+            'verify stock count',
         ]);
 
         $adminRole = Role::firstOrCreate(['name' => 'Admin LED']);
@@ -173,21 +172,21 @@ class InventoryDatabaseSeeder extends Seeder
             7 => 'VX8M', 8 => 'VX6 QL', 9 => 'VX 4E QL', 10 => 'VX 4E QL', 11 => 'VX 4E QL',
             12 => 'VX4M', 13 => 'VX4M', 14 => 'VX4M', 15 => 'VX4M', 16 => 'VX4M', 17 => 'VX4M',
             18 => 'VX4s', 19 => 'VX2S', 20 => 'VX2M', 21 => 'VX4M', 22 => 'VX2M', 23 => 'VX2M',
-            24 => 'VX2M', 25 => 'VX2M'
+            24 => 'VX2M', 25 => 'VX2M',
         ];
 
         foreach ($processorModels as $no => $model) {
-            $code = 'OVL-PROC-' . str_pad($no, 3, '0', STR_PAD_LEFT);
+            $code = 'OVL-PROC-'.str_pad($no, 3, '0', STR_PAD_LEFT);
             Asset::firstOrCreate(
                 ['asset_code' => $code],
                 [
                     'product_id' => $prodNovastar->id,
                     'current_location_id' => $locAlmari1->id,
-                    'serial_number' => 'SN-NOVA-' . $model . '-' . str_pad($no, 2, '0', STR_PAD_LEFT),
+                    'serial_number' => 'SN-NOVA-'.$model.'-'.str_pad($no, 2, '0', STR_PAD_LEFT),
                     'ownership' => 'company',
                     'condition' => 'available',
                     'status' => 'in_storage',
-                    'notes' => 'Nomor Unit ' . $no . ' (' . $model . ')',
+                    'notes' => 'Nomor Unit '.$no.' ('.$model.')',
                 ]
             );
         }
@@ -261,15 +260,15 @@ class InventoryDatabaseSeeder extends Seeder
         );
         for ($i = 1; $i <= 5; $i++) {
             Asset::firstOrCreate(
-                ['asset_code' => 'OVL-TV50-' . str_pad($i, 2, '0', STR_PAD_LEFT)],
+                ['asset_code' => 'OVL-TV50-'.str_pad($i, 2, '0', STR_PAD_LEFT)],
                 [
                     'product_id' => $prodTv50->id,
                     'current_location_id' => $locAlmari3->id,
-                    'serial_number' => 'SAMS-50-' . rand(100000, 999999),
+                    'serial_number' => 'SAMS-50-'.rand(100000, 999999),
                     'ownership' => 'company',
                     'condition' => 'available',
                     'status' => 'in_storage',
-                    'notes' => 'Unit TV 50" #' . $i . ' Hardcase Standar',
+                    'notes' => 'Unit TV 50" #'.$i.' Hardcase Standar',
                 ]
             );
         }
@@ -336,17 +335,16 @@ class InventoryDatabaseSeeder extends Seeder
         );
         for ($t = 1; $t <= 10; $t++) {
             Asset::firstOrCreate(
-                ['asset_code' => 'TB-' . str_pad($t, 2, '0', STR_PAD_LEFT)],
+                ['asset_code' => 'TB-'.str_pad($t, 2, '0', STR_PAD_LEFT)],
                 [
                     'product_id' => $prodToolbox->id,
                     'current_location_id' => $locWorkshop->id,
                     'ownership' => 'company',
                     'condition' => 'available',
                     'status' => 'in_storage',
-                    'notes' => 'Toolbox Unit ' . $t . ' Standar Kerja Lapangan',
+                    'notes' => 'Toolbox Unit '.$t.' Standar Kerja Lapangan',
                 ]
             );
         }
     }
 }
-

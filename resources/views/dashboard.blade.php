@@ -1,209 +1,262 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web Inventory — Omah Visual LED</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-    </style>
-</head>
-<body class="bg-slate-900 text-slate-100 min-h-screen">
-    <!-- Navbar -->
-    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-orange-400 flex items-center justify-center font-bold text-slate-950 text-xl shadow-lg shadow-orange-500/20">
-                    OV
-                </div>
-                <div>
-                    <h1 class="font-bold text-lg leading-tight text-white">Omah Visual LED</h1>
-                    <p class="text-xs text-slate-400">Inventory Management System • Gedung Utama</p>
-                </div>
-            </div>
-            <div class="flex items-center gap-2">
-                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1.5 animate-pulse"></span>
-                    PostgreSQL 18 Connected
-                </span>
-            </div>
-        </div>
-    </header>
+@extends('layouts.app')
 
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-        <!-- Hero Welcome -->
-        <div class="p-6 rounded-2xl bg-gradient-to-r from-slate-800/80 to-slate-800/40 border border-slate-700/60 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+@section('title', 'Dashboard Operasional')
+@section('page_title', 'Ringkasan Eksekutif & Gudang')
+
+@section('content')
+<div class="space-y-8">
+
+    <!-- Hero / Welcome Header -->
+    <div class="relative overflow-hidden rounded-2xl bg-linear-to-r from-slate-900 via-indigo-950/70 to-slate-900 border border-slate-800 p-6 md:p-8 shadow-xl">
+        <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div>
-                <span class="text-xs font-semibold uppercase tracking-wider text-amber-400">Core Inventory Foundation • MVP Draft 0.2</span>
-                <h2 class="text-2xl font-bold text-white mt-1">Sistem Inventori Berhasil Diinisialisasi! 🎉</h2>
-                <p class="text-sm text-slate-300 mt-1 max-w-2xl">
-                    Struktur database, dual-tracking mode (individual unit vs kuantitas saldo), perhitungan otomatis luasan LED ($m^2$), dan pemisahan kondisi rusak/tersedia telah aktif di database PostgreSQL lokal Anda (<code class="text-amber-300">inventory_db</code>).
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 mb-3">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                    Sistem Inventori Aktif — Gedung Utama
+                </div>
+                <h1 class="text-2xl md:text-3xl font-extrabold text-white tracking-tight">
+                    Halo, {{ Auth::user()->name }}!
+                </h1>
+                <p class="text-sm text-slate-400 mt-1 max-w-2xl">
+                    Pusat kendali ketersediaan kabinet videotron, 25 unit processor Novastar, armada TV, toolbox teknisi, dan mutasi gudang Omah Visual LED.
                 </p>
             </div>
-            <div class="flex flex-col sm:flex-row gap-2 shrink-0">
-                <span class="px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-xs text-slate-300 text-center">
-                    Gedung Utama Omah Visual
-                </span>
+
+            <!-- Quick Action Buttons -->
+            <div class="flex flex-wrap items-center gap-3">
+                <a href="{{ route('movements.create') }}" class="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold tracking-wide uppercase shadow-lg shadow-indigo-600/30 transition-all flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    <span>Catat Mutasi</span>
+                </a>
+                <a href="{{ route('adjustments.create') }}" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold tracking-wide uppercase border border-slate-700 transition-all flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    <span>Ajukan Koreksi</span>
+                </a>
             </div>
         </div>
+    </div>
 
-        <!-- Metric Stat Cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div class="p-5 rounded-xl bg-slate-800/60 border border-slate-700/50">
-                <p class="text-xs font-medium text-slate-400">Master Barang (Products)</p>
-                <div class="flex items-baseline justify-between mt-2">
-                    <span class="text-3xl font-extrabold text-white">{{ $totalProducts }}</span>
-                    <span class="text-xs text-slate-400">Kategori Aktif</span>
+    <!-- Banner Pengesahan Stok Awal (Decision 2 User) -->
+    @if (!$initialCountSession || $initialCountSession->status !== 'verified')
+        <div class="p-5 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div class="flex items-start gap-3.5">
+                <div class="p-2.5 rounded-xl bg-amber-500/20 text-amber-400 mt-0.5">
+                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
                 </div>
-            </div>
-
-            <div class="p-5 rounded-xl bg-slate-800/60 border border-slate-700/50">
-                <p class="text-xs font-medium text-slate-400">Unit Terlacak Individual (Assets)</p>
-                <div class="flex items-baseline justify-between mt-2">
-                    <span class="text-3xl font-extrabold text-amber-400">{{ $totalAssets }}</span>
-                    <span class="text-xs text-slate-400">Processors, TV & Boxes</span>
-                </div>
-            </div>
-
-            <div class="p-5 rounded-xl bg-slate-800/60 border border-slate-700/50">
-                <p class="text-xs font-medium text-slate-400">Titik Penyimpanan (Lokasi)</p>
-                <div class="flex items-baseline justify-between mt-2">
-                    <span class="text-3xl font-extrabold text-sky-400">{{ $totalLocations }}</span>
-                    <span class="text-xs text-slate-400">Lemari 1-3 & Staging</span>
-                </div>
-            </div>
-
-            <div class="p-5 rounded-xl bg-slate-800/60 border border-slate-700/50">
-                <p class="text-xs font-medium text-slate-400">Total Akun & Role (RBAC)</p>
-                <div class="flex items-baseline justify-between mt-2">
-                    <span class="text-3xl font-extrabold text-emerald-400">{{ $totalUsers }}</span>
-                    <span class="text-xs text-slate-400">Owner, Warehouse, dll</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Inventory Preview Table -->
-        <div class="rounded-2xl bg-slate-800/40 border border-slate-700/60 overflow-hidden shadow-xl">
-            <div class="p-5 border-b border-slate-700/60 flex items-center justify-between">
                 <div>
-                    <h3 class="font-bold text-white text-base">Sampel Data Inventaris Terintegrasi</h3>
-                    <p class="text-xs text-slate-400">Hasil pemetaan dari data Excel (Komponen Videotron, TV, Processor, Tools)</p>
+                    <h3 class="text-sm font-bold text-amber-300">Stok Awal Excel Belum Disahkan Resmi</h3>
+                    <p class="text-xs text-amber-200/80 mt-0.5">
+                        Sesuai PRD, data fisik dari spreadsheet perlu diverifikasi oleh Tim Warehouse sebelum resmi menjadi saldo awal berjalan.
+                    </p>
                 </div>
-                <span class="text-xs text-slate-400 bg-slate-900/60 px-3 py-1 rounded-full border border-slate-700">
-                    Dual Tracking: Individual vs Quantity
+            </div>
+            <a href="{{ route('initial-counts.index') }}" class="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shrink-0 shadow-lg shadow-amber-500/20 transition-all flex items-center gap-1.5">
+                <span>Periksa & Sahkan Stok Awal</span>
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+            </a>
+        </div>
+    @else
+        <div class="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></div>
+                <span class="text-xs font-semibold text-emerald-300">
+                    Stok awal resmi telah disahkan oleh {{ $initialCountSession->verifier?->name ?? 'Tim Warehouse' }} pada {{ $initialCountSession->finalized_at?->format('d M Y H:i') }}.
                 </span>
             </div>
+            <a href="{{ route('initial-counts.index') }}" class="text-xs font-medium text-emerald-400 hover:underline">
+                Lihat Berita Acara &rarr;
+            </a>
+        </div>
+    @endif
 
-            <div class="overflow-x-auto">
-                <table class="w-full text-left text-sm text-slate-300">
-                    <thead class="bg-slate-900/60 text-xs uppercase tracking-wider text-slate-400 border-b border-slate-700/60">
-                        <tr>
-                            <th class="px-5 py-3">Kode</th>
-                            <th class="px-5 py-3">Nama Barang</th>
-                            <th class="px-5 py-3">Kategori</th>
-                            <th class="px-5 py-3">Mode Pelacakan</th>
-                            <th class="px-5 py-3">Stok Fisik</th>
-                            <th class="px-5 py-3">Stok Tersedia</th>
-                            <th class="px-5 py-3">Kalkulasi Luas / Detail</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-700/40">
-                        @foreach($products as $prod)
-                        <tr class="hover:bg-slate-800/50 transition-colors">
-                            <td class="px-5 py-3.5 font-mono text-xs text-amber-400">{{ $prod->code }}</td>
-                            <td class="px-5 py-3.5 font-medium text-white">
-                                {{ $prod->name }}
-                                @if($prod->brand)
-                                    <span class="text-xs text-slate-400 block">{{ $prod->brand }} {{ $prod->specification ? '• ' . $prod->specification : '' }}</span>
-                                @endif
-                            </td>
-                            <td class="px-5 py-3.5 text-xs text-slate-300">{{ $prod->category->name ?? '-' }}</td>
-                            <td class="px-5 py-3.5">
-                                @if($prod->isIndividual())
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                                        Individual (Barcode/Asset ID)
-                                    </span>
-                                @else
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-sky-500/10 text-sky-400 border border-sky-500/20">
-                                        Quantity (Kuantitas)
-                                    </span>
-                                @endif
-                            </td>
-                            <td class="px-5 py-3.5 font-bold text-white">
-                                {{ $prod->total_physical_stock }} {{ $prod->unit->symbol ?? '' }}
-                            </td>
-                            <td class="px-5 py-3.5 font-bold text-emerald-400">
-                                {{ $prod->total_available_stock }} {{ $prod->unit->symbol ?? '' }}
-                            </td>
-                            <td class="px-5 py-3.5 text-xs text-slate-400">
-                                @if($prod->sqm_per_unit)
-                                    <span class="text-amber-300 font-semibold">
-                                        {{ $prod->calculateTotalSqm($prod->total_available_stock) }} m² total
-                                    </span>
-                                    <span class="block text-[11px] text-slate-500">({{ (float) $prod->sqm_per_unit }} m²/unit)</span>
-                                @elseif($prod->isIndividual())
-                                    <span>{{ $prod->assets()->count() }} Unit Terdaftar</span>
-                                @else
-                                    <span>Saldo Kuantitas</span>
-                                @endif
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+    <!-- 4 Key Metrics Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <!-- Metric 1: Luas LED Tersedia -->
+        <div class="p-5 rounded-2xl bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800/80 shadow-md">
+            <div class="flex items-center justify-between text-slate-400 text-xs font-medium mb-3">
+                <span>Kabinet LED Tersedia</span>
+                <span class="p-2 rounded-xl bg-indigo-500/10 text-indigo-400">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                </span>
             </div>
+            <div class="flex items-baseline gap-2">
+                <span class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">{{ number_format($totalLedSqm, 1) }}</span>
+                <span class="text-xs font-semibold text-indigo-400">m² siap sewa</span>
+            </div>
+            <p class="text-[11px] text-slate-500 mt-2">
+                Total {{ number_format($totalLedCabinets) }} unit kabinet (P3.9 & P2.6) di Staging LED.
+            </p>
         </div>
 
-        <!-- Akun Pengguna & Role Info -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="p-5 rounded-2xl bg-slate-800/40 border border-slate-700/60">
-                <h4 class="font-bold text-white text-sm mb-3">Akun Siap Pakai (Untuk Pengujian):</h4>
-                <div class="space-y-2 text-xs">
-                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-700/40 flex justify-between items-center">
-                        <div>
-                            <span class="font-semibold text-amber-400">Owner & Branch Manager:</span>
-                            <span class="text-slate-300 block">owner@omahvisual.com</span>
-                        </div>
-                        <span class="font-mono text-slate-400">password: password123</span>
-                    </div>
-                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-700/40 flex justify-between items-center">
-                        <div>
-                            <span class="font-semibold text-sky-400">Warehouse Team:</span>
-                            <span class="text-slate-300 block">warehouse@omahvisual.com</span>
-                        </div>
-                        <span class="font-mono text-slate-400">password: password123</span>
-                    </div>
-                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-700/40 flex justify-between items-center">
-                        <div>
-                            <span class="font-semibold text-emerald-400">Admin LED:</span>
-                            <span class="text-slate-300 block">admin@omahvisual.com</span>
-                        </div>
-                        <span class="font-mono text-slate-400">password: password123</span>
-                    </div>
+        <!-- Metric 2: Unit Aset Terlacak -->
+        <div class="p-5 rounded-2xl bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800/80 shadow-md">
+            <div class="flex items-center justify-between text-slate-400 text-xs font-medium mb-3">
+                <span>Unit Aset Individual</span>
+                <span class="p-2 rounded-xl bg-cyan-500/10 text-cyan-400">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                    </svg>
+                </span>
+            </div>
+            <div class="flex items-baseline gap-2">
+                <span class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">{{ $totalAssets }}</span>
+                <span class="text-xs font-semibold text-cyan-400">Unit Serial</span>
+            </div>
+            <p class="text-[11px] text-slate-500 mt-2">
+                Termasuk 25 unit Processor Novastar, TV Samsung, & Toolbox.
+            </p>
+        </div>
+
+        <!-- Metric 3: Master Katalog Barang -->
+        <div class="p-5 rounded-2xl bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800/80 shadow-md">
+            <div class="flex items-center justify-between text-slate-400 text-xs font-medium mb-3">
+                <span>Master Jenis Produk</span>
+                <span class="p-2 rounded-xl bg-emerald-500/10 text-emerald-400">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                    </svg>
+                </span>
+            </div>
+            <div class="flex items-baseline gap-2">
+                <span class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">{{ $totalProducts }}</span>
+                <span class="text-xs font-semibold text-emerald-400">SKU Aktif</span>
+            </div>
+            <p class="text-[11px] text-slate-500 mt-2">
+                Kabel jumper, baut, sparepart modul, PSU, dan alat bantu.
+            </p>
+        </div>
+
+        <!-- Metric 4: Titik Lemari / Lokasi -->
+        <div class="p-5 rounded-2xl bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800/80 shadow-md">
+            <div class="flex items-center justify-between text-slate-400 text-xs font-medium mb-3">
+                <span>Titik Lemari & Area</span>
+                <span class="p-2 rounded-xl bg-purple-500/10 text-purple-400">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                </span>
+            </div>
+            <div class="flex items-baseline gap-2">
+                <span class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">{{ $totalLocations }}</span>
+                <span class="text-xs font-semibold text-purple-400">Lokasi Aktif</span>
+            </div>
+            <p class="text-[11px] text-slate-500 mt-2">
+                Lemari 1-3, Area Staging LED, & Workshop Omah Visual.
+            </p>
+        </div>
+    </div>
+
+    <!-- Section 2 Kolom: Processor Novastar & Riwayat Mutasi -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <!-- Kolom Kiri (2 span): Daftar 25 Processor Novastar -->
+        <div class="lg:col-span-2 space-y-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 class="text-base font-bold text-slate-900 dark:text-white">Unit Aset Utama (Processor & Layar)</h2>
+                    <p class="text-xs text-slate-500">Pelacakan unit individual bernilai tinggi dengan kode fisik unik</p>
+                </div>
+                <a href="{{ route('assets.index') }}" class="text-xs font-semibold text-indigo-400 hover:text-indigo-300">
+                    Lihat Semua ({{ $totalAssets }}) &rarr;
+                </a>
+            </div>
+
+            <div class="bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800/80 rounded-2xl overflow-hidden shadow-md">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-slate-100 dark:bg-slate-800/60 text-slate-500 uppercase tracking-wider font-semibold border-b border-slate-200 dark:border-slate-800">
+                            <tr>
+                                <th class="px-4 py-3">Kode Aset</th>
+                                <th class="px-4 py-3">Perangkat</th>
+                                <th class="px-4 py-3">Lokasi Fisik</th>
+                                <th class="px-4 py-3">Kondisi</th>
+                                <th class="px-4 py-3">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200 dark:divide-slate-800/60">
+                            @forelse($recentAssets as $ast)
+                                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+                                    <td class="px-4 py-3 font-mono font-bold text-indigo-600 dark:text-indigo-400">
+                                        <a href="{{ route('assets.show', $ast) }}" class="hover:underline">
+                                            {{ $ast->asset_code }}
+                                        </a>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <div class="font-semibold text-slate-900 dark:text-white">{{ $ast->product->name }}</div>
+                                        <div class="text-[11px] text-slate-500 font-mono">{{ $ast->product->model_series ?? $ast->product->brand }}</div>
+                                    </td>
+                                    <td class="px-4 py-3 text-slate-600 dark:text-slate-400">
+                                        {{ $ast->currentLocation->name ?? 'Gedung Utama' }}
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        @if($ast->condition === 'available')
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                                Bagus / Siap
+                                            </span>
+                                        @elseif($ast->condition === 'damaged')
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/20">
+                                                Rusak
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                                                Servis
+                                            </span>
+                                        @endif
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <span class="text-[11px] text-slate-500">
+                                            {{ $ast->status === 'in_storage' ? 'Di Gudang' : ($ast->status === 'deployed' ? 'Dipakai Event' : $ast->status) }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="5" class="px-4 py-6 text-center text-slate-500">
+                                        Belum ada aset terdaftar.
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
                 </div>
             </div>
+        </div>
 
-            <div class="p-5 rounded-2xl bg-slate-800/40 border border-slate-700/60">
-                <h4 class="font-bold text-white text-sm mb-3">Catatan Integrasi Operasional:</h4>
-                <ul class="space-y-2 text-xs text-slate-300">
-                    <li class="flex items-start gap-2">
-                        <span class="text-amber-400 font-bold">✓</span>
-                        <span><strong>25 Unit Novastar Processors:</strong> Sudah terdaftar bernomor unik (<code class="text-amber-300">OVL-PROC-001</code> s/d <code class="text-amber-300">OVL-PROC-025</code>) siap untuk SPK / Surat Jalan event.</span>
-                    </li>
-                    <li class="flex items-start gap-2">
-                        <span class="text-amber-400 font-bold">✓</span>
-                        <span><strong>Pemisahan Kondisi:</strong> PSU Lite rusak 1 unit tercatat otomatis tanpa mengurangi stok fisik keseluruhan namun tidak dihitung di stok tersedia.</span>
-                    </li>
-                    <li class="flex items-start gap-2">
-                        <span class="text-amber-400 font-bold">✓</span>
-                        <span><strong>Formula Meter Persegi ($m^2$):</strong> Tim gudang menghitung 72 unit kabinet 100x50, sistem otomatis mengonversi menjadi 36.0 $m^2$ untuk sewa.</span>
-                    </li>
-                </ul>
+        <!-- Kolom Kanan (1 span): Titik Lokasi Lemari & Mutasi Terbaru -->
+        <div class="space-y-6">
+            <!-- Lokasi Lemari -->
+            <div>
+                <h2 class="text-base font-bold text-slate-900 dark:text-white mb-1">Penyimpanan Gudang</h2>
+                <p class="text-xs text-slate-500 mb-4">Distribusi barang di 5 titik area Gedung Utama</p>
+
+                <div class="space-y-2.5">
+                    @foreach($locationsWithStock as $loc)
+                        <a href="{{ route('locations.show', $loc) }}" class="p-3.5 rounded-xl bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800/80 hover:border-indigo-500/50 transition-all flex items-center justify-between group">
+                            <div>
+                                <div class="text-xs font-bold text-slate-900 dark:text-white group-hover:text-indigo-400 transition-colors">
+                                    {{ $loc->name }}
+                                </div>
+                                <div class="text-[11px] text-slate-500 font-mono">{{ $loc->code }}</div>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-xs font-bold text-slate-700 dark:text-slate-300">{{ $loc->assets_count }} unit aset</span>
+                                <span class="block text-[10px] text-slate-500">{{ $loc->stock_balances_count }} item saldo</span>
+                            </div>
+                        </a>
+                    @endforeach
+                </div>
             </div>
         </div>
-    </main>
-</body>
-</html>
-
+    </div>
+</div>
+@endsection

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Asset extends Model
 {
@@ -32,14 +33,19 @@ class Asset extends Model
         return $this->belongsTo(Location::class, 'current_location_id');
     }
 
+    public function movementItems(): HasMany
+    {
+        return $this->hasMany(StockMovementItem::class);
+    }
+
     /**
      * Auto-generate kode aset unik Omah Visual LED
      * Format: OVL-AST-YYYYMM-XXXX (contoh: OVL-AST-202610-0001)
      */
     public static function generateAssetCode(): string
     {
-        $prefix = 'OVL-AST-' . date('Ym') . '-';
-        $latest = static::where('asset_code', 'LIKE', $prefix . '%')
+        $prefix = 'OVL-AST-'.date('Ym').'-';
+        $latest = static::where('asset_code', 'LIKE', $prefix.'%')
             ->orderBy('asset_code', 'desc')
             ->first();
 
@@ -50,7 +56,6 @@ class Asset extends Model
             $nextNumber = '0001';
         }
 
-        return $prefix . $nextNumber;
+        return $prefix.$nextNumber;
     }
 }
-

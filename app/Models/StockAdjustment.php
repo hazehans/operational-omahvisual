@@ -55,8 +55,8 @@ class StockAdjustment extends Model
 
     public static function generateAdjustmentNumber(): string
     {
-        $prefix = 'ADJ-' . date('Ym') . '-';
-        $latest = static::where('adjustment_number', 'LIKE', $prefix . '%')
+        $prefix = 'ADJ-'.date('Ym').'-';
+        $latest = static::where('adjustment_number', 'LIKE', $prefix.'%')
             ->orderBy('adjustment_number', 'desc')
             ->first();
 
@@ -67,7 +67,6 @@ class StockAdjustment extends Model
             $nextNumber = '0001';
         }
 
-        return $prefix . $nextNumber;
+        return $prefix.$nextNumber;
     }
 }
-
