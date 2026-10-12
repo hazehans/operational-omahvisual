@@ -49,7 +49,7 @@
     <!-- Content / Login Card -->
     <main class="relative z-10 w-full max-w-md mx-auto px-6 py-8">
         <div class="bg-slate-900/70 border border-slate-800/80 rounded-2xl shadow-2xl shadow-black/40 backdrop-blur-xl p-8 transition-all">
-            
+
             <div class="mb-8">
                 <h1 class="text-2xl font-bold tracking-tight text-white">Selamat Datang</h1>
                 <p class="text-sm text-slate-400 mt-1.5">Silakan masuk menggunakan kredensial akun Anda.</p>

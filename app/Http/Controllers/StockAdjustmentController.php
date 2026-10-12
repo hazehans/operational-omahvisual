@@ -23,7 +23,7 @@ class StockAdjustmentController extends Controller
      */
     public function index(Request $request): View
     {
-        $status = $request->get('status', 'pending_approval');
+        $status = $request->input('status', 'pending_approval');
 
         $query = StockAdjustment::with(['location', 'requester', 'approver', 'items.product.unit']);
 
