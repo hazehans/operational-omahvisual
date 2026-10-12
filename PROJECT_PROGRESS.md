@@ -118,7 +118,7 @@ Berdasarkan analisis 2 file Excel (`DATA TOOLS BOX .2` dan `DEV_STOCK OPNAME by 
   - Tombol **Setujui (Approve)** dan **Tolak (Reject)** khusus Owner/Branch Manager dengan posting saldo atomik.
 - [x] **Halaman Audit Trail ([`/audit-logs`](file:///d:/Job/ID_CV%20Han%20Media%20Tekindo/operational-omahvisual/resources/views/audit_logs/index.blade.php)):**
   - Log aktivitas pengguna immutable untuk Owner & Superuser.
-- [x] **Automated Tests:** 17 test PHPUnit lulus 100% (86 assertions).
+- [x] **Automated Tests:** 17 test PHPUnit lulus 100% (131 assertions).
 - [x] **Code Style:** Difilter & diformat sesuai standar Laravel Pint.
 
 ### Tahap 3: Fitur Foto Produk, Raw DB Superuser Manager, & Tipografi Nyaman (SELESAI ✅)
@@ -132,9 +132,11 @@ Berdasarkan analisis 2 file Excel (`DATA TOOLS BOX .2` dan `DEV_STOCK OPNAME by 
   - Akses terbatas secara ketat untuk peran `Superuser` (role lain mendapatkan `403 Forbidden`).
   - Whitelist 16 tabel inti database PostgreSQL dengan rekap baris data per kategori (Master Data, Inventaris, Transaksi, Sistem & Keamanan).
   - Data grid dinamis dengan pencarian teks/ID, pengurutan kolom, paginasi, aksi view/edit/delete, dan pencatatan audit log otomatis.
+  - **Bugfix Navigasi & Static Analysis:** Memperbaiki collection grouping link tabel agar selalu mengarah ke nama tabel riil (`$item['table']`), membersihkan seluruh warning deprecated `$request->get()`, dan memperbaiki type-hinting `abort_if()`.
 - [x] **Peningkatan Tipografi & Skalasi Font (Typography Scaling):**
   - Mengubah ukuran teks yang sebelumnya terlalu kecil (`text-[10px]`, `text-[11px]`, `text-xs`) menjadi lebih nyaman dibaca (`text-xs`, `text-sm`, `text-base`, `text-lg`).
   - Optimalisasi hierarki visual pada kartu dashboard, tabel aset, tabel master barang, dan form input.
+- [x] **Dokumentasi Proyek Komprehensif:** Menyusun [`README.md`](file:///d:/Job/ID_CV%20Han%20Media%20Tekindo/operational-omahvisual/README.md) resmi yang merinci profil proyek, arsitektur, cara kerja, akun demo, dan roadmap lanjutan.
 - [x] **Catatan Barcode Scanner:** Ditunda sementara atas persetujuan pengguna agar alur operasional utama matang terlebih dahulu sebelum integrasi fisik scanner.
 
 ---

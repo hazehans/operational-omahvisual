@@ -73,6 +73,13 @@
 - [x] Skalasi ukuran font dari sebelumnya terlalu kecil (`text-[10px]`, `text-[11px]`, `text-xs`) menjadi lebih nyaman dan proporsional (`text-xs`, `text-sm`, `text-base`, `text-lg`)
 - [x] Perbaikan hierarki visual pada kartu metrik, tabel data, label input form, dan status badges di seluruh view
 
+### 13. Bugfix & Diagnostik Superuser Database Controller — ✅ Selesai
+- [x] Perbaikan routing navigasi tabel: Memperbaiki collection grouping di `index.blade.php` agar selalu mengarah ke nama tabel riil (`$item['table']`), bukan indeks numerik `0, 1, 2`
+- [x] Perbaikan static analysis VS Code pada `abort_unless()`: Menggunakan boolean check ketat (`abort_if(! $rawRecord, 404)`) untuk menghindari error tipe `stdClass|null` dan `array`
+- [x] Migrasi fungsi deprecated: Mengganti seluruh pemanggilan `$request->get()` menjadi `$request->input()`
+- [x] Penambahan test suite untuk memastikan ke-16 link tabel di katalog Database Manager valid dan menghasilkan HTTP 200 (131 assertions lulus 100%)
+- [x] Dokumentasi lengkap proyek di `README.md`, `TODO.md`, dan `PROJECT_PROGRESS.md`
+
 ---
 
 ## 🔮 Roadmap Jangka Panjang (Operasional Lanjutan Sesuai PRD Global)

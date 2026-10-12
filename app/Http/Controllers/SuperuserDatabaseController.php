@@ -144,10 +144,10 @@ class SuperuserDatabaseController extends Controller
 
         // Filter pencarian teks
         if ($request->filled('q')) {
-            $search = $request->q;
-            $textColumns = array_filter($columns, function ($col) {
+            $search = (string) $request->input('q');
+            $textColumns = array_values(array_filter($columns, function ($col) {
                 return in_array($col['type_name'], ['varchar', 'text', 'string', 'char']);
-            });
+            }));
 
             if (! empty($textColumns)) {
                 $query->where(function ($q) use ($textColumns, $search) {
@@ -165,8 +165,8 @@ class SuperuserDatabaseController extends Controller
         }
 
         // Sorting
-        $sortBy = $request->get('sort', in_array('id', $columnNames) ? 'id' : $columnNames[0]);
-        $sortDir = strtolower($request->get('dir', 'desc')) === 'asc' ? 'asc' : 'desc';
+        $sortBy = (string) $request->input('sort', in_array('id', $columnNames) ? 'id' : $columnNames[0]);
+        $sortDir = strtolower((string) $request->input('dir', 'desc')) === 'asc' ? 'asc' : 'desc';
 
         if (in_array($sortBy, $columnNames)) {
             $query->orderBy($sortBy, $sortDir);
@@ -266,8 +266,8 @@ class SuperuserDatabaseController extends Controller
         $this->authorizeSuperuser();
         abort_unless(array_key_exists($table, $this->allowedTables), 404, 'Tabel tidak diizinkan.');
 
-        $record = DB::table($table)->where('id', $id)->first();
-        abort_unless($record, 404, 'Record dengan ID tersebut tidak ditemukan.');
+        $rawRecord = DB::table($table)->where('id', $id)->first();
+        abort_if(! $rawRecord, 404, 'Record dengan ID tersebut tidak ditemukan.');
 
         $columns = Schema::getColumns($table);
         $tableMeta = $this->allowedTables[$table];
@@ -276,7 +276,7 @@ class SuperuserDatabaseController extends Controller
             'table' => $table,
             'meta' => $tableMeta,
             'columns' => $columns,
-            'record' => (array) $record,
+            'record' => (array) $rawRecord,
             'id' => $id,
         ]);
     }
@@ -289,8 +289,10 @@ class SuperuserDatabaseController extends Controller
         $this->authorizeSuperuser();
         abort_unless(array_key_exists($table, $this->allowedTables), 404, 'Tabel tidak diizinkan.');
 
-        $oldRecord = (array) DB::table($table)->where('id', $id)->first();
-        abort_unless($oldRecord, 404, 'Record tidak ditemukan.');
+        $rawRecord = DB::table($table)->where('id', $id)->first();
+        abort_if(! $rawRecord, 404, 'Record tidak ditemukan.');
+
+        $oldRecord = (array) $rawRecord;
 
         $columns = Schema::getColumns($table);
         $data = [];
@@ -351,8 +353,10 @@ class SuperuserDatabaseController extends Controller
         $this->authorizeSuperuser();
         abort_unless(array_key_exists($table, $this->allowedTables), 404, 'Tabel tidak diizinkan.');
 
-        $oldRecord = (array) DB::table($table)->where('id', $id)->first();
-        abort_unless($oldRecord, 404, 'Record tidak ditemukan.');
+        $rawRecord = DB::table($table)->where('id', $id)->first();
+        abort_if(! $rawRecord, 404, 'Record tidak ditemukan.');
+
+        $oldRecord = (array) $rawRecord;
 
         DB::table($table)->where('id', $id)->delete();
 
@@ -368,4 +372,3 @@ class SuperuserDatabaseController extends Controller
             ->with('success', "Record #{$id} pada tabel [{$table}] berhasil dihapus.");
     }
 }
-

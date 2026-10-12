@@ -114,10 +114,32 @@ class SuperuserDatabaseAndProductImageTest extends TestCase
         $response->assertSee('Master Produk');
         $response->assertSee('Unit Serial Aset');
 
-        $tableResponse = $this->actingAs($this->superuser)->get('/superuser/database/products');
-        $tableResponse->assertStatus(200);
-        $tableResponse->assertSee('products');
-        $tableResponse->assertSee('Master Produk');
+        $tables = [
+            'products',
+            'assets',
+            'categories',
+            'units',
+            'locations',
+            'stock_balances',
+            'stock_movements',
+            'stock_movement_items',
+            'stock_adjustments',
+            'stock_adjustment_items',
+            'inventory_counts',
+            'inventory_count_items',
+            'audit_logs',
+            'users',
+            'roles',
+            'permissions',
+        ];
+
+        foreach ($tables as $tbl) {
+            $response->assertSee(route('superuser.database.show', $tbl));
+
+            $tableResponse = $this->actingAs($this->superuser)->get('/superuser/database/'.$tbl);
+            $tableResponse->assertStatus(200);
+            $tableResponse->assertSee($tbl);
+        }
     }
 
     public function test_superuser_can_insert_update_and_delete_raw_record(): void
@@ -169,4 +191,3 @@ class SuperuserDatabaseAndProductImageTest extends TestCase
         $this->assertNotNull($deleteAudit);
     }
 }
-

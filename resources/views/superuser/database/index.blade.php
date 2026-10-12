@@ -45,13 +45,16 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    @foreach($items as $tableName => $item)
-                        <a href="{{ route('superuser.database.show', $tableName) }}"
+                    @foreach($items as $item)
+                        @php
+                            $actualTable = $item['table'];
+                        @endphp
+                        <a href="{{ route('superuser.database.show', $actualTable) }}"
                            class="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 hover:border-indigo-500/60 hover:bg-slate-800/40 transition-all flex flex-col justify-between group shadow-md">
                             <div>
                                 <div class="flex items-center justify-between gap-2 mb-2">
                                     <span class="font-mono text-xs font-bold text-indigo-400 group-hover:text-indigo-300 transition-colors">
-                                        {{ $tableName }}
+                                        {{ $actualTable }}
                                     </span>
                                     <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-slate-800 text-slate-300 border border-slate-700/60">
                                         {{ number_format($item['count']) }} baris
