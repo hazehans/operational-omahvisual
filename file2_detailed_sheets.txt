@@ -1,0 +1,155 @@
+============================================================
+SHEET: "Jurnal List Aset dari duplicate" (Max Row: 1001, Max Col: 19)
+  Row 3: C9:Detail inventory
+  Row 5: C2:No | C3:Nama Barang  | C4:Jumlah | C5:Harga | C6:Total | C7:Harga | C9:No | C10:Nama | C11:Jumlah
+  Row 6: C2:1.0 | C3:Qiangly Led P3.9 | C4:50.0 | C5:15800000.0 | C6:790000000 | C7:790000000.0 | C9:1.0 | C10:Cabinet P3.9 100x50 | C11:36.0 | C17:Videotron P3.9 Batch 9
+  Row 7: C2:2.0 | C3:Hanging Bar / flybar | C4:6.0 | C5:940000.0 | C6:5640000 | C7:5900000.0 | C9:2.0 | C10:Cabinet P3.9 50x50 | C11:36.0 | C17:Hardcase 
+  Row 8: C2:3.0 | C3:Aksesoris Power Corn 1 | C4:1.0 | C5:2340000.0 | C6:2340000 | C9:3.0 | C10:Hardcase Fly Case | C11:16.0 | C17:Panel isi 6 | C18:4.0
+  Row 9: C2:4.0 | C3:Aksesoris Power Corn 2 | C4:1.0 | C5:260000.0 | C6:260000 | C9:4.0 | C10:Lan Jumper 1,5 cm | C11:130.0 | C17:Panel isi 12 | C18:1.0
+============================================================
+SHEET: "Data Bersih" (Max Row: 210, Max Col: 9)
+  Row 1: C1:Kategori Utama | C2:Sub-Kategori | C3:Merk/Seri | C4:Nama Barang Spesifik | C5:Spesifikasi/Ukuran | C6:Qty | C7:Satuan | C8:Status Kondisi | C9:Keterangan Detail
+  Row 2: C1:Komponen Videotron | C2:Komponen Inti | C3:Qiangli | C4:Cabinet P3.9 | C5:100x50 cm | C6:36.0 | C7:Unit
+  Row 3: C1:Komponen Videotron | C2:Komponen Inti | C3:Qiangli | C4:Cabinet P3.10 | C5:50x50 cm | C6:36.0 | C7:Unit
+  Row 4: C1:Komponen Videotron | C2:Kelistrikan | C4:Panel Power Box | C5:6 Output | C6:2.0 | C7:Unit
+  Row 5: C1:Komponen Videotron | C2:Kelistrikan | C4:Panel Power Box | C5:12 Output | C6:1.0 | C7:Unit
+  Row 6: C1:Komponen Videotron | C2:Sistem | C3:Novastar | C4:Video Processor | C5:VX6 | C6:1.0 | C7:Unit
+============================================================
+SHEET: "Data Urut" (Max Row: 210, Max Col: 9)
+  Row 1: C1:Kategori Utama | C2:Sub-Kategori | C3:Merk/Seri | C4:Nama Barang Spesifik | C5:Spesifikasi/Ukuran | C6:Qty | C7:Satuan | C8:Status Kondisi | C9:Keterangan Detail
+  Row 2: C1:Alat Pendukung | C2:Penyimpanan | C3:Janice | C4:Box Antena / Alat | C6:1.0 | C7:Unit
+  Row 3: C1:Alat Pendukung | C2:Penyimpanan | C4:Box HDMI Extender | C5:Polos | C6:1.0 | C7:Unit
+  Row 4: C1:Alat Pendukung | C2:Penyimpanan | C4:Box Kosong ABS (Saga/Lite) | C6:5.0 | C7:Unit
+  Row 5: C1:Alat Pendukung | C2:Penyimpanan | C4:Box LED | C5:Kosong | C6:1.0 | C7:Unit
+  Row 6: C1:Alat Pendukung | C2:Penyimpanan | C4:Box LED | C5:Isi 5 | C6:5.0 | C7:Unit
+============================================================
+SHEET: " STOCK" (Max Row: 1004, Max Col: 13)
+  Row 3: C2:STOCK OPNAME LED 31 JANUARI 2026
+  Row 5: C2:No | C3:Item | C4:Keterangan | C5:Detail | C6:Ukuran | C7:QTY | C8:Total item
+(PCS) | C9:In | C10:Out | C11:Keterangan Lain
+  Row 7: C2:1.0 | C3:Kabel Foh | C4:Panjang/pendek | C6:69 m | C7:1.0 | C8:12
+  Row 8: C6:60,5 m | C7:1.0
+  Row 9: C6:50 m | C7:2.0
+  Row 10: C6:49 M | C7:1.0
+============================================================
+SHEET: "STOCK - AURA&PUTRI" (Max Row: 889, Max Col: 13)
+  Row 3: C2:STOCK OPNAME LED 23 FEBRUARI 2026
+  Row 5: C2:No | C3:Item | C4:Keterangan | C5:Detail | C6:Ukuran | C7:QTY | C8:Total item
+(PCS) | C9:In | C10:Out | C11:Keterangan Lain
+  Row 7: C2:1.0 | C3:Kabel Foh | C4:Panjang/pendek | C6:69 m | C7:1.0 | C8:12 | C9:1.0
+  Row 8: C6:60,5 m | C7:1.0 | C9:1.0
+  Row 9: C6:50 m | C7:2.0 | C9:2.0
+  Row 10: C6:49 M | C7:1.0 | C9:1.0
+============================================================
+SHEET: "Burhan" (Max Row: 120, Max Col: 14)
+  Row 3: C2:MASTER DATA STOCK BARANG OMAH VISUAL LED 
+Update Periode : 30 April 2026 
+  Row 5: C2:No | C3:Item | C4:Keterangan | C5:Detail | C6:Ukuran | C7:QTY | C8:Total item
+(PCS) | C9:Ready In | C10:Ready Out | C11:Lose
+  Row 6: C2:1 | C3:Kabel Foh | C4:Panjang/pendek | C6:69 m | C7:1.0 | C8:12
+  Row 7: C6:60,5 m | C7:1.0
+  Row 8: C6:50 m | C7:2.0
+  Row 9: C6:49 M | C7:1.0
+============================================================
+SHEET: "MASTER DATA mei 2026" (Max Row: 119, Max Col: 14)
+  Row 1: C2:MASTER DATA STOCK BARANG OMAH VISUAL LED MEI 2026
+30 MEI 2026
+  Row 5: C2:No | C3:Item | C4:Keterangan | C5:Detail | C6:Ukuran | C7:QTY | C8:Total item
+(PCS) | C9:Ready In | C10:Ready Out | C11:Lose
+  Row 6: C2:1 | C3:Kabel Foh | C4:Panjang/pendek | C6:69 m | C7:1.0 | C8:12 | C9:1.0
+  Row 7: C6:60,5 m | C7:1.0 | C9:1.0
+  Row 8: C6:50 m | C7:2.0 | C9:2.0
+  Row 9: C6:36 M | C7:1.0 | C9:1.0
+============================================================
+SHEET: "MASTER DATA 10 APR 2026" (Max Row: 120, Max Col: 14)
+  Row 3: C2:MASTER DATA STOCK BARANG OMAH VISUAL LED 
+Update Periode : 10 April 2026 
+  Row 5: C2:No | C3:Item | C4:Keterangan | C5:Detail | C6:Ukuran | C7:QTY | C8:Total item
+(PCS) | C9:Ready In | C10:Ready Out | C11:Lose
+  Row 6: C2:1 | C3:Kabel Foh | C4:Panjang/pendek | C6:69 m | C7:1.0 | C8:12.0 | C9:1.0
+  Row 7: C6:60,5 m | C7:1.0 | C9:1.0
+  Row 8: C6:50 m | C7:2.0 | C9:2.0
+  Row 9: C6:49 M | C7:1.0 | C9:1.0
+============================================================
+SHEET: "Sheet14" (Max Row: 1, Max Col: 1)
+============================================================
+SHEET: "INVENTORY ASET TV MASTER" (Max Row: 1025, Max Col: 9)
+  Row 4: C2:INVENTORY ASET TV ( 13 MARET 2026 )
+  Row 6: C2:No | C3:Item | C4:Keterangan | C5:Detail | C6:QTY | C7:Keterangan lain | C8:Checklist
+  Row 7: C2:1.0 | C3:Pertelevisian | C4:43 inch | C5:LG | C6:3.0 | C7:ADA DI GUDANG | C8:✔️
+  Row 8: C5:LG | C7:ADA DI GUDANG | C8:✔️
+  Row 9: C5:Samsung | C7:ADA DI GUDANG | C8:✔️
+  Row 10: C4:50 inch | C5:Samsung | C6:5.0 | C7:ADA DI GUDANG | C8:✔️
+============================================================
+SHEET: "INVENTORY ASET LED MASTER" (Max Row: 1057, Max Col: 19)
+  Row 6: C4:  
+  Row 7: C4:INVENTORY ASET LED MASTER
+  Row 10: C4:No | C5:Item | C6:Keterangan | C7:Detail | C8:QTY | C9:Keterangan lain
+  Row 11: C4:1.0 | C5:Kabel Foh | C6:Panjang/Pendek | C8:15.0
+  Row 12: C4:2.0 | C5:Panel Listrik | C6:Panel isi 6 | C8:7.0
+  Row 13: C6:Panel isi 12 | C8:2.0
+============================================================
+SHEET: "INVENTORY ASET LED 18 DES 2025" (Max Row: 1030, Max Col: 23)
+  Row 6: C4:  
+  Row 7: C4:INVENTORY ASET LED KAMIS 18 DES 2025
+  Row 10: C4:No | C5:Item | C6:Keterangan | C7:Detail | C8:QTY | C9:UKURAN | C10:STOCK OPNAME | C11:SESUAI | C12:TIDAK SESUAI | C13:Keterangan lain
+  Row 11: C4:1.0 | C5:Kabel Foh | C6:Panjang/Pendek | C8:15.0 | C10:11.0
+  Row 12: C4:2.0 | C5:Panel Listrik | C6:Panel isi 6 | C8:7.0 | C10:6.0
+  Row 13: C6:Panel isi 12 | C8:2.0 | C10:2.0
+============================================================
+SHEET: "FIX STOCK" (Max Row: 999, Max Col: 13)
+  Row 3: C2:STOCK OPNAME LED 6 JANUARI 2026
+  Row 5: C2:No | C3:Item | C4:Keterangan | C5:Detail | C6:Ukuran | C7:QTY | C8:Total item
+(PCS) | C9:In | C10:Out | C11:Keterangan Lain
+  Row 7: C2:1.0 | C3:Kabel Foh | C4:Panjang/pendek | C6:69 m | C7:1.0 | C8:11 | C9:1.0
+  Row 8: C6:60,5 m | C7:1.0 | C9:1.0
+  Row 9: C6:50 m | C7:2.0 | C9:2.0
+  Row 10: C6:48 m | C7:1.0 | C9:1.0
+============================================================
+SHEET: "Perangkat Pendukung TV" (Max Row: 21, Max Col: 9)
+  Row 6: C1:LIST PERANGKAT PENDUKUNG TV (TANGGAL 31 MEI 2026) | C8:IN | C9:OUT
+  Row 8: C1:No | C2:Item | C3:Keterangan | C4:Detail | C5:QTY | C6:Keterangan lain | C7:Ceklist
+  Row 9: C1:1.0 | C2:Perangkat Pendukung  | C3:Splitter | C4:Bafo HDMI 2.0 / 4 Port | C5:6 Unit | C6:6 unit ( -2 rusak ) | C7:6 unit ( -2 rusak ) | C8:6 unit ( - rusak)
+  Row 10: C4:Vention | C5:2 unit | C7:2 unit | C8:2 unit
+  Row 11: C4:Uhd | C5:1 unit | C7:1 unit | C8:1 unit
+  Row 12: C3:Extender | C4:Bafo HDMI Extender 60 M | C5:2 pasang | C6:Reciver + Transmiter | C7:2 Pasang | C8:2 pasang 
+============================================================
+SHEET: "UKURAN HARDCASE TV" (Max Row: 21, Max Col: 8)
+  Row 5: C3:UKURAN HARDCASE
+  Row 7: C3:No | C4:Merk tv | C5:Ukuran (inch) | C6:Panjang (cm) | C7:Lebar (cm) | C8:Tinggi (cm)
+  Row 8: C3:1.0 | C4:LG  | C5:65.0 | C6:164.0 | C7:17.0 | C8:95.0
+  Row 9: C3:2.0 | C4:4K LED | C5:65.0 | C6:164.0 | C7:17.0 | C8:95.0
+  Row 10: C3:3.0 | C4:Samsung | C5:60.0 | C6:152.0 | C7:17.0 | C8:88.0
+  Row 11: C3:4.0 | C4:Samsung | C5:55.0 | C6:138.0 | C7:15.0 | C8:85.0
+============================================================
+SHEET: "INVENTORY ASET LED 13 NOV 25" (Max Row: 1050, Max Col: 23)
+  Row 7: C2:No | C3:Item | C4:Keterangan | C5:Detail | C6:QTY | C7:Stock opname | C8:Sesuai | C9:Tidak sesuai | C10:Keterangan lain
+  Row 9: C2:1.0 | C3:Kabel Foh | C4:Panjang/Pendek | C6:15.0
+  Row 10: C2:2.0 | C3:Panel Listrik | C4:Panel isi 6 | C6:7.0
+  Row 11: C4:Panel isi 12 | C6:1.0
+  Row 12: C4:Kabel panel kecil | C6:6.0
+  Row 13: C4:Kabel panel besar | C6:1.0
+============================================================
+SHEET: "TAMBAHAN ASET" (Max Row: 33, Max Col: 17)
+  Row 9: C2:PEMBELIAN NEW INVENTORY 13 NOVEMBER 2025
+  Row 11: C2:No | C3:Item | C4:QTY | C5:Detail | C6:ETC.
+  Row 13: C2:1.0 | C3:Cabinet Lrs P 2.6 Indoor 100x50cm | C4:42.0 | C5:21 Meter | C6:Done
+  Row 14: C2:2.0 | C3:Cabinet Lrs P 2.6 Indoor 50x50cm | C4:0.0
+  Row 15: C2:3.0 | C3:Flight case lampro | C4:7.0
+  Row 16: C2:4.0 | C3:Powercorn Jumper Lrs 1.5M | C4:43.0 | C6:Done
+============================================================
+SHEET: "KEKURANGAN" (Max Row: 20, Max Col: 8)
+  Row 3: C2:No | C3:Item | C4:Jumlah | C5:Venue | C6:Pic | C7:Crew (bukan magang) | C8:Keterangan lain
+  Row 4: C2:1.0 | C3:Obeng + | C4:1.0 | C5:Tejowangi nongkojajar | C6:Bagus | C7:Byan | C8:lunas
+  Row 5: C7:Burhan
+  Row 6: C3:Baut panjang | C4:5.0 | C7:Dhani
+  Row 7: C7:Erik
+  Row 8: C2:2.0 | C3:Lan awal panjang | C4:1.0 | C5:Pandaan | C6:Irul | C7:Farel
+============================================================
+SHEET: "List Alat Kerja " (Max Row: 1000, Max Col: 26)
+  Row 6: C2:Tool Box 1 | C6:Tool Box 2 | C10:Tool Box 3 | C14:Tool Box 4 | C22:Tool Box 5
+  Row 7: C2:PIC | C3:Rian | C6:PIC | C7:Yoga tramadol | C10:PIC | C11:Nihel traga | C14:PIC | C15:Bobi dan dadang | C18:Di Pastikan isi Tool Box sesuai Standart Kerja | C22:PIC
+  Row 8: C2:No | C3:Nama Barang | C4:Cheklist | C6:No | C7:Nama Barang | C8:Cheklist | C10:No | C11:Nama Barang | C12:Cheklist | C14:No
+  Row 9: C2:1.0 | C3:Tang Kombinasi | C4:True | C6:1.0 | C7:Tang Kombinasi | C8:True | C10:1.0 | C11:Tang Kombinasi | C12:False | C14:1.0
+  Row 10: C2:2.0 | C3:Tang Potong | C4:True | C6:2.0 | C7:Tang Potong | C8:True | C10:2.0 | C11:Tang Potong | C12:True | C14:2.0
+  Row 11: C2:4.0 | C3:Obeng +- | C4:True | C6:4.0 | C7:Obeng +- | C8:True | C10:4.0 | C11:Obeng +- | C12:True | C14:4.0
