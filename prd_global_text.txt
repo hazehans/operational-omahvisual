@@ -1,0 +1,680 @@
+﻿
+PRD GLOBAL OPERASIONAL
+OMAH VISUAL LED
+Product Requirements Document — Sistem Operasional Terintegrasi
+Draft 1.0 • 12 Oktober 2026
+Basis: diskusi discovery yang tersedia
+Untuk review bersama agen Antigravity; tidak semua aturan bisnis sudah final.
+0. Cara Membaca Dokumen
+Ini adalah PRD induk seluruh webapp operasional Omah Visual LED. PRD Inventory yang dibuat sebelumnya menjadi dokumen turunan. Dokumen ini menggabungkan keputusan, konteks jangka panjang, usulan, serta pertanyaan terbuka.
+Label
+Arti
+Arahan untuk agen
+TERKONFIRMASI
+Keputusan yang sudah dinyatakan jelas.
+Pertahankan kecuali user mengubahnya.
+USULAN
+Rancangan awal yang belum disahkan.
+Jangan anggap final; minta persetujuan.
+KONTEKS JANGKA PANJANG
+Kebutuhan yang pernah dibahas tetapi bukan prioritas MVP.
+Jaga kompatibilitas, jangan otomatis membangun.
+PERTANYAAN TERBUKA
+Belum ada keputusan yang cukup.
+Catat dan tanyakan sebelum implementasi yang bergantung padanya.
+[TERKONFIRMASI] 
+Stack: Laravel backend, Blade frontend, PostgreSQL database.
+[TERKONFIRMASI] 
+MVP yang sudah memiliki spesifikasi turunan adalah Inventory. Agen harus audit repository sebelum coding.
+[TERKONFIRMASI] 
+Jangan menjalankan migration destruktif, menghapus fitur, atau menulis ulang aplikasi tanpa rencana dan persetujuan user.
+1. Ringkasan Produk
+Sistem internal terpadu untuk menjalankan siklus bisnis LED: pelanggan dan order, quotation, persiapan barang/SDM/kendaraan/dana, rental/event, instalasi dan QC, demobilisasi, inventory, pembelian, penjualan aset, alat eksternal, servis internal, invoice, pembayaran, laporan, dokumen, notifikasi, serta portal tracking customer terbatas.
+1.1 Tujuan
+Memusatkan data customer, order, barang, dokumen, biaya, pembayaran, dan aktivitas pengguna.
+Menekan selisih stok fisik dan stok sistem.
+Memastikan kesiapan event diperiksa sebelum kendaraan berangkat.
+Memisahkan pencatatan, verifikasi, persetujuan, dan koreksi transaksi.
+Menyediakan histori yang dapat diaudit lintas modul.
+Membangun bertahap, dimulai dari fondasi akses/audit dan Inventory.
+1.2 Prinsip desain
+Satu sumber data utama; impor spreadsheet harus direkonsiliasi.
+Master produk, aset individual, saldo stok, dan histori mutasi adalah konsep berbeda.
+Transaksi yang diposting/final tidak dihapus diam-diam; koreksi memakai reversal/void/adjustment.
+Akses melihat data tidak otomatis berarti kewenangan approval.
+Setiap perubahan status penting mencatat siapa, kapan, dari status apa ke apa, dan alasan.
+Fitur berstatus usulan/terbuka tidak boleh dianggap keputusan final.
+2. Konteks Bisnis dan Batas Sistem
+[TERKONFIRMASI] 
+Fokus saat ini bisnis LED pada satu cabang/gedung utama. Bisnis rental kamera/drone masih akan datang.
+[TERKONFIRMASI] 
+Customer menghubungi Admin LED lewat WhatsApp. Admin membuat order di aplikasi; tidak ada inquiry/booking mandiri dari customer.
+[TERKONFIRMASI] 
+Metode pembayaran yang dibahas: tunai dan transfer bank; payment gateway tidak termasuk kebutuhan saat ini.
+[TERKONFIRMASI] 
+Cakupan jangka panjang meliputi rental/event, sales, procurement, inventory, finance/payment, internal service, alat eksternal, crew, dokumen, tracking customer.
+[USULAN] 
+Rancang agar bisa diperluas ke cabang/unit bisnis lain, tetapi jangan membangun multi-cabang kompleks pada MVP.
+2.1 Bukan prioritas awal
+Payment gateway/rekonsiliasi bank otomatis.
+Face-scan atau upload foto wajah dari perangkat; sebelumnya dikesampingkan karena kompleksitas.
+Portal customer untuk membuat inquiry/booking.
+Rental kamera/drone sebelum bisnis tersebut diluncurkan.
+Payroll otomatis sampai aturan KPI dan perhitungan matang.
+Implementasi semua modul sekaligus tanpa review repository dan persetujuan milestone.
+3. Arsitektur dan Arahan Teknis
+Area
+Arahan
+Backend / frontend / DB
+Laravel / Blade / PostgreSQL.
+Authorization
+Wajib di server-side menggunakan middleware, policy/gate, atau mekanisme setara; menyembunyikan tombol saja tidak cukup.
+Data transaksi
+Gunakan FK, constraint, transaksi database, validasi, dan pencegahan double-submit/race condition.
+Audit
+Audit trail bisnis terpusat untuk stok, pembayaran, approval, status order, perubahan akses, dan koreksi.
+Dokumen
+PDF untuk dokumen yang disepakati; nomor, tanggal, status, dan sumber datanya jelas.
+Integrasi
+Tambahkan hanya setelah kebutuhan, keamanan, credential, dan skenario error ditentukan.
+Deployment
+Pisahkan development/staging/production; sediakan migration dan rollback yang dapat ditinjau.
+Audit repository terlebih dahulu: routes, migrations, models, controllers, middleware/policies, Blade views, tests, upload, config, dokumentasi.
+Laporkan fitur existing: lengkap, parsial, bermasalah, duplikat, belum ada.
+Jangan menaruh secret/token/password di source control atau log.
+Jangan hard-delete record yang telah terkait transaksi bisnis.
+Uji restore backup, bukan hanya membuat backup.
+4. Role dan Tata Kelola
+Daftar role yang dibahas. Matriks permission per aksi belum sepenuhnya final.
+Role
+Tanggung jawab yang dibahas
+Batas penting
+Owner
+Pengawasan bisnis dan approval penting; akses semua modul.
+Approval biaya alat eksternal; koreksi/batal pembayaran terverifikasi bersama Branch Manager.
+Branch Manager
+Pengelolaan cabang dan approval.
+Dapat menyetujui penjualan aset perusahaan; saat ini orang yang sama dengan Owner, tetapi role tetap berbeda.
+Operations Manager
+Operasi order/event, negosiasi harga SDM, penugasan crew, kontrol pekerjaan.
+Dapat menyetujui penjualan aset perusahaan.
+Admin LED
+Customer/order, quotation, dokumen order, pencatatan pembayaran.
+Order dibuat setelah komunikasi WhatsApp; menyiapkan draft invoice.
+Warehouse Team
+Stok, hitung fisik, penerimaan/pengeluaran, SPK/cargo, verifikasi barang.
+Mengesahkan stok awal; mengajukan adjustment untuk approval Owner.
+Finance
+Verifikasi pembayaran, cek bukti/mutasi bank, finalisasi invoice.
+Pencatatan dan verifikasi pembayaran adalah tahap berbeda.
+Technician
+Pekerjaan teknis, instalasi/QC, servis internal.
+Berbeda dari Crew; service hanya untuk aset milik perusahaan.
+Crew / Field Operator
+Pelaksanaan lapangan, shift, demobilisasi, laporan lapangan.
+Berbeda dari Technician.
+Superuser / System Administrator
+Administrasi teknis dan akses luas untuk troubleshooting.
+Akses luas tidak otomatis memberi approval bisnis; audit trail dapat dilihat.
+4.1 Pemisahan tugas dan aturan yang dikonfirmasi
+Admin mencatat pembayaran; Finance memverifikasi. Orang yang sama boleh memegang dua role, tetapi sistem tetap menyimpan aktor, waktu, tahap, dan audit masing-masing.
+Tidak ada kewajiban universal untuk approver orang kedua pada transaksi bernilai besar; threshold belum ditetapkan.
+Bukti transfer berupa foto/screenshot dapat diajukan; Finance tetap memeriksa mutasi/rekening koran untuk transfer.
+Owner menerima notifikasi pembayaran yang ditolak atau perlu ditinjau.
+Pembayaran yang sudah diverifikasi hanya dapat dikoreksi/dibatalkan oleh Owner atau Branch Manager, dengan alasan dan audit trail.
+Audit trail dapat dilihat Owner dan Superuser.
+Owner dan Branch Manager saat ini orang yang sama; Admin LED dan Finance mungkin orang yang sama. Akun harus mendukung multi-role.
+4.2 Pertanyaan akses
+Apakah data customer/order dibatasi berdasarkan penugasan?
+Siapa boleh membuat master produk, siapa hanya mengelola stok?
+Siapa boleh menghapus draft yang belum pernah diposting?
+Apakah quotation, diskon, procurement, dan pengeluaran dana butuh approval satu tahap/berjenjang?
+Apakah akses Superuser ke data finansial sensitif perlu alasan/permission tambahan?
+5. Peta Modul dan Prioritas
+Modul
+Tujuan
+Prioritas indikatif
+Fondasi Auth/RBAC/Audit
+Login, multi-role, server-side authorization, histori.
+Wajib
+Inventory &amp; Warehouse
+Master, asset/quantity tracking, kondisi, ownership, stok awal, movement, count, adjustment.
+MVP awal
+Customer &amp; Order
+Customer dan order input Admin.
+Fase berikut
+Quotation &amp; Dokumen
+Quotation/revisi, approval bila berlaku, dokumen order.
+Fase berikut
+Finance
+Invoice draft/final, payment record/verification/correction.
+Fase berikut
+Rental/Event Operations
+SPK, readiness, crew, kendaraan, dana, install/QC, demobilisasi.
+Fase lanjutan
+External Equipment
+Pinjam/sewa pihak luar, biaya, penerimaan, alokasi.
+Fase lanjutan
+Procurement/Purchasing
+Pembelian aset perusahaan, penerimaan barang.
+Fase lanjutan
+Sales aset perusahaan
+Penjualan barang/aset dengan approval.
+Fase lanjutan
+Internal Service
+Servis aset perusahaan.
+Fase lanjutan
+Crew/Field Operations
+Penugasan, shift, konfirmasi, laporan lapangan.
+Fase lanjutan
+Customer Tracking
+Order number + unique token, status terbatas.
+Fase lanjutan
+Reports/PDF/Notifications
+Laporan, dokumen, notifikasi approval dan exception.
+Bertahap
+6. Inventory &amp; Warehouse
+[TERKONFIRMASI] 
+Barang tertentu dilacak individual dengan ID/nomor seri; barang lain dilacak berdasarkan kuantitas.
+[TERKONFIRMASI] 
+Warehouse menghitung, memverifikasi, dan mengesahkan stok awal.
+[TERKONFIRMASI] 
+Warehouse mengajukan penyesuaian stok; Owner menyetujui sebelum saldo resmi berubah.
+[TERKONFIRMASI] 
+Kondisi: available, damaged, under service. Damaged/under service tetap dihitung fisik tetapi tidak tersedia untuk alokasi.
+[TERKONFIRMASI] 
+Kepemilikan harus membedakan barang perusahaan dan eksternal. Satuan dapat berupa unit, set, meter, roll, dll.
+6.1 Model konseptual
+Product/catalog: definisi jenis barang.
+Asset/item instance: unit fisik individual untuk barang yang dilacak per ID/serial.
+Stock balance: saldo per lokasi/status berdasarkan transaksi posted.
+Stock movement: penerimaan, pengeluaran, alokasi, pengembalian, transfer, perubahan kondisi, adjustment, reversal.
+Inventory count: hasil hitung fisik dibandingkan saldo sistem.
+External equipment: barang pihak luar, tidak disamakan dengan aset perusahaan.
+6.2 Alur stok awal
+Buat/import master barang dan satuan.
+Warehouse melakukan hitung fisik; catat serial/ID untuk barang individual.
+Warehouse memeriksa duplikasi, kondisi, kepemilikan, dan selisih.
+Warehouse mengesahkan stok awal; sistem menyimpan snapshot, aktor, waktu, dan catatan.
+Setelah diposting, koreksi dilakukan melalui adjustment, bukan edit langsung.
+6.3 Alur adjustment
+Warehouse membuat pengajuan berisi item, delta/sebelum-sesudah, alasan, dan bukti bila ada.
+Status konseptual: Draft → Submitted → Approved/Rejected → Posted.
+Owner meninjau; hanya pengajuan approved yang diposting ke saldo resmi.
+Semua aksi masuk audit trail; transaksi posted tidak dihapus.
+6.4 Fitur dan validasi
+Master kategori, unit, produk, tracking type, ownership, kondisi, kode dan deskripsi.
+Filter/pencarian kategori, kode, nama, serial, tracking type, ownership, kondisi, availability.
+Catat receipt, issue, return, damage, service in/out, adjustment dan reversal.
+Tampilkan jumlah fisik, available, allocated, dan di luar gudang bila relevan.
+Cegah alokasi barang damaged/under service atau aset yang sudah teralokasi pada rentang sama.
+Stock count dan laporan selisih; export/PDF sesuai prioritas.
+Jangan menyimpan semua kuantitas hanya pada tabel products jika movement/asset tracking diperlukan.
+6.5 Pertanyaan inventory
+Apakah stok awal juga butuh approval Owner, atau cukup pengesahan Warehouse?
+Stok negatif dilarang mutlak atau ada exception?
+Format product code, asset ID, barcode/QR?
+Lokasi rak/bin dibutuhkan di MVP?
+Siapa approve kehilangan, write-off, scrap, barang rusak permanen?
+Bagaimana consumable dan satuan pecahan dicatat?
+Bagaimana barang eksternal ditempatkan: transaksi terpisah, lokasi transit, atau langsung terkait order?
+7. Customer, Order, dan Quotation
+[TERKONFIRMASI] 
+Admin LED membuat order setelah komunikasi WhatsApp; customer tidak membuat order sendiri.
+[TERKONFIRMASI] 
+Admin menyiapkan draft invoice; Finance memfinalisasi invoice.
+[USULAN] 
+Alur umum: inquiry WhatsApp dicatat bila perlu → Draft Order → Quotation/revisi → approval bila diperlukan → Awaiting DP → Booking Confirmed → persiapan → event → demobilisasi/return → penyelesaian tagihan → Completed.
+7.1 Data konseptual
+Customer: nama/organisasi, kontak, PIC, alamat, catatan, histori order.
+Order: nomor unik, customer, tanggal permintaan/event, lokasi, jenis pekerjaan, PIC internal, status, catatan.
+Order line: item/layanan, qty, unit, harga/biaya, periode, kebutuhan khusus.
+Quotation revision: revisi, item/harga/diskon/validitas, status, pembuat, approver.
+Dokumen: nomor, versi, tanggal, file/snapshot, status, pembuat, relasi ke order.
+7.2 Pertanyaan order
+Quotation wajib atau opsional? Siapa approve diskon/harga khusus/margin rendah?
+Format nomor order dan aturan perubahan setelah DP/booking?
+Satu order dapat berisi beberapa tanggal/lokasi/event?
+Order dapat berupa rental, jasa instalasi, penjualan barang, atau gabungan?
+Order batal harus mempertahankan histori biaya/pembayaran?
+8. Rental &amp; Event Operations
+[KONTEKS JANGKA PANJANG] 
+Alur event pernah dibahas sebagai: Draft/Quoting → Awaiting DP → Booking Confirmed → Preparing Cargo → Installed &amp; BAST → On-Event/Live → Demobilization → Completed. Ini belum menjadi state machine final.
+Status konseptual
+Makna
+Draft/Quoting
+Order disusun/penawaran dinegosiasikan.
+Awaiting DP
+Menunggu uang muka.
+Booking Confirmed
+Booking terkonfirmasi sesuai aturan yang nantinya disahkan.
+Preparing Cargo
+Persiapan barang, SPK, kru, kendaraan, dana.
+Installed &amp; BAST
+Instalasi selesai dan BAST diproses.
+On-Event/Live
+Pekerjaan/event berjalan.
+Demobilization
+Pembongkaran, hitung, dan pengembalian.
+Completed
+Barang diperiksa dan kewajiban diselesaikan sesuai definisi final.
+8.1 Gate kesiapan keberangkatan
+Crew ditugaskan dan siap.
+Barang dipicking dan dicocokkan dengan SPK/cargo list.
+Kendaraan/transport tersedia dan tercatat.
+Dana operasional disiapkan sesuai proses Finance.
+SPK/cargo list dan dokumen wajib tersedia.
+Exception hanya oleh role berwenang dengan alasan tercatat.
+8.2 Instalasi, QC, dan demobilisasi
+QC pernah mencakup tes RGB, kesesuaian instalasi, grounding, dan foto sisi kanan/kiri/depan/belakang.
+Operations Manager dibahas sebagai approver QC; perlu validasi.
+Demobilisasi mencakup hitung barang, inspeksi kondisi, dan rekonsiliasi terhadap SPK.
+Warehouse mencocokkan barang kembali; barang hilang/kurang memicu discrepancy dan notifikasi Owner.
+Stok dan kondisi diperbarui sebelum order dinyatakan selesai.
+8.3 Skema harga rental yang pernah dibahas — belum disahkan
+Aturan terdahulu
+Status
+Hari 1 = 100%; hari 2–3 = 70%/hari; hari 4+ = 50%/hari atau paket.
+Perlu validasi
+Logistik berdasarkan zona jarak.
+Zona/rate belum ada
+Teknisi/operator per orang per shift 12 jam.
+Overtime belum dibahas
+DP minimum 30%, sisa 70% H-1 sebelum berangkat.
+Perlu validasi
+Penalti pembatalan berbeda menurut waktu pembatalan.
+Tabel penalti belum tersedia
+8.4 Pertanyaan event
+Transisi final, aktor, dan syarat tiap status?
+BAST saat instalasi, saat barang kembali, atau keduanya?
+Format dan penandatangan SPK, cargo list, surat jalan, QC, BAST?
+Bagaimana barang tambahan/pengganti, perpanjangan, perubahan lokasi, multi-hari, shift, overtime?
+Bagaimana force majeure, keterlambatan, pembatalan, kehilangan/kerusakan?
+Kapan order Completed bila ada invoice belum lunas atau klaim kerusakan?
+9. External Equipment / Vendor Rental
+[TERKONFIRMASI] 
+Alat eksternal dapat dipinjam gratis atau disewa. Sumber, kesepakatan/biaya, dan penerimaan barang harus dicatat.
+[TERKONFIRMASI] 
+Manager mencari sumber; Warehouse memverifikasi penerimaan sebelum barang siap dialokasikan. Alat dapat langsung terkait order atau diterima sebelum dialokasikan.
+[TERKONFIRMASI] 
+Semua biaya alat eksternal termasuk biaya tambahan/perpanjangan perlu approval Owner.
+Catat vendor/pemilik, item, kondisi, ID/serial jika ada, periode, status gratis/sewa, tarif, deposit, agreement.
+Catat biaya utama dan tambahan; approval Owner wajib sebelum difinalisasi.
+Warehouse memverifikasi barang fisik dan kondisi.
+Tandai ownership eksternal dengan jelas; jangan campur sebagai aset perusahaan.
+Catat tanggal kembali, kondisi return, bukti serah-terima, biaya kerusakan/kehilangan bila ada.
+Pertanyaan terbuka
+Request sourcing perlu approval sebelum pencarian?
+Pembayaran vendor sebelum/sesudah event; bagaimana deposit/jaminan?
+Siapa menanggung barang rusak/hilang?
+Perlu master vendor, kontrak, histori harga?
+Apakah alat eksternal mendapat barcode/ID internal?
+10. Procurement / Purchasing
+[TERKONFIRMASI] 
+Pembelian menambah stok/aset perusahaan, bukan pemenuhan penjualan customer.
+[USULAN] 
+Purchase Request → approval sesuai otoritas → Purchase Order bila dipakai → penerimaan dan verifikasi Warehouse → stok/aset tercatat → invoice supplier/pembayaran Finance.
+Pertanyaan: siapa request/approve, dan apakah tergantung nominal?
+Apakah PO wajib? Apakah supplier invoice/hutang masuk aplikasi?
+Bagaimana pembelian tunai/transfer, penerimaan parsial, retur supplier, garansi, dan biaya kirim?
+Apakah procurement dibangun setelah Inventory atau setelah Finance siap?
+11. Sales / Penjualan Aset Perusahaan
+[TERKONFIRMASI] 
+Semua penjualan barang milik perusahaan memerlukan approval Operations Manager atau Branch Manager.
+Barang tidak boleh keluar sebelum approval dan mutasi stok sah.
+Aset individual merujuk asset ID/serial; barang kuantitas mencatat qty/unit.
+Catat pembeli, harga, alasan, approver, dokumen, status kepemilikan dan histori.
+Mutasi stok dan audit trail harus terkait ke transaksi penjualan.
+Pertanyaan terbuka
+Apakah aset bekas perlu penilaian kondisi/harga minimum?
+Apakah Operations Manager dan Branch Manager setara atau ada substitusi?
+Invoice/payment mengikuti modul Finance yang sama?
+Apakah penjualan scrap/rusak punya workflow khusus?
+12. Finance, Invoice, dan Pembayaran
+[TERKONFIRMASI] 
+Metode pembayaran: tunai dan transfer; payment gateway tidak termasuk scope saat ini.
+[TERKONFIRMASI] 
+Admin mencatat pembayaran; Finance memverifikasi. Admin membuat draft invoice; Finance finalisasi.
+[TERKONFIRMASI] 
+Foto/screenshot transaksi dapat menjadi bukti yang diserahkan; Finance memeriksa mutasi bank untuk transfer.
+[TERKONFIRMASI] 
+Owner mendapat notifikasi pembayaran ditolak/perlu review; Owner/Branch Manager saja yang dapat mengoreksi/membatalkan pembayaran terverifikasi.
+12.1 Alur pembayaran
+Admin memasukkan order/invoice, nominal, metode, tanggal, catatan, dan bukti.
+Record masuk Pending Verification.
+Finance memeriksa invoice, nominal, bukti, dan rekening bank jika transfer.
+Finance memberi Verified atau Rejected/Needs Review dengan alasan.
+Owner mendapat notifikasi untuk rejected/needs review.
+Koreksi/cancel verified payment oleh Owner/Branch Manager dengan alasan dan referensi ke transaksi asli.
+12.2 Invoice
+Admin menyiapkan draft dari order/quotation dan perubahan yang disetujui.
+Finance meninjau dan finalisasi dengan nomor unik, tanggal, customer, rincian, total, status.
+Invoice final tidak ditimpa bebas; revisi/cancel perlu mekanisme dengan histori.
+Pertanyaan terbuka
+Pembayaran parsial, DP, deposit, refund, overpayment, dan alokasi satu payment ke beberapa invoice?
+Aturan nomor invoice, pajak, diskon, biaya tambahan, pembatalan dan revisi?
+Kas kecil/dana operasional dan pertanggungjawaban event?
+Laporan piutang, hutang supplier, arus kas, profit per order?
+Upload mutasi bank atau verifikasi manual di luar sistem?
+13. Internal Service
+[TERKONFIRMASI] 
+Modul service hanya menangani aset milik perusahaan, bukan alat eksternal.
+[USULAN] 
+Workflow awal: Reported → Inspection → In Service/Repair → QC → Available kembali atau Damaged/Retired.
+Service ticket merujuk aset, gejala, pelapor, tanggal, teknisi, prioritas, foto/catatan.
+Aset yang masuk servis tidak dapat dialokasikan.
+Catat diagnosis, tindakan, spare part/biaya bila dibutuhkan, QC, dan tanggal selesai.
+Pertanyaan: siapa membuka/menutup tiket; apakah spare parts inventory; bagaimana biaya/vendor; kapan aset write-off?
+14. Crew dan Operasi Lapangan
+[KONTEKS JANGKA PANJANG] 
+Operations Manager dibahas menegosiasikan harga SDM dan menugaskan crew; Crew/Field Operator berbeda dari Technician.
+Master personel, skill, kontak, status dan availability.
+Penugasan per event, role lapangan, shift, waktu/lokasi, konfirmasi dan laporan.
+Tarif teknisi/operator pernah dibahas per orang per shift 12 jam; tarif final, overtime, dan shift lanjutan belum disahkan.
+Payroll otomatis ditunda sampai aturan KPI/kompensasi matang.
+Pertanyaan terbuka
+Crew internal, freelancer, dan vendor tenaga kerja dalam master sama atau terpisah?
+Bagaimana mencegah double booking?
+Absensi terintegrasi HRIS atau manual?
+Tarif tetap, per event, per shift, atau negosiasi per order?
+15. Customer Tracking Portal
+[TERKONFIRMASI] 
+Portal customer jangka panjang memakai nomor order + token unik untuk melihat status. Tidak untuk membuat inquiry/booking.
+[USULAN] 
+Token harus sulit ditebak, dapat dicabut/diganti, tidak sama dengan nomor order; batasi percobaan akses dan jangan tampilkan data internal.
+Tentukan field/status yang aman ditampilkan.
+Jangan tampilkan margin, biaya internal, catatan internal, data pribadi crew, atau data sensitif.
+Token bisa diterbitkan ulang/dicabut oleh Admin.
+Pertanyaan: masa berlaku token; akses download quotation/invoice/BAST; notifikasi WhatsApp/email diperlukan?
+16. Dokumen, Laporan, dan Notifikasi
+Dokumen berpotensi dibutuhkan: quotation/revisi, booking summary, invoice draft/final, SPK, cargo list, surat jalan, BAST, QC, demobilisasi, bukti/verifikasi pembayaran, stock count/adjustment/mutasi, service report, purchase/sales documents.
+PDF harus memiliki nomor, tanggal, status, dan sumber data jelas; akses mengikuti role.
+Notifikasi terkonfirmasi: Owner untuk payment rejected/needs review. Disarankan: stock adjustment, biaya eksternal, barang hilang/kurang; channel dan trigger masih perlu disepakati.
+Pertanyaan: dashboard/laporan wajib per role? PDF/Excel/CSV mana yang dibutuhkan? Notifikasi in-app, email, atau WhatsApp?
+17. Audit Trail dan Integritas Data
+Audit trail merupakan kapabilitas bisnis lintas modul, bukan hanya error log. Simpan aktor, role aktif bila tersedia, timestamp, entitas/ID, aksi, nilai sebelum/sesudah yang relevan, alasan, hasil approval, dan referensi transaksi.
+Catat perubahan master/role/permission/configuration.
+Catat stok awal, stock count, adjustment, posting/reversal, perubahan kondisi/ownership.
+Catat perubahan status order/event, invoice, payment, approval procurement/sales/external cost.
+Audit log dapat dilihat Owner dan Superuser.
+USULAN: audit log append-only bagi pengguna biasa; koreksi memakai transaksi baru yang menunjuk record asal.
+18. Entitas Data Konseptual
+Ini peta domain, bukan schema final. Agen harus membandingkannya dengan migration/model existing dan menghindari tabel duplikat.
+Domain
+Entitas konseptual
+Identity
+users, roles, permissions, user_roles, role_permissions
+Audit
+audit_logs
+Inventory
+categories, units, products, assets, locations, stock_balances, stock_movements, stock_movement_items
+Stock control
+inventory_counts, inventory_count_items, stock_adjustments, stock_adjustment_items, approvals
+External parties
+vendors/external_partners, external_equipment_transactions/items, agreements
+Customer/order
+customers, contacts, orders, order_items, order_status_history
+Quotation/docs
+quotations, quotation_revisions, documents, document_sequences
+Event
+events, work_orders/SPK, cargo_lists/items, assignments, vehicles/transport, readiness_checklists
+Field execution
+installations, QC checks, attachments, demobilizations, return inspections, discrepancies
+Finance
+invoices/items, payments, payment_verifications, refunds/adjustments if approved, operational_funds/expenses
+Procurement/sales
+purchase_requests, purchase_orders, goods_receipts, supplier_invoices, asset_sales/items, approvals
+Service
+service_tickets, service_actions, service_parts, service_qc
+Crew
+personnel, skills, event_assignments, shifts, field_reports
+Tracking
+tracking_tokens, tracking_access_logs if needed
+Notifications
+notifications, notification_preferences
+Tidak semua tabel perlu dibuat sekarang. Gunakan FK/constraint/indeks, histori status, dan transaction boundaries. Jangan menyimpan saldo stok hanya pada master product jika perlu movement dan asset tracking.
+19. State Machine dan Aturan Transaksi
+Setiap workflow memiliki status, transisi yang diizinkan, role pelaku, dan precondition.
+Status final seperti Verified, Posted, Finalized, Completed, Cancelled tidak diedit bebas; gunakan koreksi/reopen yang disetujui.
+Gunakan database transaction untuk posting stok, finalisasi invoice, verifikasi payment, dan operasi multi-tabel.
+Cegah race condition pada alokasi aset/stok.
+Gunakan idempotency atau pencegahan duplikasi pada aksi penting.
+Tentukan timezone, nomor dokumen, mata uang, pembulatan, dan pajak sebelum implementasi Finance.
+Jangan hard-delete transaksi bisnis yang sudah diposting.
+20. Keamanan dan Operasional
+Password menggunakan hashing framework; tidak ada plaintext password.
+Least privilege, server-side authorization, CSRF protection, validasi request, escaping output.
+Lampiran memiliki validasi tipe/ukuran dan akses privat sesuai role.
+Token tracking customer dapat dicabut dan tidak memberi akses ke aplikasi internal.
+Tetapkan backup/restore database dan file; uji restore.
+Log error tidak membocorkan secret atau bukti pembayaran sensitif.
+Pertanyaan: hosting/domain/SSL, owner server/database, backup schedule, retensi dokumen/audit, mobile-first gudang/lapangan, dukungan jaringan buruk, barcode/QR/printer label?
+21. Acceptance Criteria Global Awal
+ID
+Kriteria
+NFR-01
+Aksi terlindungi selalu memeriksa permission server-side.
+NFR-02
+Saldo stok tidak diubah melalui edit langsung master produk.
+NFR-03
+Posting movement konsisten dengan saldo dan audit trail.
+NFR-04
+Adjustment belum mengubah saldo sebelum approval Owner sesuai aturan.
+NFR-05
+Barang damaged/under service tidak dapat dialokasikan.
+NFR-06
+Payment record dan verification adalah tahap terpisah; reject memiliki alasan.
+NFR-07
+Koreksi/cancel verified payment dibatasi Owner/Branch Manager dan diaudit.
+NFR-08
+Invoice draft Admin belum final sampai Finance finalisasi.
+NFR-09
+Biaya alat eksternal, termasuk tambahan/perpanjangan, memerlukan approval Owner.
+NFR-10
+Penjualan aset perusahaan perlu approval Operations Manager atau Branch Manager.
+NFR-11
+Owner dan Superuser dapat menelusuri audit trail.
+NFR-12
+Tracking customer hanya menampilkan data yang disetujui.
+NFR-13
+Void/reversal/correction menunjuk transaksi asal.
+NFR-14
+PDF/dokumen hanya diakses role yang berwenang.
+22. Tahapan Implementasi yang Direkomendasikan
+Tahap
+Cakupan
+Gate
+0. Repository audit
+Inventaris fitur, schema, route, bug, risiko, gap PRD.
+User menyetujui gap analysis.
+1. Foundation
+Auth, multi-role, authorization, audit dasar, layout.
+Test akses/audit lulus.
+2. Inventory MVP
+Master, tracking individual/qty, condition/ownership, initial stock, count, adjustment, movement.
+Warehouse sahkan stok; Owner approve adjustment.
+3. Customer/order/quotation
+Customer, order Admin, quotation/revisi, status/dokumen.
+Alur order disetujui.
+4. Finance basic
+Invoice draft/final, payment record/verification, evidence, correction, notification.
+Aturan invoice/payment disahkan.
+5. Event operations
+SPK, cargo readiness, crew, transport, funds, install/QC, demobilisasi.
+State machine dan dokumen disahkan.
+6. External/procurement/sales
+Sourcing eksternal, biaya approval, receiving, purchase, asset sale.
+Approval matrix dan perlakuan biaya disepakati.
+7. Service/reporting
+Service tickets, reports/PDF, dashboard, audit lanjutan.
+Status service dan KPI disepakati.
+8. Customer tracking
+Nomor order + token, safe fields, revoke/expiry.
+Review keamanan lulus.
+Urutan final dapat berubah setelah audit repository. Jangan implementasi semua modul paralel tanpa model data dan state machine yang disetujui.
+23. Master List Pertanyaan Terbuka
+ID
+Area
+Pertanyaan
+Q-01
+Prioritas
+Setelah Inventory, apakah Customer/Order, Finance, atau Event Operations yang lebih dahulu?
+Q-02
+Inventory
+Stok awal cukup disahkan Warehouse atau perlu approval Owner?
+Q-03
+Inventory
+Satu gudang cukup? Apakah lokasi rak/bin dibutuhkan?
+Q-04
+Inventory
+Format product code, asset ID, barcode/QR, serial internal?
+Q-05
+Inventory
+Siapa menyetujui write-off, kehilangan, scrap, rusak permanen?
+Q-06
+Inventory
+Stok negatif dan consumables/satuan pecahan bagaimana?
+Q-07
+RBAC
+Matriks final view/create/edit/submit/approve/post/cancel/export tiap role?
+Q-08
+RBAC
+Akses per order/penugasan dibutuhkan selain role?
+Q-09
+RBAC
+Apakah akses Superuser ke finansial sensitif dibatasi/di-audit khusus?
+Q-10
+Order
+Quotation wajib? Siapa approve diskon/harga khusus/margin rendah?
+Q-11
+Order
+Format nomor order dan aturan perubahan setelah DP/booking?
+Q-12
+Order
+Satu order dapat memuat banyak event/lokasi dan gabungan rental/jasa/sales?
+Q-13
+Rental
+Apakah skema 100% hari 1, 70% hari 2–3, 50% hari 4+ masih berlaku?
+Q-14
+Rental
+Zona/rate logistik, tarif crew/technician, overtime, biaya tambahan?
+Q-15
+Rental
+Apakah DP 30%, sisa 70% H-1 dan penalti pembatalan masih berlaku?
+Q-16
+Event
+State machine final, aktor, syarat transisi dan exception?
+Q-17
+Event
+Dokumen wajib, format, dan siapa menandatangani SPK/cargo/surat jalan/BAST/QC?
+Q-18
+Event
+Aturan barang tambahan/pengganti, perpanjangan, force majeure, hilang/rusak?
+Q-19
+External
+Approval sourcing, deposit vendor, jadwal bayar, dan tanggung jawab kerusakan?
+Q-20
+Procurement
+Purchase Request/PO wajib? Siapa approve dan berdasarkan nominal?
+Q-21
+Procurement
+Supplier invoice/hutang, retur, garansi, penerimaan parsial dibutuhkan?
+Q-22
+Sales
+Aturan substitusi antara Operations Manager dan Branch Manager?
+Q-23
+Finance
+Partial payment, DP/deposit, refund, overpayment, alokasi payment, kas kecil?
+Q-24
+Finance
+Nomor invoice, pajak, diskon, biaya tambahan, cancel/revisi?
+Q-25
+Finance
+Laporan piutang/hutang/arus kas/profit per order dibutuhkan?
+Q-26
+Service
+Status final, pembuka/penutup tiket, spare parts, biaya, write-off?
+Q-27
+Crew
+Crew internal/freelancer/vendor satu master? Cara cegah double booking?
+Q-28
+Tracking
+Field/status customer-visible, masa token, revoke/resend, dokumen download?
+Q-29
+Notification
+In-app, email, WhatsApp? Event apa memicu notifikasi?
+Q-30
+Reporting
+Dashboard wajib per role dan format PDF/Excel/CSV?
+Q-31
+Deployment
+Hosting, domain, SSL, backup, restore, akses server dan deployment?
+Q-32
+Operations
+Mobile use, koneksi buruk/offline, barcode/QR/printer label?
+Q-33
+Migration
+Data Excel tersedia, siapa cleansing, mapping, import dan sign-off?
+Q-34
+Retention
+Masa simpan audit log, bukti payment, foto dan dokumen?
+Q-35
+Integration
+Selain komunikasi WhatsApp manual, integrasi apa benar-benar diperlukan?
+Q-36
+Expansion
+Kapan rental kamera/drone masuk scope; apakah model stok/rental sama?
+Q-37
+Payroll
+Payroll/KPI tetap ditunda sampai rumus dan kebijakan disahkan?
+Q-38
+Accounting
+Sistem untuk operasional internal saja atau perlu format pembukuan/pajak formal?
+24. Prompt Siap Tempel untuk Agen Antigravity
+Anda bertindak sebagai Senior Product Analyst, System Analyst, dan Lead Laravel Engineer untuk Omah Visual LED.
+Baca PRD Global Operasional ini dan audit repository yang sedang terbuka sebelum melakukan perubahan.
+WAJIB:
+1. Jangan langsung coding atau menjalankan migration yang mengubah data.
+2. Pertahankan label TERKONFIRMASI, USULAN, KONTEKS JANGKA PANJANG, dan PERTANYAAN TERBUKA.
+3. Jangan menetapkan jawaban pertanyaan terbuka tanpa bertanya kepada user.
+4. Jangan menghapus fitur existing atau merombak struktur besar tanpa menjelaskan dampak dan meminta persetujuan.
+5. Audit routes, migrations, models, controllers, middleware/policies, Blade views, tests, uploads, config, dokumentasi, dan struktur PostgreSQL.
+6. Authorization harus server-side. Superuser tidak otomatis menjadi approver bisnis.
+7. Prioritaskan integritas stok/keuangan, transaksi database, histori, idempotency, dan audit trail.
+8. Gunakan struktur existing jika layak; hindari tabel/fitur duplikat.
+OUTPUT PERTAMA — JANGAN CODING:
+A. Ringkasan arsitektur/repository saat ini.
+B. Matriks modul: ada, parsial, bermasalah, belum ada.
+C. Gap analysis dengan referensi file/route/migration spesifik.
+D. Risiko security, RBAC, data integrity, dan migration.
+E. Model data konseptual yang memanfaatkan struktur existing.
+F. Urutan implementasi milestone beserta dependensi dan acceptance criteria.
+G. Pertanyaan yang benar-benar memblokir milestone pertama; jangan tanyakan ulang keputusan terkonfirmasi.
+H. Rencana test, migration dan rollback.
+Setelah laporan, tunggu persetujuan user. Implementasikan satu milestone per persetujuan; setelah setiap milestone laporkan file yang berubah, migration, test yang dijalankan, hasil, dan risiko tersisa.
+25. Glosarium
+Istilah
+Makna
+Asset
+Unit fisik individual yang dapat ditelusuri.
+Stock balance
+Saldo barang per lokasi/status berdasarkan transaksi posted.
+Stock movement
+Histori mutasi yang membentuk saldo.
+Adjustment
+Koreksi stok dengan alasan dan approval.
+SPK
+Surat Perintah Kerja; format final perlu dipastikan.
+BAST
+Berita Acara Serah Terima; titik penggunaan perlu dipastikan.
+Posting
+Menerapkan transaksi ke catatan operasional resmi.
+Reversal
+Transaksi pembalik yang merujuk transaksi asal.
+RBAC
+Role-Based Access Control.
+State machine
+Status dan transisi yang diizinkan untuk sebuah workflow.
+26. Penutup
+Dokumen ini menyatukan konteks lintas modul agar tidak hilang ketika diskusi berpindah ke agen Antigravity. Ini bukan pernyataan bahwa seluruh aturan bisnis telah final. Agen wajib audit repository, menunjukkan gap, mengajukan pertanyaan yang memblokir, lalu menunggu persetujuan sebelum implementasi. Setelah itu, PRD turunan, ERD rinci, matriks permission final, dan test plan per modul dapat dibuat berdasarkan hasil audit.
+
