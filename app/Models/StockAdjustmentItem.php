@@ -43,3 +43,4 @@ class StockAdjustmentItem extends Model
         return $this->belongsTo(Asset::class);
     }
 }
+

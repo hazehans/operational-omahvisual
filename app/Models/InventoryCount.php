@@ -63,3 +63,4 @@ class InventoryCount extends Model
         return $prefix . $nextNumber;
     }
 }
+

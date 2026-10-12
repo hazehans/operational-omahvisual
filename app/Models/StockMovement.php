@@ -72,3 +72,4 @@ class StockMovement extends Model
         return $prefix . $nextNumber;
     }
 }
+

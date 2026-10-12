@@ -39,3 +39,4 @@ class StockBalance extends Model
         return max(0, (float) $this->quantity - (float) $this->allocated_quantity);
     }
 }
+

@@ -101,3 +101,4 @@ class Product extends Model
         return round($units * (float) $this->sqm_per_unit, 2);
     }
 }
+

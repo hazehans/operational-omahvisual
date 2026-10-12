@@ -53,3 +53,4 @@ class Asset extends Model
         return $prefix . $nextNumber;
     }
 }
+

@@ -349,3 +349,4 @@ class InventoryDatabaseSeeder extends Seeder
         }
     }
 }
+
