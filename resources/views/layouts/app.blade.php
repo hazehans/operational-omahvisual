@@ -149,19 +149,36 @@
                     <span>Audit Trail</span>
                 </a>
                 @endcan
+
+                @hasrole('Superuser')
+                <div class="pt-4 px-3 pb-1 text-xs font-bold uppercase tracking-wider text-rose-400">
+                    Sistem & Raw DB
+                </div>
+
+                <!-- Superuser Database Manager -->
+                <a href="{{ route('superuser.database.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all {{ request()->routeIs('superuser.database.*') ? 'bg-rose-600 text-white shadow-md shadow-rose-600/20' : 'text-rose-400/80 hover:text-rose-300 hover:bg-rose-500/10' }}">
+                    <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
+                    </svg>
+                    <div class="flex items-center justify-between flex-1">
+                        <span>Database Manager</span>
+                        <span class="px-1.5 py-0.5 text-[10px] rounded bg-rose-500/20 text-rose-400 font-bold">RAW</span>
+                    </div>
+                </a>
+                @endhasrole
             </nav>
         </div>
 
         <!-- Sidebar Footer / User Profile -->
         <div class="p-4 border-t border-slate-200 dark:border-slate-800/60 bg-slate-100/60 dark:bg-slate-950/40">
             <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-xl bg-linear-to-tr from-indigo-500 to-cyan-500 text-white font-bold flex items-center justify-center text-xs shadow-md">
+                <div class="w-10 h-10 rounded-xl bg-linear-to-tr from-indigo-500 to-cyan-500 text-white font-bold flex items-center justify-center text-sm shadow-md shrink-0">
                     {{ strtoupper(substr(Auth::user()->name ?? 'U', 0, 2)) }}
                 </div>
                 <div class="flex-1 min-w-0">
-                    <p class="text-xs font-semibold text-slate-900 dark:text-white truncate leading-tight">{{ Auth::user()->name ?? 'Guest' }}</p>
-                    <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5">
-                        <span class="inline-block px-1.5 py-0.2 rounded text-[10px] bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+                    <p class="text-sm font-bold text-slate-900 dark:text-white truncate leading-tight">{{ Auth::user()->name ?? 'Guest' }}</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5">
+                        <span class="inline-block px-2 py-0.5 rounded text-[11px] font-semibold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
                             {{ Auth::user()->getRoleNames()->first() ?? 'Member' }}
                         </span>
                     </p>
@@ -175,13 +192,13 @@
         <!-- Topbar -->
         <header class="h-16 px-6 border-b border-slate-200 dark:border-slate-800/80 bg-slate-50/70 dark:bg-slate-900/60 backdrop-blur-xl flex items-center justify-between sticky top-0 z-30">
             <div class="flex items-center gap-3">
-                <div class="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
-                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-200/60 dark:bg-slate-800/60 text-slate-700 dark:text-slate-300 font-medium">
+                <div class="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-200/60 dark:bg-slate-800/60 text-slate-700 dark:text-slate-200 text-xs font-semibold">
                         <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
                         Gedung Utama Omah Visual
                     </span>
-                    <span class="hidden sm:inline">/</span>
-                    <span class="hidden sm:inline font-medium text-slate-700 dark:text-slate-300">@yield('page_title', 'Ringkasan Sistem')</span>
+                    <span class="hidden sm:inline text-slate-400">/</span>
+                    <span class="hidden sm:inline font-semibold text-slate-800 dark:text-slate-200">@yield('page_title', 'Ringkasan Sistem')</span>
                 </div>
             </div>
 

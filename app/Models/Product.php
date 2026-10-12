@@ -19,6 +19,7 @@ class Product extends Model
         'brand',
         'model_series',
         'specification',
+        'image_path',
         'tracking_type',
         'sqm_per_unit',
         'min_stock',
@@ -99,5 +100,17 @@ class Product extends Model
         }
 
         return round($units * (float) $this->sqm_per_unit, 2);
+    }
+
+    /**
+     * URL Gambar produk jika ada
+     */
+    public function getImageUrlAttribute(): ?string
+    {
+        if ($this->image_path) {
+            return asset('storage/'.$this->image_path);
+        }
+
+        return null;
     }
 }

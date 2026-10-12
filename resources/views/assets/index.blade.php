@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Unit Aset Individual')
-@section('page_title', 'Pelacakan Unit Serialized & Alat Bernilai Tinggi')
+@section('title', 'Daftar Unit Aset Terlacak')
+@section('page_title', 'Aset Individual & Serial')
 
 @section('content')
 <div class="space-y-6">
@@ -9,44 +9,44 @@
     <!-- Header Actions -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-            <h1 class="text-xl font-bold text-white">Unit Aset Serial & Bernomor Fisik</h1>
-            <p class="text-xs text-slate-400 mt-0.5">Pelacakan 25 unit Processor Novastar, Layar Smart TV, dan Toolbox Teknisi</p>
+            <h1 class="text-2xl font-bold text-white">Daftar Unit Aset Serial</h1>
+            <p class="text-sm text-slate-400 mt-1">Pelacakan unit bernomor seri unik: 25 Processor Novastar, TV, & Toolbox</p>
         </div>
         <div class="flex items-center gap-2">
-            <span class="px-3 py-1.5 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-semibold">
-                Total: {{ $assets->total() }} Unit Terdaftar
+            <span class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-indigo-500/15 text-indigo-400 border border-indigo-500/30">
+                Total Terdata: {{ $assets->total() }} Unit
             </span>
         </div>
     </div>
 
-    <!-- Filters & Search -->
+    <!-- Filters & Search Bar -->
     <div class="p-4 rounded-2xl bg-slate-900/60 border border-slate-800 shadow-md">
         <form method="GET" action="{{ route('assets.index') }}" class="grid grid-cols-1 sm:grid-cols-12 gap-3">
             <!-- Search -->
             <div class="sm:col-span-4 relative">
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari kode aset, serial, barcode..."
-                    class="w-full pl-9 pr-4 py-2 rounded-xl bg-slate-950/60 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-all">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari kode aset, serial pabrik, produk..."
+                    class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-all">
+                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
                 </div>
             </div>
 
-            <!-- Condition -->
-            <div class="sm:col-span-3">
-                <select name="condition" class="w-full px-3 py-2 rounded-xl bg-slate-950/60 border border-slate-800 text-xs text-white focus:outline-none focus:border-indigo-500 transition-all">
-                    <option value="">Semua Kondisi Fisik</option>
-                    <option value="available" {{ request('condition') == 'available' ? 'selected' : '' }}>Bagus / Tersedia</option>
+            <!-- Condition Filter -->
+            <div class="sm:col-span-2">
+                <select name="condition" class="w-full px-3 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-sm text-white focus:outline-none focus:border-indigo-500 transition-all">
+                    <option value="">Semua Kondisi</option>
+                    <option value="available" {{ request('condition') == 'available' ? 'selected' : '' }}>Siap / Bagus</option>
                     <option value="damaged" {{ request('condition') == 'damaged' ? 'selected' : '' }}>Rusak</option>
-                    <option value="in_service" {{ request('condition') == 'in_service' ? 'selected' : '' }}>Dalam Perbaikan / Servis</option>
+                    <option value="in_service" {{ request('condition') == 'in_service' ? 'selected' : '' }}>Servis</option>
                 </select>
             </div>
 
-            <!-- Location -->
+            <!-- Location Filter -->
             <div class="sm:col-span-3">
-                <select name="location_id" class="w-full px-3 py-2 rounded-xl bg-slate-950/60 border border-slate-800 text-xs text-white focus:outline-none focus:border-indigo-500 transition-all">
-                    <option value="">Semua Lokasi Penyimpanan</option>
+                <select name="location_id" class="w-full px-3 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-sm text-white focus:outline-none focus:border-indigo-500 transition-all">
+                    <option value="">Semua Lokasi</option>
                     @foreach($locations as $loc)
                         <option value="{{ $loc->id }}" {{ request('location_id') == $loc->id ? 'selected' : '' }}>
                             {{ $loc->name }}
@@ -55,13 +55,23 @@
                 </select>
             </div>
 
-            <!-- Submit -->
-            <div class="sm:col-span-2 flex items-center gap-2">
-                <button type="submit" class="w-full py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition-all">
+            <!-- Status Filter -->
+            <div class="sm:col-span-2">
+                <select name="status" class="w-full px-3 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-sm text-white focus:outline-none focus:border-indigo-500 transition-all">
+                    <option value="">Semua Status</option>
+                    <option value="in_storage" {{ request('status') == 'in_storage' ? 'selected' : '' }}>Di Gudang</option>
+                    <option value="deployed" {{ request('status') == 'deployed' ? 'selected' : '' }}>Dipakai Event</option>
+                    <option value="maintenance" {{ request('status') == 'maintenance' ? 'selected' : '' }}>Maintenance</option>
+                </select>
+            </div>
+
+            <!-- Submit Filter -->
+            <div class="sm:col-span-1 flex items-center gap-2">
+                <button type="submit" class="w-full py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-semibold border border-slate-700 transition-all">
                     Filter
                 </button>
                 @if(request()->hasAny(['search', 'condition', 'location_id', 'status']))
-                    <a href="{{ route('assets.index') }}" class="p-2 rounded-xl bg-slate-800 text-slate-400 hover:text-white" title="Reset filter">
+                    <a href="{{ route('assets.index') }}" class="p-2.5 rounded-xl bg-slate-800 text-slate-400 hover:text-white transition-colors" title="Reset filter">
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                         </svg>
@@ -74,65 +84,65 @@
     <!-- Assets Grid / Table -->
     <div class="bg-slate-900/60 border border-slate-800 rounded-2xl overflow-hidden shadow-lg">
         <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs">
-                <thead class="bg-slate-800/60 text-slate-400 uppercase tracking-wider font-semibold border-b border-slate-800">
+            <table class="w-full text-left text-sm">
+                <thead class="bg-slate-800/70 text-slate-300 uppercase tracking-wider font-semibold text-xs border-b border-slate-800">
                     <tr>
-                        <th class="px-5 py-3.5">Kode Aset</th>
-                        <th class="px-5 py-3.5">Perangkat & Model</th>
-                        <th class="px-5 py-3.5">Nomor Seri / Barcode</th>
-                        <th class="px-5 py-3.5">Lokasi Penyimpanan</th>
-                        <th class="px-5 py-3.5">Kondisi Fisik</th>
-                        <th class="px-5 py-3.5">Status Penggunaan</th>
-                        <th class="px-5 py-3.5 text-right">Aksi</th>
+                        <th class="px-5 py-4">Kode Aset</th>
+                        <th class="px-5 py-4">Perangkat & Model</th>
+                        <th class="px-5 py-4">Nomor Seri Pabrik</th>
+                        <th class="px-5 py-4">Lokasi Penyimpanan</th>
+                        <th class="px-5 py-4">Kondisi Fisik</th>
+                        <th class="px-5 py-4">Status Penggunaan</th>
+                        <th class="px-5 py-4 text-right">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-800/60">
                     @forelse($assets as $ast)
-                        <tr class="hover:bg-slate-800/30 transition-colors">
-                            <td class="px-5 py-3.5">
-                                <a href="{{ route('assets.show', $ast) }}" class="font-mono font-bold text-indigo-400 hover:text-indigo-300">
+                        <tr class="hover:bg-slate-800/40 transition-colors">
+                            <td class="px-5 py-4">
+                                <a href="{{ route('assets.show', $ast) }}" class="font-mono font-bold text-indigo-400 hover:text-indigo-300 transition-colors">
                                     {{ $ast->asset_code }}
                                 </a>
                             </td>
-                            <td class="px-5 py-3.5">
-                                <div class="font-semibold text-white">{{ $ast->product->name }}</div>
-                                <div class="text-[11px] text-slate-500 font-mono">{{ $ast->product->model_series ?? $ast->product->brand }}</div>
+                            <td class="px-5 py-4">
+                                <div class="font-semibold text-white text-sm">{{ $ast->product->name }}</div>
+                                <div class="text-xs text-slate-400 font-mono mt-0.5">{{ $ast->product->model_series ?? $ast->product->brand }}</div>
                             </td>
-                            <td class="px-5 py-3.5 font-mono text-slate-400">
+                            <td class="px-5 py-4 font-mono text-slate-300">
                                 {{ $ast->serial_number ?? ($ast->barcode ?? '-') }}
                             </td>
-                            <td class="px-5 py-3.5 text-slate-300">
+                            <td class="px-5 py-4 text-slate-300 font-medium">
                                 {{ $ast->currentLocation->name ?? 'Gedung Utama' }}
                             </td>
-                            <td class="px-5 py-3.5">
+                            <td class="px-5 py-4">
                                 @if($ast->condition === 'available')
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
                                         Bagus / Siap
                                     </span>
                                 @elseif($ast->condition === 'damaged')
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/20">
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-rose-500/15 text-rose-400 border border-rose-500/30">
                                         Rusak
                                     </span>
                                 @else
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/15 text-amber-400 border border-amber-500/30">
                                         Servis
                                     </span>
                                 @endif
                             </td>
-                            <td class="px-5 py-3.5">
-                                <span class="text-slate-400">
+                            <td class="px-5 py-4">
+                                <span class="text-slate-300 font-medium">
                                     {{ $ast->status === 'in_storage' ? 'Di Gudang' : ($ast->status === 'deployed' ? 'Dipakai Event' : $ast->status) }}
                                 </span>
                             </td>
-                            <td class="px-5 py-3.5 text-right">
-                                <a href="{{ route('assets.show', $ast) }}" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white font-semibold inline-block">
+                            <td class="px-5 py-4 text-right">
+                                <a href="{{ route('assets.show', $ast) }}" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold inline-block transition-colors">
                                     Rincian Unit &rarr;
                                 </a>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="px-5 py-8 text-center text-slate-500">
+                            <td colspan="7" class="px-5 py-10 text-center text-slate-400">
                                 Tidak ada unit aset yang sesuai dengan kriteria filter.
                             </td>
                         </tr>
@@ -142,11 +152,10 @@
         </div>
 
         @if($assets->hasPages())
-            <div class="px-5 py-3 border-t border-slate-800">
+            <div class="px-5 py-4 border-t border-slate-800">
                 {{ $assets->links() }}
             </div>
         @endif
     </div>
 </div>
 @endsection
-

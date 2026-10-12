@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\Unit;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class ProductController extends Controller
@@ -68,6 +69,7 @@ class ProductController extends Controller
             'brand' => ['nullable', 'string', 'max:100'],
             'model_series' => ['nullable', 'string', 'max:100'],
             'specification' => ['nullable', 'string', 'max:255'],
+            'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:4096'],
             'tracking_type' => ['required', 'in:individual,quantity'],
             'sqm_per_unit' => ['nullable', 'numeric', 'min:0'],
             'min_stock' => ['nullable', 'numeric', 'min:0'],
@@ -75,6 +77,11 @@ class ProductController extends Controller
         ]);
 
         $validated['is_active'] = true;
+
+        if ($request->hasFile('image')) {
+            $validated['image_path'] = $request->file('image')->store('products', 'public');
+        }
+        unset($validated['image']);
 
         $product = Product::create($validated);
 
@@ -132,11 +139,29 @@ class ProductController extends Controller
             'brand' => ['nullable', 'string', 'max:100'],
             'model_series' => ['nullable', 'string', 'max:100'],
             'specification' => ['nullable', 'string', 'max:255'],
+            'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:4096'],
+            'remove_image' => ['nullable', 'boolean'],
             'sqm_per_unit' => ['nullable', 'numeric', 'min:0'],
             'min_stock' => ['nullable', 'numeric', 'min:0'],
             'is_active' => ['boolean'],
             'notes' => ['nullable', 'string'],
         ]);
+
+        if ($request->boolean('remove_image')) {
+            if ($product->image_path) {
+                Storage::disk('public')->delete($product->image_path);
+            }
+            $validated['image_path'] = null;
+        }
+
+        if ($request->hasFile('image')) {
+            if ($product->image_path) {
+                Storage::disk('public')->delete($product->image_path);
+            }
+            $validated['image_path'] = $request->file('image')->store('products', 'public');
+        }
+
+        unset($validated['image'], $validated['remove_image']);
 
         $oldValues = $product->only(array_keys($validated));
         $product->update($validated);

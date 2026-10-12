@@ -53,9 +53,30 @@
 - [x] Buat `AuditLogController` (index)
 - [x] Tabel log aktivitas pengguna (siapa, aksi apa, entitas apa, waktu, IP) khusus Owner & Superuser
 
+### 10. Fitur Upload Gambar Barang (`image_path`) — ✅ Selesai
+- [x] Migrasi `add_image_path_to_products_table` dan `php artisan storage:link`
+- [x] Model `Product`: atribut `image_path` & accessor `getImageUrlAttribute`
+- [x] `ProductController`: validasi gambar, upload disk `public/products`, ganti file lama, dan hapus gambar
+- [x] Antarmuka upload foto pada `products/create.blade.php` & `products/edit.blade.php` dengan live JavaScript preview
+- [x] Tampilan foto produk pada thumbnail tabel katalog (`products/index.blade.php`), kartu profil detail (`products/show.blade.php`)
+
+### 11. Superuser Raw Database Manager (Opsi 1 / Django Admin CRUD) — ✅ Selesai
+- [x] Buat `SuperuserDatabaseController` dengan proteksi ketat role `Superuser` (abort 403 untuk role lain)
+- [x] Whitelist 16 tabel inti database PostgreSQL (Master Data, Inventaris, Transaksi, Sistem & Keamanan)
+- [x] Halaman katalog tabel (`/superuser/database`): ringkasan baris data per tabel dan kategori
+- [x] Halaman data grid mentah (`/superuser/database/{table}`): filter pencarian teks/ID, sorting kolom dinamis, paginasi
+- [x] Form raw insert baris baru (`create.blade.php`) & form raw edit baris (`edit.blade.php`) dengan tipe kolom otomatis (text, boolean, json, date)
+- [x] Hapus baris aman (`destroy`) dan pencatatan seluruh mutasi database mentah ke `AuditLog`
+- [x] Menu navigasi khusus "Database Manager (RAW)" di sidebar khusus user `Superuser`
+
+### 12. Peningkatan Tipografi & Keterbacaan UI (Typography Scaling) — ✅ Selesai
+- [x] Skalasi ukuran font dari sebelumnya terlalu kecil (`text-[10px]`, `text-[11px]`, `text-xs`) menjadi lebih nyaman dan proporsional (`text-xs`, `text-sm`, `text-base`, `text-lg`)
+- [x] Perbaikan hierarki visual pada kartu metrik, tabel data, label input form, dan status badges di seluruh view
+
 ---
 
 ## 🔮 Roadmap Jangka Panjang (Operasional Lanjutan Sesuai PRD Global)
+- [ ] Integrasi Barcode / QR Code Fisik Scanner (Ditunda sementara sesuai arahan user agar fokus pematangan operasional)
 - [ ] Modul Customer & Order (Input order Admin via WhatsApp, Quotation & Revisi)
 - [ ] Modul SPK (Surat Perintah Kerja) & Cargo List / Surat Jalan
 - [ ] Gate Kesiapan Keberangkatan Event (Barang, Kru, Armada, Dana Operasional)

@@ -9,6 +9,7 @@ use App\Http\Controllers\LocationController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\StockAdjustmentController;
 use App\Http\Controllers\StockMovementController;
+use App\Http\Controllers\SuperuserDatabaseController;
 use Illuminate\Support\Facades\Route;
 
 // Guest Authentication Routes
@@ -55,4 +56,15 @@ Route::middleware('auth')->group(function () {
 
     // Audit Trail
     Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
+
+    // Superuser Raw Database Manager (Django-like Admin CRUD)
+    Route::prefix('superuser/database')->name('superuser.database.')->group(function () {
+        Route::get('/', [SuperuserDatabaseController::class, 'index'])->name('index');
+        Route::get('/{table}', [SuperuserDatabaseController::class, 'showTable'])->name('show');
+        Route::get('/{table}/create', [SuperuserDatabaseController::class, 'createRecord'])->name('create');
+        Route::post('/{table}', [SuperuserDatabaseController::class, 'storeRecord'])->name('store');
+        Route::get('/{table}/{id}/edit', [SuperuserDatabaseController::class, 'editRecord'])->name('edit');
+        Route::put('/{table}/{id}', [SuperuserDatabaseController::class, 'updateRecord'])->name('update');
+        Route::delete('/{table}/{id}', [SuperuserDatabaseController::class, 'deleteRecord'])->name('destroy');
+    });
 });
