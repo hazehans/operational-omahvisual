@@ -130,4 +130,43 @@ class InitialCountController extends Controller
         return redirect()->route('initial-counts.index')
             ->with('success', 'Stok awal berhasil diverifikasi dan resmi disahkan sebagai saldo berjalan operasional Omah Visual!');
     }
+
+    /**
+     * Reset initial stock count status back to pending_verification for testing / demo purposes.
+     */
+    public function resetSimulation(InventoryCount $count): RedirectResponse
+    {
+        if (! Auth::user()->hasRole(['Warehouse', 'Owner', 'Superuser'])) {
+            abort(403, 'Aksi ini hanya dapat dilakukan oleh Warehouse, Owner, atau Superuser.');
+        }
+
+        DB::transaction(function () use ($count) {
+            $count->update([
+                'status' => 'pending_verification',
+                'verified_by' => null,
+                'finalized_at' => null,
+                'notes' => 'Sesi verifikasi saldo fisik perdana sebelum sistem live operasional (Mode Simulasi).',
+            ]);
+
+            $count->items()->update(['is_verified' => false]);
+
+            // Hapus mutasi initial stock yang sebelumnya tercatat jika ada
+            $movementNumber = 'MOV-INIT-'.date('Ym').'-0001';
+            $movement = StockMovement::where('movement_number', $movementNumber)->first();
+            if ($movement) {
+                $movement->items()->delete();
+                $movement->delete();
+            }
+
+            AuditLog::log(
+                action: 'reset_initial_stock_simulation',
+                entityType: 'InventoryCount',
+                entityId: $count->id,
+                description: 'Status stok awal di-reset ke pending oleh '.Auth::user()->name.' untuk pengujian simulasi.'
+            );
+        });
+
+        return redirect()->route('initial-counts.index')
+            ->with('info', 'Status stok awal berhasil di-reset ke mode simulasi (Menunggu Pengesahan). Anda dapat mencoba menekan tombol "Sahkan Saldo Stok Awal" kembali!');
+    }
 }

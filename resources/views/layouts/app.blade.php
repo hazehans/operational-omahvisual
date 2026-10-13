@@ -122,13 +122,25 @@
                 </a>
 
                 <!-- Sahkan Stok Awal (Decision 2 User) -->
+                @php
+                    $isPendingInitialCount = \App\Models\InventoryCount::where('status', '!=', 'verified')->exists();
+                @endphp
                 <a href="{{ route('initial-counts.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all {{ request()->routeIs('initial-counts.*') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-slate-800/50' }}">
                     <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
                     </svg>
                     <div class="flex items-center justify-between flex-1">
                         <span>Sahkan Stok Awal</span>
-                        <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+                        @if($isPendingInitialCount)
+                            <span class="relative flex h-2 w-2" title="Menunggu Pengesahan Warehouse">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+                            </span>
+                        @else
+                            <span class="inline-flex items-center justify-center w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] font-bold" title="Stok Awal Sudah Sah">
+                                ✓
+                            </span>
+                        @endif
                     </div>
                 </a>
 

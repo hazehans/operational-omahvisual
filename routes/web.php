@@ -46,6 +46,7 @@ Route::middleware('auth')->group(function () {
     // Initial Stock Counts (Sahkan Stok Awal)
     Route::get('/initial-counts', [InitialCountController::class, 'index'])->name('initial-counts.index');
     Route::post('/initial-counts/{count}/verify', [InitialCountController::class, 'verify'])->name('initial-counts.verify');
+    Route::post('/initial-counts/{count}/reset-simulation', [InitialCountController::class, 'resetSimulation'])->name('initial-counts.reset-simulation');
 
     // Stock Adjustments & Owner Approval
     Route::get('/adjustments', [StockAdjustmentController::class, 'index'])->name('adjustments.index');

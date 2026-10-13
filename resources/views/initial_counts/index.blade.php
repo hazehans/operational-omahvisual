@@ -50,12 +50,12 @@
             </div>
         </div>
 
-        <!-- Tombol Pengesahan -->
-        <div>
+        <!-- Tombol Pengesahan & Simulasi -->
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
             @if($session->status !== 'verified')
                 <form action="{{ route('initial-counts.verify', $session) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin data fisik ini sudah valid dan siap disahkan sebagai saldo awal resmi operasional Omah Visual LED?');">
                     @csrf
-                    <button type="submit" class="w-full md:w-auto px-6 py-3.5 rounded-xl bg-linear-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white font-bold text-xs uppercase tracking-wider shadow-lg shadow-emerald-600/30 transition-all flex items-center justify-center gap-2 transform active:scale-95">
+                    <button type="submit" class="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-linear-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white font-bold text-xs uppercase tracking-wider shadow-lg shadow-emerald-600/30 transition-all flex items-center justify-center gap-2 transform active:scale-95">
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
@@ -64,11 +64,22 @@
                 </form>
             @else
                 <div class="px-5 py-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold flex items-center gap-2">
-                    <svg class="w-5 h-5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg class="w-5 h-5 text-emerald-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                     </svg>
-                    <span>Saldo Telah Aktif & Diposting ke Saldo Berjalan</span>
+                    <span>Saldo Telah Aktif & Diposting Resmi</span>
                 </div>
+
+                <!-- Tombol Simulasi Ulang (Demo Feature) -->
+                <form action="{{ route('initial-counts.reset-simulation', $session) }}" method="POST" onsubmit="return confirm('Reset status stok awal ke mode simulasi (Pending) agar Anda dapat mencoba alur tombol pengesahan kembali?');">
+                    @csrf
+                    <button type="submit" class="w-full sm:w-auto px-4 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 text-xs font-semibold flex items-center justify-center gap-2 transition-all shadow-md active:scale-95" title="Gunakan ini untuk mencoba alur verifikasi berkali-kali">
+                        <svg class="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                        <span>Uji Ulang Simulasi (Reset ke Pending)</span>
+                    </button>
+                </form>
             @endif
         </div>
     </div>

@@ -129,6 +129,14 @@ class InventoryFeatureTest extends TestCase
         $session->refresh();
         $this->assertEquals('verified', $session->status);
         $this->assertEquals($this->warehouse->id, $session->verified_by);
+
+        // Uji tombol simulasi reset kembali ke pending
+        $resetResponse = $this->actingAs($this->warehouse)->post('/initial-counts/'.$session->id.'/reset-simulation');
+        $resetResponse->assertRedirect('/initial-counts');
+
+        $session->refresh();
+        $this->assertEquals('pending_verification', $session->status);
+        $this->assertNull($session->verified_by);
     }
 
     public function test_stock_movement_execution(): void
