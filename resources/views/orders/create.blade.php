@@ -246,11 +246,25 @@
             </div>
         </div>
 
-        <!-- SECTION 3: CREW TEAM & VEHICLE ASSIGNMENT -->
+        <!-- SECTION 3: VIRTUAL 3D STAGE & LAYOUT LED DESIGNER -->
+        <div class="space-y-3">
+            <div class="flex items-center justify-between">
+                <h2 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-lg bg-indigo-600/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-xs">3</span>
+                    <span>Visualisasi Panggung 3D & Formasi Layar (Drag & Drop)</span>
+                </h2>
+                <span class="text-xs text-slate-500">
+                    Otomatis dikonversi menjadi Blueprint 2D saat cetak SPK fisik
+                </span>
+            </div>
+            <x-stage-designer-3d canvasHeight="460px" />
+        </div>
+
+        <!-- SECTION 4: CREW TEAM & VEHICLE ASSIGNMENT -->
         <div class="bg-white dark:bg-slate-900/60 p-6 rounded-2xl border border-slate-200 dark:border-slate-800/80 shadow-xs space-y-5">
             <div class="border-b border-slate-100 dark:border-slate-800 pb-3">
                 <h2 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                    <span class="w-6 h-6 rounded-lg bg-cyan-600/10 text-cyan-600 dark:text-cyan-400 flex items-center justify-center text-xs">3</span>
+                    <span class="w-6 h-6 rounded-lg bg-cyan-600/10 text-cyan-600 dark:text-cyan-400 flex items-center justify-center text-xs">4</span>
                     <span>Penugasan Crew Lapangan & Armada Mobil</span>
                 </h2>
                 <p class="text-xs text-slate-500 mt-0.5">Crew 1 s/d Crew 7 akan dicetak pada Halaman 1 Lembar SPK.</p>
@@ -314,11 +328,11 @@
             </datalist>
         </div>
 
-        <!-- SECTION 4: FINANCIALS & MULTIMEDIA ADD-ONS -->
+        <!-- SECTION 5: FINANCIALS & MULTIMEDIA ADD-ONS -->
         <div class="bg-white dark:bg-slate-900/60 p-6 rounded-2xl border border-slate-200 dark:border-slate-800/80 shadow-xs space-y-5">
             <div class="border-b border-slate-100 dark:border-slate-800 pb-3">
                 <h2 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                    <span class="w-6 h-6 rounded-lg bg-amber-600/10 text-amber-600 dark:text-amber-400 flex items-center justify-center text-xs">4</span>
+                    <span class="w-6 h-6 rounded-lg bg-amber-600/10 text-amber-600 dark:text-amber-400 flex items-center justify-center text-xs">5</span>
                     <span>Finansial & Tambahan Multimedia (Opsional)</span>
                 </h2>
             </div>

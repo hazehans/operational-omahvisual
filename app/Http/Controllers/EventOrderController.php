@@ -135,6 +135,14 @@ class EventOrderController extends Controller
                 'event_time' => $validated['event_time'] ?? null,
                 'electricity_source' => $validated['electricity_source'] ?? 'PLN 16A',
                 'dress_code' => $validated['dress_code'] ?? 'Seragam Omahvisual',
+                'stage_width_m' => $validated['stage_width_m'] ?? 10.00,
+                'stage_depth_m' => $validated['stage_depth_m'] ?? 6.00,
+                'stage_height_m' => $validated['stage_height_m'] ?? 0.60,
+                'stage_layout_json' => ! empty($validated['stage_layout_json'])
+                    ? (is_array($validated['stage_layout_json']) ? $validated['stage_layout_json'] : json_decode((string) $validated['stage_layout_json'], true))
+                    : null,
+                'stage_layout_image' => $validated['stage_layout_image'] ?? null,
+                'stage_layout_front_image' => $validated['stage_layout_front_image'] ?? null,
                 'status' => 'confirmed',
                 'notes' => $validated['notes'] ?? null,
                 'total_price' => $validated['total_price'] ?? 0,
@@ -223,6 +231,37 @@ class EventOrderController extends Controller
         $order->load(['customer', 'screens', 'spkAssignment.checklistItems']);
 
         return view('orders.show', compact('order'));
+    }
+
+    /**
+     * Update the 3D stage layout configuration and 2D diagram snapshot.
+     */
+    public function updateStageLayout(Request $request, EventOrder $order): JsonResponse
+    {
+        $validated = $request->validate([
+            'stage_width_m' => ['nullable', 'numeric', 'min:1', 'max:100'],
+            'stage_depth_m' => ['nullable', 'numeric', 'min:1', 'max:50'],
+            'stage_height_m' => ['nullable', 'numeric', 'min:0', 'max:10'],
+            'stage_layout_json' => ['nullable'],
+            'stage_layout_image' => ['nullable', 'string'],
+            'stage_layout_front_image' => ['nullable', 'string'],
+        ]);
+
+        $order->update([
+            'stage_width_m' => $validated['stage_width_m'] ?? $order->stage_width_m,
+            'stage_depth_m' => $validated['stage_depth_m'] ?? $order->stage_depth_m,
+            'stage_height_m' => $validated['stage_height_m'] ?? $order->stage_height_m,
+            'stage_layout_json' => ! empty($validated['stage_layout_json'])
+                ? (is_array($validated['stage_layout_json']) ? $validated['stage_layout_json'] : json_decode((string) $validated['stage_layout_json'], true))
+                : $order->stage_layout_json,
+            'stage_layout_image' => $validated['stage_layout_image'] ?? $order->stage_layout_image,
+            'stage_layout_front_image' => $validated['stage_layout_front_image'] ?? $order->stage_layout_front_image,
+        ]);
+
+        return response()->json([
+            'message' => 'Layout panggung dan blueprint 2D berhasil diperbarui!',
+            'order' => $order,
+        ]);
     }
 
     /**

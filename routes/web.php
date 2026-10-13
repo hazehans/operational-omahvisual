@@ -70,6 +70,7 @@ Route::middleware('auth')->group(function () {
 
     // Event Orders & LED Screen Calculator (Phase 4)
     Route::post('/orders/calculate', [EventOrderController::class, 'calculate'])->name('orders.calculate');
+    Route::put('/orders/{order}/stage-layout', [EventOrderController::class, 'updateStageLayout'])->name('orders.update-stage-layout');
     Route::resource('orders', EventOrderController::class);
 
     // SPK & Equipment Gate Checklist (Phase 4)

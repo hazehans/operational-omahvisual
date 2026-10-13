@@ -160,7 +160,35 @@
                 </td>
 
                 <td style="width: 42%; vertical-align: top; border-left: 1px dashed #ccc; padding-left: 15px;">
-                    <table style="width: 100%; border-collapse: collapse; margin-top: 135px;">
+                    <!-- 2D STAGE & LED BLUEPRINT DIAGRAM -->
+                    <div style="border: 1.5px solid #000; padding: 4px; margin-bottom: 8px; text-align: center; background: #fff;">
+                        <div style="font-weight: bold; font-size: 9px; text-transform: uppercase; background: #e2e8f0; padding: 2px; margin-bottom: 4px; border: 1px solid #cbd5e1;">
+                            📐 BLUEPRINT LAYOUT PANGGUNG 2D
+                        </div>
+                        @if($assignment->eventOrder->stage_layout_image)
+                            <img src="{{ $assignment->eventOrder->stage_layout_image }}" style="width: 100%; max-height: 135px; object-fit: contain; display: block; margin: 0 auto; border: 1px solid #e2e8f0;">
+                        @else
+                            <div style="height: 110px; border: 1px dashed #94a3b8; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f8fafc; font-size: 9px; color: #475569;">
+                                <div style="font-weight: bold; font-size: 10px; color: #000;">
+                                    Panggung: {{ $assignment->eventOrder->stage_width_m ?? 10 }}m × {{ $assignment->eventOrder->stage_depth_m ?? 6 }}m
+                                </div>
+                                <div style="margin-top: 4px; font-weight: bold; color: #1e3a8a;">
+                                    {{ $assignment->eventOrder->screens->map(fn($s) => $s->screen_name . ' (' . $s->width_m . 'x' . $s->height_m . 'm)')->implode(' + ') }}
+                                </div>
+                                <div style="font-size: 8px; color: #64748b; margin-top: 4px;">
+                                    ▼ Bibir Panggung Menghadap Penonton ▼
+                                </div>
+                            </div>
+                        @endif
+                        <div style="font-size: 8px; color: #334155; margin-top: 2px; font-weight: bold;">
+                            Dimensi: {{ $assignment->eventOrder->stage_width_m ?? 10 }}m × {{ $assignment->eventOrder->stage_depth_m ?? 6 }}m (Level {{ $assignment->eventOrder->stage_height_m ?? 0.6 }}m)
+                        </div>
+                        <div style="font-size: 7.5px; color: #1e40af; margin-top: 2px; font-weight: bold; background: #eff6ff; padding: 2px; border: 1px solid #bfdbfe;">
+                            📌 Detail Teknis Tampak Atas & Depan: Lihat Lembar 4
+                        </div>
+                    </div>
+
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
                         <tr><td style="width: 100px; padding: 3px 0;">Kendaraan</td><td>: {{ $assignment->vehicle_name ?? 'TRAGA 1' }}</td></tr>
                         <tr><td style="padding: 3px 0;">E toll</td><td>: {{ $assignment->has_etoll ? 'Ada / Siap' : '.......' }}</td></tr>
                         <tr><td style="padding: 3px 0;">Kunci Ban</td><td>: {{ $assignment->has_kunci_ban ? 'Ada / Siap' : '.......' }}</td></tr>
@@ -310,6 +338,135 @@
                 @endforeach
             </tbody>
         </table>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- HALAMAN 4: BLUEPRINT TEKNIS TATA LETAK PANGGUNG & FORMASI LAYAR LED       -->
+    <!-- ========================================================================= -->
+    <div class="page">
+        <!-- Title & Event Header -->
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #000; padding-bottom: 4px; margin-bottom: 8px;">
+            <div>
+                <div style="font-size: 13px; font-weight: bold; text-transform: uppercase;">
+                    4 BLUEPRINT TEKNIS: TATA LETAK PANGGUNG &amp; FORMASI LAYAR LED
+                </div>
+                <div style="font-size: 9px; color: #334155; font-weight: bold;">
+                    Engineering Stage Plot &amp; LED Screen Rigging Blueprint • Omahvisual LED
+                </div>
+            </div>
+            <div style="font-size: 9px; text-align: right;">
+                <strong>No. SPK:</strong> {{ $assignment->spk_number }}<br>
+                <strong>No. Event:</strong> {{ $assignment->eventOrder->order_number }}
+            </div>
+        </div>
+
+        <!-- Project Meta Strip -->
+        <table style="width: 100%; border-collapse: collapse; font-size: 9.5px; margin-bottom: 8px; background: #f8fafc; border: 1px solid #cbd5e1;">
+            <tr>
+                <td style="padding: 4px 6px; width: 33%;"><strong>Client:</strong> {{ $assignment->eventOrder->customer->name }}</td>
+                <td style="padding: 4px 6px; width: 33%;"><strong>Venue:</strong> {{ $assignment->eventOrder->venue_name }}</td>
+                <td style="padding: 4px 6px; width: 34%;"><strong>Tgl Event:</strong> {{ $assignment->eventOrder->event_start_date->format('d/m/Y') }} (Load: {{ $assignment->eventOrder->loading_date->format('d/m/Y') }})</td>
+            </tr>
+            <tr>
+                <td style="padding: 4px 6px;"><strong>Ukuran Panggung:</strong> {{ $assignment->eventOrder->stage_width_m ?? 10 }}m × {{ $assignment->eventOrder->stage_depth_m ?? 6 }}m (Level +{{ $assignment->eventOrder->stage_height_m ?? 0.6 }}m)</td>
+                <td style="padding: 4px 6px;"><strong>Total Layar:</strong> {{ $assignment->eventOrder->screens->count() }} Unit ({{ $assignment->eventOrder->total_sqm }} m²)</td>
+                <td style="padding: 4px 6px;"><strong>PIC Event:</strong> {{ $assignment->crew_pic_event_name ?? '-' }}</td>
+            </tr>
+        </table>
+
+        <!-- DIAGRAM 1: TAMPAK ATAS (TOP-DOWN 2D FLOOR PLAN) -->
+        <div style="border: 1.5px solid #000; margin-bottom: 8px; background: #fff;">
+            <div style="background: #1e293b; color: #fff; padding: 3px 8px; font-size: 10px; font-weight: bold; display: flex; justify-content: space-between; align-items: center;">
+                <span>📐 1. TAMPAK ATAS (TOP-DOWN FLOOR PLAN) — BIDANG PANGGUNG & FORMASI LAYAR TERHADAP PENONTON</span>
+                <span style="font-size: 8.5px; color: #38bdf8;">Grid Skala: 1 Kotak = 1 Meter</span>
+            </div>
+            <div style="padding: 4px; text-align: center; background: #0f172a;">
+                @if($assignment->eventOrder->stage_layout_image)
+                    <img src="{{ $assignment->eventOrder->stage_layout_image }}" style="width: 100%; max-height: 230px; object-fit: contain; display: block; margin: 0 auto;">
+                @else
+                    <div style="height: 150px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #94a3b8; font-size: 10px;">
+                        <span style="font-size: 11px; font-weight: bold; color: #e2e8f0; margin-bottom: 4px;">Panggung: {{ $assignment->eventOrder->stage_width_m ?? 10 }}m × {{ $assignment->eventOrder->stage_depth_m ?? 6 }}m</span>
+                        <span>{{ $assignment->eventOrder->screens->map(fn($s) => $s->screen_name . ' (' . $s->width_m . 'x' . $s->height_m . 'm)')->implode(' • ') }}</span>
+                        <span style="margin-top: 6px; color: #facc15;">▼ BIBIR PANGGUNG MENGHADAP PENONTON ▼</span>
+                    </div>
+                @endif
+            </div>
+        </div>
+
+        <!-- DIAGRAM 2: TAMPAK DEPAN (FRONT ELEVATION / PERSPEKTIF PENONTON) -->
+        <div style="border: 1.5px solid #000; margin-bottom: 8px; background: #fff;">
+            <div style="background: #1e293b; color: #fff; padding: 3px 8px; font-size: 10px; font-weight: bold; display: flex; justify-content: space-between; align-items: center;">
+                <span>🎭 2. TAMPAK DEPAN (FRONT ELEVATION) — LEVEL TINGGI PANGGUNG, ELEVASI LAYAR & TRUSS GANTUNG</span>
+                <span style="font-size: 8.5px; color: #facc15;">Perspektif Penonton</span>
+            </div>
+            <div style="padding: 4px; text-align: center; background: #0f172a;">
+                @if($assignment->eventOrder->stage_layout_front_image)
+                    <img src="{{ $assignment->eventOrder->stage_layout_front_image }}" style="width: 100%; max-height: 230px; object-fit: contain; display: block; margin: 0 auto;">
+                @else
+                    <div style="height: 150px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #94a3b8; font-size: 10px;">
+                        <span style="font-size: 11px; font-weight: bold; color: #e2e8f0; margin-bottom: 4px;">Elevasi Panggung: Level +{{ $assignment->eventOrder->stage_height_m ?? 0.6 }}m</span>
+                        <span>Ground Stack / Rigging Truss Gantung</span>
+                        <span style="margin-top: 6px; color: #38bdf8;">(Render blueprint elevasi otomatis saat simpan layout di sistem)</span>
+                    </div>
+                @endif
+            </div>
+        </div>
+
+        <!-- TABEL SPESIFIKASI TEKNIK PEMASANGAN & RIGGING -->
+        <table class="data-table" style="margin-bottom: 8px;">
+            <thead>
+                <tr>
+                    <th style="width: 25px;">NO</th>
+                    <th>Nama Posisi Layar</th>
+                    <th style="width: 75px;">Dimensi Fisik</th>
+                    <th style="width: 60px;">Luas SQM</th>
+                    <th style="width: 80px;">Total Kabinet</th>
+                    <th style="width: 100px;">Metode Pasang</th>
+                    <th style="width: 110px;">Prosesor & Sinyal</th>
+                    <th>Catatan Rigging & Safety</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($assignment->eventOrder->screens as $idx => $sc)
+                    <tr>
+                        <td style="text-align: center; font-weight: bold;">{{ $idx + 1 }}</td>
+                        <td style="font-weight: bold;">{{ $sc->screen_name }}</td>
+                        <td style="text-align: center;">{{ $sc->width_m }}m × {{ $sc->height_m }}m</td>
+                        <td style="text-align: center; font-weight: bold; color: #1e40af;">{{ $sc->total_sqm }} m²</td>
+                        <td style="text-align: center;">{{ $sc->total_cabinets }} Kabinet ({{ $sc->total_hardcases }} Box)</td>
+                        <td style="text-align: center; font-weight: bold;">
+                            {{ $sc->rigging_method === 'hanging' ? 'Truss Gantung' : 'Ground Stack' }}
+                        </td>
+                        <td style="font-size: 8.5px;">{{ $sc->processor_model }}</td>
+                        <td style="font-size: 8.5px;">{{ $sc->stage_specification ?? 'Perhatikan level kerataan & ballast panggung' }}</td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+
+        <!-- RIGGING CHECK & SIGN-OFF BOX -->
+        <div style="border: 1px solid #000; padding: 6px; background: #fff;">
+            <div style="font-size: 9px; font-weight: bold; margin-bottom: 4px; text-transform: uppercase;">
+                Pernyataan Kelayakan Instalasi Rigging & Visual Panggung:
+            </div>
+            <div style="font-size: 8.5px; color: #334155; line-height: 1.25; margin-bottom: 6px;">
+                1. Kerataan lantai level panggung telah dicek menggunakan waterpass sebelum modul kabinet pertama dipasang.<br>
+                2. Sistem penguncian kabinet (quick-lock) dan safety wire terpasang lengkap sesuai standar keselamatan kerja.<br>
+                3. Distribusi beban daya listrik telah dibagi merata dan grounding terpasang aman.
+            </div>
+            <table class="sign-table" style="margin-bottom: 0;">
+                <tr>
+                    <td style="height: 35px; vertical-align: top;">TTD PIC RIGGING / STAGE LEAD</td>
+                    <td style="vertical-align: top;">TTD OPERATOR VISUAL / SYSTEM</td>
+                    <td style="vertical-align: top;">TTD PIC EVENT (LAPANGAN)</td>
+                </tr>
+                <tr>
+                    <td>( .................................................. )</td>
+                    <td>( .................................................. )</td>
+                    <td>( {{ $assignment->crew_pic_event_name ?? '..................................' }} )</td>
+                </tr>
+            </table>
+        </div>
     </div>
 
 </div>

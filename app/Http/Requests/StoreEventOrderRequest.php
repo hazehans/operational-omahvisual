@@ -43,6 +43,12 @@ class StoreEventOrderRequest extends FormRequest
             'event_time' => ['nullable', 'string', 'max:50'],
             'electricity_source' => ['nullable', 'string', 'max:100'],
             'dress_code' => ['nullable', 'string', 'max:100'],
+            'stage_width_m' => ['nullable', 'numeric', 'min:1', 'max:100'],
+            'stage_depth_m' => ['nullable', 'numeric', 'min:1', 'max:50'],
+            'stage_height_m' => ['nullable', 'numeric', 'min:0', 'max:10'],
+            'stage_layout_json' => ['nullable', 'string'],
+            'stage_layout_image' => ['nullable', 'string'],
+            'stage_layout_front_image' => ['nullable', 'string'],
             'notes' => ['nullable', 'string'],
 
             // Screens

@@ -209,4 +209,129 @@ class EventOrderAndSpkManagementTest extends TestCase
         $response->assertSee('Wedding Senayan Super Mega');
         $response->assertSee('Portal Crew Lapangan');
     }
+
+    public function test_user_can_store_order_with_3d_stage_layout_and_print_2d_blueprint(): void
+    {
+        $sampleLayoutJson = json_encode([
+            [
+                'id' => 1,
+                'name' => 'Main Screen',
+                'width' => 8.0,
+                'height' => 4.0,
+                'x' => 0.0,
+                'z' => -2.0,
+                'rotY' => 0,
+                'rigging' => 'ground_stake',
+            ],
+            [
+                'id' => 2,
+                'name' => 'Wing Kiri',
+                'width' => 3.0,
+                'height' => 4.0,
+                'x' => -5.5,
+                'z' => -1.0,
+                'rotY' => 25,
+                'rigging' => 'ground_stake',
+            ],
+        ]);
+
+        $sampleBlueprintImage = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
+        $sampleBlueprintFrontImage = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
+
+        $orderData = [
+            'customer_name' => 'EO Diamond Wedding',
+            'customer_phone' => '089988776655',
+            'event_name' => 'Grand Wedding Kevin & Jessica',
+            'event_type' => 'indoor',
+            'venue_name' => 'Grand Ballroom Ijen Suites Malang',
+            'loading_date' => now()->addDays(2)->format('Y-m-d'),
+            'loading_time' => '23:00',
+            'event_start_date' => now()->addDays(3)->format('Y-m-d'),
+            'stage_width_m' => 12.0,
+            'stage_depth_m' => 8.0,
+            'stage_height_m' => 0.8,
+            'stage_layout_json' => $sampleLayoutJson,
+            'stage_layout_image' => $sampleBlueprintImage,
+            'stage_layout_front_image' => $sampleBlueprintFrontImage,
+            'screens' => [
+                [
+                    'screen_name' => 'Main Screen',
+                    'brand_series' => 'SAGA',
+                    'pixel_pitch' => 'P3.9',
+                    'width_m' => 8.0,
+                    'height_m' => 4.0,
+                    'rigging_method' => 'ground_stake',
+                ],
+            ],
+            'vehicle_name' => 'TRAGA 2',
+        ];
+
+        $response = $this->actingAs($this->user)->post(route('orders.store'), $orderData);
+        $response->assertSessionHasNoErrors();
+
+        $order = EventOrder::where('event_name', 'Grand Wedding Kevin & Jessica')->first();
+        $this->assertNotNull($order);
+        $this->assertEquals(12.0, (float) $order->stage_width_m);
+        $this->assertEquals(8.0, (float) $order->stage_depth_m);
+        $this->assertEquals(0.8, (float) $order->stage_height_m);
+        $this->assertCount(2, $order->stage_layout_json);
+        $this->assertEquals($sampleBlueprintImage, $order->stage_layout_image);
+        $this->assertEquals($sampleBlueprintFrontImage, $order->stage_layout_front_image);
+
+        // Verify printed SPK contains Halaman 4 with both 2D Blueprints (Top Plan & Front Elevation)
+        $printResponse = $this->actingAs($this->user)->get(route('spk.print', $order->spkAssignment));
+        $printResponse->assertOk();
+        $printResponse->assertSee('BLUEPRINT LAYOUT PANGGUNG 2D');
+        $printResponse->assertSee('4 BLUEPRINT TEKNIS: TATA LETAK PANGGUNG & FORMASI LAYAR LED');
+        $printResponse->assertSee('TAMPAK ATAS (TOP-DOWN FLOOR PLAN)');
+        $printResponse->assertSee('TAMPAK DEPAN (FRONT ELEVATION)');
+        $printResponse->assertSee($sampleBlueprintImage);
+        $printResponse->assertSee($sampleBlueprintFrontImage);
+
+        // Verify live crew token view also displays both blueprints
+        $crewResponse = $this->get(route('spk.live', $order->public_token));
+        $crewResponse->assertOk();
+        $crewResponse->assertSee('Tampak Atas (Top Plan)');
+        $crewResponse->assertSee('Tampak Depan (Front Elevation)');
+        $crewResponse->assertSee($sampleBlueprintImage);
+        $crewResponse->assertSee($sampleBlueprintFrontImage);
+    }
+
+    public function test_user_can_update_stage_layout_via_ajax_endpoint(): void
+    {
+        $customer = Customer::factory()->create();
+        $order = EventOrder::factory()->create([
+            'customer_id' => $customer->id,
+            'stage_width_m' => 10.0,
+            'stage_depth_m' => 6.0,
+        ]);
+
+        $newLayout = [
+            ['id' => 1, 'name' => 'Main Screen', 'width' => 10.0, 'height' => 4.0, 'x' => 0.0, 'z' => -1.5, 'rotY' => 0],
+        ];
+        $newTopImage = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
+        $newFrontImage = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
+
+        $response = $this->actingAs($this->user)->putJson(route('orders.update-stage-layout', $order), [
+            'stage_width_m' => 14.0,
+            'stage_depth_m' => 8.0,
+            'stage_height_m' => 1.0,
+            'stage_layout_json' => $newLayout,
+            'stage_layout_image' => $newTopImage,
+            'stage_layout_front_image' => $newFrontImage,
+        ]);
+
+        $response->assertOk();
+        $response->assertJson([
+            'message' => 'Layout panggung dan blueprint 2D berhasil diperbarui!',
+        ]);
+
+        $order->refresh();
+        $this->assertEquals(14.0, (float) $order->stage_width_m);
+        $this->assertEquals(8.0, (float) $order->stage_depth_m);
+        $this->assertEquals(1.0, (float) $order->stage_height_m);
+        $this->assertEquals($newTopImage, $order->stage_layout_image);
+        $this->assertEquals($newFrontImage, $order->stage_layout_front_image);
+        $this->assertEquals('Main Screen', $order->stage_layout_json[0]['name']);
+    }
 }

@@ -82,6 +82,9 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Left: LED Screens & Checklists Summary -->
         <div class="lg:col-span-2 space-y-6">
+            <!-- 3D Stage Designer & 2D Blueprint Visualizer -->
+            <x-stage-designer-3d :order="$order" :screens="$order->screens" :saveUrl="route('orders.update-stage-layout', $order)" canvasHeight="440px" />
+
             <!-- Screens Card -->
             <div class="bg-white dark:bg-slate-900/60 p-6 rounded-2xl border border-slate-200 dark:border-slate-800/80 shadow-xs space-y-4">
                 <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">

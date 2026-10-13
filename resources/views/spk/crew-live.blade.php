@@ -63,6 +63,62 @@
         </div>
     </div>
 
+    <!-- Stage & LED Layout Blueprint (2D & 3D Interactive) -->
+    <div class="p-4 rounded-xl bg-slate-800/80 border border-slate-700/80 space-y-3">
+        <div class="flex items-center justify-between">
+            <div class="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+                <span>📐 Blueprint Layout Panggung</span>
+            </div>
+            <span class="text-[10px] px-2 py-0.5 rounded font-bold bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">
+                Panggung {{ $order->stage_width_m ?? 10 }}m × {{ $order->stage_depth_m ?? 6 }}m
+            </span>
+        </div>
+
+        @if($order->stage_layout_image || $order->stage_layout_front_image)
+            <div class="space-y-3">
+                @if($order->stage_layout_image)
+                    <div class="rounded-xl overflow-hidden border border-slate-700 bg-slate-950 p-1.5 space-y-1">
+                        <div class="text-[10px] font-bold text-cyan-400 px-1 flex items-center justify-between">
+                            <span>📐 Tampak Atas (Top Plan)</span>
+                            <span class="text-slate-500 font-normal">Denah Panggung 2D</span>
+                        </div>
+                        <img src="{{ $order->stage_layout_image }}" alt="Layout Panggung Tampak Atas" class="w-full object-contain rounded-lg">
+                    </div>
+                @endif
+
+                @if($order->stage_layout_front_image)
+                    <div class="rounded-xl overflow-hidden border border-slate-700 bg-slate-950 p-1.5 space-y-1">
+                        <div class="text-[10px] font-bold text-amber-400 px-1 flex items-center justify-between">
+                            <span>🎭 Tampak Depan (Front Elevation)</span>
+                            <span class="text-slate-500 font-normal">Level +{{ $order->stage_height_m ?? 0.6 }}m & Rigging</span>
+                        </div>
+                        <img src="{{ $order->stage_layout_front_image }}" alt="Layout Panggung Tampak Depan" class="w-full object-contain rounded-lg">
+                    </div>
+                @endif
+            </div>
+        @else
+            <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 text-center space-y-1">
+                <div class="text-xs font-bold text-slate-200">
+                    Formasi: {{ $order->screens->map(fn($s) => $s->screen_name . ' (' . $s->width_m . 'x' . $s->height_m . 'm)')->implode(' + ') }}
+                </div>
+                <div class="text-[10px] text-slate-400">
+                    Tinggi level panggung: {{ $order->stage_height_m ?? 0.6 }} meter
+                </div>
+            </div>
+        @endif
+
+        <!-- Toggle for 3D Viewer on Mobile -->
+        <details class="group">
+            <summary class="cursor-pointer text-xs font-bold text-indigo-400 hover:text-indigo-300 flex items-center justify-between py-1">
+                <span>🎮 Buka Simulasi Virtual 3D di Smartphone</span>
+                <span class="group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <div class="pt-2">
+                <x-stage-designer-3d :order="$order" :screens="$order->screens" :isEditable="false" canvasHeight="320px" />
+            </div>
+        </details>
+    </div>
+
     <!-- LED Screen Technical Summary -->
     <div class="p-4 rounded-xl bg-slate-800/60 border border-slate-700/60 space-y-2.5">
         <div class="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center justify-between">

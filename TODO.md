@@ -146,7 +146,40 @@
 - [x] Integrasi antarmuka input order baru (`orders/create.blade.php`):
   - [x] Pilihan dropdown customer terisi 379 pelanggan setia Omah Visual (Singham, Lunar, Garuda EO, Amicomedia, dll.)
   - [x] Bidang input PIC Event dan Crew 1 s/d 7 terhubung ke `<datalist id="crewList">` sehingga autocomplete langsung aktif untuk seluruh 113 kru (Boby, Yoga, Rio, Apip, Bagus, dll.)
-- [x] Pengujian otomatis feature: `ImportExcelDataCommandTest` (1 test, 11 assertions) — Total suite menjadi **41 tests lulus (100% Green), 259 assertions**
+### 20. Visual Virtual 3D Stage Designer & Dual Blueprint 2D (Tampak Atas & Depan) (`/orders` & `/spk`) — ✅ Selesai (Tahap 5)
+- [x] Migrasi Skema Basis Data Tata Letak Panggung:
+  - [x] Migrasi `add_stage_layout_to_event_orders_table` (`stage_width_m`, `stage_depth_m`, `stage_height_m`, `stage_layout_json`, `stage_layout_image`)
+  - [x] Migrasi `add_stage_layout_front_image_to_event_orders_table` (`stage_layout_front_image`)
+- [x] Komponen Interaktif Virtual 3D Stage Canvas (`components/stage-designer-3d.blade.php`):
+  - [x] Render panggung 3D dinamis dengan Three.js & OrbitControls (dukungan offline lokal `public/vendor/three/`)
+  - [x] Penempatan layar LED multi-unit (Main Screen, Wing Kiri, Wing Kanan) dengan visual kabinet dan truss gantung/ground stack
+  - [x] Preset 1-klik: *Tengah Tunggal*, *Main + 2 Wings Miring*, *Triptych 3 Layar*
+  - [x] Engine **Snap Magnet Action**:
+    - [x] Snap garis tengah panggung ($X = 0$) dengan pemandu visual garis neon cyan 3D
+    - [x] Snap kedalaman sejajar ($Z$-depth) terhadap layar lain dengan pemandu visual garis neon emerald 3D
+    - [x] Snap kisi grid dinamis ($0.25\text{m}$, $0.5\text{m}$, $1.0\text{m}$) dengan magnetic feedback HUD badge
+    - [x] Fitur bebas drag tanpa snap dengan menahan tombol `Shift`
+  - [x] Dual 2D Architectural Blueprint Generator:
+    - [x] `generate2DTopBlueprint()`: Tampak Atas (Top-Down Floor Plan) dengan kisi skala 1 meter, garis bibir panggung kuning menghadap penonton, dan sudut kemiringan sayap
+    - [x] `generate2DFrontBlueprint()`: Tampak Depan (Front Elevation) dengan garis dasar tanah ($\pm0.00\text{m}$), podium level panggung, balok truss gantung & kabel sling vs kaki ground stack, serta elevasi puncak layar
+  - [x] Integrasi sinkronisasi otomatis ke form input order baru (`orders/create.blade.php`) dan update AJAX di halaman detail order (`orders/show.blade.php`)
+- [x] Peningkatan Cetak SPK A4 Lembar ke-4 Khusus Layout Teknis (`spk/print.blade.php`):
+  - [x] Halaman 4 mandiri (A4 Portrait): **4 BLUEPRINT TEKNIS: TATA LETAK PANGGUNG & FORMASI LAYAR LED**
+  - [x] Kotak ganda berdampingan: Diagram Tampak Atas (Denah Panggung) & Diagram Tampak Depan (Elevasi Penonton)
+  - [x] Tabel spesifikasi teknis rigging (ukuran fisik, luas SQM, kabinet, flight case, prosesor, dan catatan panggung)
+  - [x] Lembar tanda tangan kelayakan rigging (PIC Rigging / Stage Lead, Operator Visual, PIC Event Lapangan)
+  - [x] Lembar 1 dilengkapi penunjuk rujukan: `📌 Detail Teknis Tampak Atas & Depan: Lihat Lembar 4`
+- [x] Portal Mobile Crew Lapangan (`spk/crew-live.blade.php`):
+  - [x] Kartu ganda Tampak Atas & Tampak Depan yang responsif untuk layar smartphone
+  - [x] Accordion simulasi virtual 3D interaktif yang bisa diputar langsung dari HP kru
+- [x] Pengujian otomatis: `EventOrderAndSpkManagementTest` diperluas mencakup validasi formasi ganda dan cetak lembar ke-4 — Total suite menjadi **43 tests lulus (100% Green), 287 assertions**
+
+---
+
+## 📌 Catatan Revisi & Prioritas Sesi Berikutnya (Next Session Priority)
+- [ ] **Revisi Skala & Margin Layout Printout A4 SPK (`spk/print.blade.php`)**:
+  - Investigasi dan penyesuaian CSS print `@page { size: A4 portrait; margin: ... }` agar seluruh elemen di Halaman 1 s/d Halaman 4 tercetak 100% pas tanpa ada bagian tepi/tabel yang terpotong saat diekspor ke PDF atau dicetak printer fisik.
+  - Opsi pengaturan zoom/skala atau penyesuaian padding tabel data Halaman 2, 3, dan 4.
 
 ---
 
