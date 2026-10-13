@@ -121,6 +121,7 @@ class InventoryFeatureTest extends TestCase
 
         $session = InventoryCount::first();
         $this->assertNotNull($session);
+        $session->update(['status' => 'pending_verification', 'verified_by' => null]);
 
         // Warehouse sahkan stok awal
         $verifyResponse = $this->actingAs($this->warehouse)->post('/initial-counts/'.$session->id.'/verify');

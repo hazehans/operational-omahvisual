@@ -35,8 +35,7 @@ Route::middleware('auth')->group(function () {
     Route::put('/assets/{asset}/status', [AssetController::class, 'updateStatus'])->name('assets.update-status');
 
     // Locations & Lemari Storage
-    Route::get('/locations', [LocationController::class, 'index'])->name('locations.index');
-    Route::get('/locations/{location}', [LocationController::class, 'show'])->name('locations.show');
+    Route::resource('locations', LocationController::class);
 
     // Stock Movements
     Route::get('/movements', [StockMovementController::class, 'index'])->name('movements.index');

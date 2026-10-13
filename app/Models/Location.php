@@ -17,8 +17,21 @@ class Location extends Model
         'parent_id',
         'type',
         'description',
+        'image_path',
         'is_active',
     ];
+
+    /**
+     * URL Gambar visual lokasi jika ada
+     */
+    public function getImageUrlAttribute(): ?string
+    {
+        if ($this->image_path) {
+            return asset('storage/'.$this->image_path);
+        }
+
+        return null;
+    }
 
     protected $casts = [
         'is_active' => 'boolean',
