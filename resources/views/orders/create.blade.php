@@ -66,7 +66,7 @@
                 </select>
             </div>
 
-            <div id="newCustomerWrapper" class="grid grid-cols-1 sm:grid-cols-3 gap-4 hidden">
+            <div id="newCustomerWrapper" class="grid-cols-1 sm:grid-cols-3 gap-4 hidden">
                 <div>
                     <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Nama Client *</label>
                     <input type="text" name="customer_name" id="newCustomerName" value="{{ old('customer_name') }}" placeholder="Misal: Mas Dani Bless" class="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
@@ -268,41 +268,50 @@
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">PIC Event Lapangan *</label>
-                    <input type="text" name="crew_pic_event_name" value="{{ old('crew_pic_event_name') }}" placeholder="Misal: Boby / Yoga / Kemal" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-sm">
+                    <input type="text" name="crew_pic_event_name" list="crewList" value="{{ old('crew_pic_event_name') }}" placeholder="Pilih / ketik nama PIC (misal: Boby / Yoga / Rio)" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-sm">
                 </div>
             </div>
 
-            <!-- Crew Roster 1 to 7 -->
+            <!-- Crew Roster 1 to 7 with Autocomplete Datalist -->
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
                 <div>
                     <label class="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">Crew 1</label>
-                    <input type="text" name="crew_1_name" placeholder="Nama crew 1" class="w-full px-3 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-xs">
+                    <input type="text" name="crew_1_name" list="crewList" placeholder="Nama crew 1" class="w-full px-3 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-xs">
                 </div>
                 <div>
                     <label class="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">Crew 2</label>
-                    <input type="text" name="crew_2_name" placeholder="Nama crew 2" class="w-full px-3 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-xs">
+                    <input type="text" name="crew_2_name" list="crewList" placeholder="Nama crew 2" class="w-full px-3 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-xs">
                 </div>
                 <div>
                     <label class="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">Crew 3</label>
-                    <input type="text" name="crew_3_name" placeholder="Nama crew 3" class="w-full px-3 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-xs">
+                    <input type="text" name="crew_3_name" list="crewList" placeholder="Nama crew 3" class="w-full px-3 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-xs">
                 </div>
                 <div>
                     <label class="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">Crew 4</label>
-                    <input type="text" name="crew_4_name" placeholder="Nama crew 4" class="w-full px-3 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-xs">
+                    <input type="text" name="crew_4_name" list="crewList" placeholder="Nama crew 4" class="w-full px-3 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-xs">
                 </div>
                 <div>
                     <label class="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">Crew 5</label>
-                    <input type="text" name="crew_5_name" placeholder="Nama crew 5" class="w-full px-3 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-xs">
+                    <input type="text" name="crew_5_name" list="crewList" placeholder="Nama crew 5" class="w-full px-3 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-xs">
                 </div>
                 <div>
                     <label class="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">Crew 6</label>
-                    <input type="text" name="crew_6_name" placeholder="Nama crew 6" class="w-full px-3 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-xs">
+                    <input type="text" name="crew_6_name" list="crewList" placeholder="Nama crew 6" class="w-full px-3 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-xs">
                 </div>
                 <div>
                     <label class="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">Crew 7</label>
-                    <input type="text" name="crew_7_name" placeholder="Nama crew 7" class="w-full px-3 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-xs">
+                    <input type="text" name="crew_7_name" list="crewList" placeholder="Nama crew 7" class="w-full px-3 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-xs">
                 </div>
             </div>
+
+            <!-- Datalist of Real Crews -->
+            <datalist id="crewList">
+                @if(isset($crews))
+                    @foreach($crews as $cr)
+                        <option value="{{ $cr->nickname }}">{{ $cr->full_name }} ({{ $cr->position }}) - {{ $cr->phone }}</option>
+                    @endforeach
+                @endif
+            </datalist>
         </div>
 
         <!-- SECTION 4: FINANCIALS & MULTIMEDIA ADD-ONS -->

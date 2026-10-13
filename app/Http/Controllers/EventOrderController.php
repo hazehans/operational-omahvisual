@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreEventOrderRequest;
+use App\Models\Crew;
 use App\Models\Customer;
 use App\Models\EventOrder;
 use App\Models\OrderLedScreen;
@@ -64,8 +65,9 @@ class EventOrderController extends Controller
     public function create(): View
     {
         $customers = Customer::orderBy('name')->get();
+        $crews = Crew::where('is_active', true)->orderBy('nickname')->get();
 
-        return view('orders.create', compact('customers'));
+        return view('orders.create', compact('customers', 'crews'));
     }
 
     /**

@@ -136,6 +136,18 @@
   - [x] Halaman mobile publik crew lapangan via token rahasia (`spk/crew-live.blade.php`) tanpa perlu login (akses rute maps, jadwal loading, roster crew, dan checklist muatan)
 - [x] Pengujian otomatis komprehensif: `LedCalculationServiceTest` (3 tests) & `EventOrderAndSpkManagementTest` (8 tests) — Total **40 tests lulus (100% Green), 248 assertions**
 
+### 19. Migrasi & Impor Data Riil Pelanggan (379 Klien) & Roster Kru (113 Kru) (`app:import-excel-data`) — ✅ Selesai (Opsi 1)
+- [x] Migrasi database: Tabel `crews` (nama panggilan, nama lengkap, telepon, nomor darurat, jabatan/posisi PIC/Kru/Operator, status aktif)
+- [x] Model `Crew`, relasi ke `User`, dan `CrewFactory`
+- [x] Ekstraktor Python cerdas yang menormalisasi format nomor telepon Indonesia (mengubah float `8113035202.0` menjadi `08113035202`) dan membersihkan nama instansi/organisasi
+- [x] Perintah konsol Artisan `php artisan app:import-excel-data` & Seeder `OmahvisualExcelDataSeeder`:
+  - [x] Berhasil mengimpor **379 Customer riil** dari sheet `Daftar Custumer Led` ke tabel `customers`
+  - [x] Berhasil mengimpor **113 Kru lapangan riil** dari sheet `Nama Crew` ke tabel `crews`
+- [x] Integrasi antarmuka input order baru (`orders/create.blade.php`):
+  - [x] Pilihan dropdown customer terisi 379 pelanggan setia Omah Visual (Singham, Lunar, Garuda EO, Amicomedia, dll.)
+  - [x] Bidang input PIC Event dan Crew 1 s/d 7 terhubung ke `<datalist id="crewList">` sehingga autocomplete langsung aktif untuk seluruh 113 kru (Boby, Yoga, Rio, Apip, Bagus, dll.)
+- [x] Pengujian otomatis feature: `ImportExcelDataCommandTest` (1 test, 11 assertions) — Total suite menjadi **41 tests lulus (100% Green), 259 assertions**
+
 ---
 
 ## 🔮 Roadmap Jangka Panjang (Operasional Lanjutan Sesuai PRD Global)
