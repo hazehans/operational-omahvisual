@@ -149,7 +149,24 @@ Berdasarkan analisis 2 file Excel (`DATA TOOLS BOX .2` dan `DEV_STOCK OPNAME by 
 - [x] **Simulasi & Dinamisasi Notifikasi Sahkan Stok Awal:**
   - Indikator menu sidebar dinamis: Dot amber berkedip (*animate-ping*) aktif saat ada sesi yang belum diverifikasi, dan otomatis berubah menjadi centang hijau tenang (`✓`) ketika disahkan resmi.
   - Tombol simulasi reset (`resetSimulation`) untuk memfasilitasi pengujian alur verifikasi berkali-kali tanpa merusak basis data.
-- [x] **Pengujian Otomatis:** Menambahkan [`LocationPhotoManagementTest.php`](file:///d:/Job/ID_CV%20Han%20Media%20Tekindo/operational-omahvisual/tests/Feature/LocationPhotoManagementTest.php) (6 tests baru). Total suite pengujian: **23 Tests, 156 Assertions, 100% Lulus (Green)**.
+- [x] **Pengujian Otomatis:** Menambahkan [`LocationPhotoManagementTest.php`](file:///d:/Job/ID_CV%20Han%20Media%20Tekindo/operational-omahvisual/tests/Feature/LocationPhotoManagementTest.php) (6 tests baru).
+
+### Tahap 3.6: Pemotong Gambar Interaktif (Cropper.js) & Halaman Profil Pengguna (SELESAI ✅)
+- [x] **Pustaka Pemotong Gambar (Cropper.js):**
+  - Komponen modal global [`image-cropper-modal.blade.php`](file:///d:/Job/ID_CV%20Han%20Media%20Tekindo/operational-omahvisual/resources/views/components/image-cropper-modal.blade.php) terpasang di layout utama.
+  - Mendukung rotasi 90°, zoom in/out, reset, dan rasio pemotongan presisi:
+    - 16:9 untuk Titik Lokasi & Lemari Gudang
+    - 4:3 untuk Master Barang & Komponen Videotron
+    - 1:1 untuk Avatar Profil Pengguna
+  - Terintegrasi penuh pada formulir tambah & edit lokasi, tambah & edit produk, dan profil pengguna.
+- [x] **Modul Profil Pengguna & Keamanan Kata Sandi (`/profile`):**
+  - Migrasi `add_phone_and_avatar_path_to_users_table`.
+  - Akses kontroler [`ProfileController.php`](file:///d:/Job/ID_CV%20Han%20Media%20Tekindo/operational-omahvisual/app/Http/Controllers/ProfileController.php) di `/profile`.
+  - Formulir pembaruan nama, nomor WhatsApp/telepon, dan foto avatar ber-crop 1:1 dengan tombol hapus foto.
+  - Formulir pembaruan kata sandi mandiri dengan verifikasi `current_password` dan konfirmasi sandi baru.
+  - Penampil wewenang akun (*Roles & Permissions*) yang transparan bagi setiap staf.
+  - Penambahan tautan profil di Topbar navigasi lengkap dengan foto avatar/inisial dan role aktif.
+- [x] **Pengujian Otomatis:** Menambahkan suite [`UserProfileAndAvatarTest.php`](file:///d:/Job/ID_CV%20Han%20Media%20Tekindo/operational-omahvisual/tests/Feature/UserProfileAndAvatarTest.php) (6 tests baru). Total suite pengujian proyek kini mencapai: **29 Tests, 179 Assertions, 100% Lulus (Green)**.
 
 ---
 

@@ -11,6 +11,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     
+    <!-- Cropper.js CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css" />
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     
     <style>
@@ -214,7 +217,22 @@
                 </div>
             </div>
 
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2 sm:gap-3">
+                <!-- User Profile Link -->
+                <a href="{{ route('profile.edit') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl hover:bg-slate-200/60 dark:hover:bg-slate-800/60 transition-colors {{ request()->routeIs('profile.*') ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20' : 'text-slate-700 dark:text-slate-200' }}" title="Pengaturan Profil & Keamanan">
+                    @if(Auth::user()->avatar_url)
+                        <img src="{{ Auth::user()->avatar_url }}" alt="{{ Auth::user()->name }}" class="w-7 h-7 rounded-full object-cover border border-slate-700 shadow-xs">
+                    @else
+                        <div class="w-7 h-7 rounded-full bg-linear-to-tr from-indigo-600 to-cyan-500 flex items-center justify-center text-white text-[11px] font-bold shadow-xs">
+                            {{ Auth::user()->initials }}
+                        </div>
+                    @endif
+                    <div class="hidden md:block text-left">
+                        <div class="text-xs font-bold leading-tight">{{ Auth::user()->name }}</div>
+                        <div class="text-[10px] text-slate-400 capitalize">{{ Auth::user()->roles->first()?->name ?? 'Pengguna' }}</div>
+                    </div>
+                </a>
+
                 <!-- Theme Toggle Button (Dark / Light) -->
                 <button type="button" onclick="toggleTheme()" class="p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-slate-800/60 transition-colors" title="Ganti Mode Gelap/Terang">
                     <svg id="theme-icon-dark" class="w-4 h-4 hidden dark:block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -282,6 +300,10 @@
             @yield('content')
         </main>
     </div>
+
+    <!-- Cropper.js Library & Global Modal -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+    @include('components.image-cropper-modal')
 
     <!-- Theme Toggle Script -->
     <script>

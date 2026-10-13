@@ -162,19 +162,14 @@
 
 <script>
     document.getElementById('image-input')?.addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(evt) {
-                const previewImg = document.getElementById('image-preview');
-                const placeholder = document.getElementById('preview-placeholder');
-                previewImg.src = evt.target.result;
-                previewImg.classList.remove('hidden');
-                if (placeholder) {
-                    placeholder.classList.add('hidden');
-                }
-            };
-            reader.readAsDataURL(file);
+        if (e.target.files && e.target.files[0]) {
+            openCropper({
+                file: e.target.files[0],
+                fileInput: e.target,
+                previewImg: document.getElementById('image-preview'),
+                placeholder: document.getElementById('preview-placeholder'),
+                aspectRatio: 4 / 3 // 4:3 Proporsional untuk Modul / Hardware
+            });
         }
     });
 </script>

@@ -94,6 +94,23 @@
 - [x] Tombol simulasi reset (`resetSimulation`): Memungkinkan pengguna menguji ulang alur pengesahan stok awal kapan saja untuk keperluan simulasi/demo
 - [x] Pengujian otomatis pengesahan dan reset simulasi di `InventoryFeatureTest.php`
 
+### 16. Integrasi Pemotong Gambar Interaktif (Cropper.js) — ✅ Selesai
+- [x] Integrasi pustaka client-side Cropper.js dengan modal global (`components/image-cropper-modal.blade.php`)
+- [x] Fitur pemotongan foto interaktif dengan kontrol putar (rotate), perbesar (zoom), reset, dan crop rasio spesifik:
+  - Rasio 16:9 untuk Titik Lokasi & Lemari Gudang
+  - Rasio 4:3 untuk Master Barang & Modul LED
+  - Rasio 1:1 (persegi) untuk Foto Avatar Pengguna
+- [x] Mekanisme injeksi berkas hasil crop via HTML5 `DataTransfer` sehingga controller backend tetap menerima objek `UploadedFile` standar tanpa modifikasi controller
+
+### 17. Modul Profil Pengguna & Keamanan Kata Sandi (`/profile`) — ✅ Selesai
+- [x] Migrasi database: Penambahan kolom `phone` dan `avatar_path` pada tabel `users`
+- [x] Model `User`: Konfigurasi `$fillable`, accessor `avatar_url`, dan helper `initials`
+- [x] Kontroler [`ProfileController.php`](file:///d:/Job/ID_CV%20Han%20Media%20Tekindo/operational-omahvisual/app/Http/Controllers/ProfileController.php) dengan metode `edit`, `update`, dan `updatePassword`
+- [x] Tampilan formulir profil di [`profile/edit.blade.php`](file:///d:/Job/ID_CV%20Han%20Media%20Tekindo/operational-omahvisual/resources/views/profile/edit.blade.php) lengkap dengan kartu identitas, upload avatar dengan crop 1:1, dan info hak akses role Spatie
+- [x] Formulir mandiri pembaruan kata sandi akun dengan validasi password saat ini dan konfirmasi
+- [x] Tautan cepat profil di Topbar navigasi [`layouts/app.blade.php`](file:///d:/Job/ID_CV%20Han%20Media%20Tekindo/operational-omahvisual/resources/views/layouts/app.blade.php) menampilkan avatar/inisial dan role aktif
+- [x] Pengujian otomatis komprehensif di `tests/Feature/UserProfileAndAvatarTest.php` (6 tests baru, 29 tests total lulus 100%)
+
 ---
 
 ## 🔮 Roadmap Jangka Panjang (Operasional Lanjutan Sesuai PRD Global)
