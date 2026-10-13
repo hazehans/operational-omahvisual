@@ -4,14 +4,19 @@ use App\Http\Controllers\AssetController;
 use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\EventOrderController;
 use App\Http\Controllers\InitialCountController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SpkController;
 use App\Http\Controllers\StockAdjustmentController;
 use App\Http\Controllers\StockMovementController;
 use App\Http\Controllers\SuperuserDatabaseController;
 use Illuminate\Support\Facades\Route;
+
+// Public Live Token Route for Crew Lapangan (No login required)
+Route::get('/spk/live/{token}', [SpkController::class, 'liveTokenView'])->name('spk.live');
 
 // Guest Authentication Routes
 Route::middleware('guest')->group(function () {
@@ -62,6 +67,17 @@ Route::middleware('auth')->group(function () {
 
     // Audit Trail
     Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
+
+    // Event Orders & LED Screen Calculator (Phase 4)
+    Route::post('/orders/calculate', [EventOrderController::class, 'calculate'])->name('orders.calculate');
+    Route::resource('orders', EventOrderController::class);
+
+    // SPK & Equipment Gate Checklist (Phase 4)
+    Route::get('/spk/{assignment}', [SpkController::class, 'show'])->name('spk.show');
+    Route::get('/spk/{assignment}/print', [SpkController::class, 'print'])->name('spk.print');
+    Route::post('/spk/{assignment}/verify-departure', [SpkController::class, 'verifyDeparture'])->name('spk.verify-departure');
+    Route::post('/spk/{assignment}/verify-return', [SpkController::class, 'verifyReturn'])->name('spk.verify-return');
+    Route::post('/spk/items/{item}/toggle', [SpkController::class, 'toggleItem'])->name('spk.toggle-item');
 
     // Superuser Raw Database Manager (Django-like Admin CRUD)
     Route::prefix('superuser/database')->name('superuser.database.')->group(function () {

@@ -111,13 +111,36 @@
 - [x] Tautan cepat profil di Topbar navigasi [`layouts/app.blade.php`](file:///d:/Job/ID_CV%20Han%20Media%20Tekindo/operational-omahvisual/resources/views/layouts/app.blade.php) menampilkan avatar/inisial dan role aktif
 - [x] Pengujian otomatis komprehensif di `tests/Feature/UserProfileAndAvatarTest.php` (6 tests baru, 29 tests total lulus 100%)
 
+### 18. Modul Pesanan Event, Kalkulator Layar LED & SPK Otomatis 3-Lembar (`/orders` & `/spk`) — ✅ Selesai (Tahap 4)
+- [x] Migrasi Skema Basis Data Terstruktur (Menggantikan 124 Kolom Google Sheets):
+  - [x] Tabel `customers` (klien cepat, nomor WhatsApp, instansi/vendor)
+  - [x] Tabel `event_orders` (nomor transaksi unik, jadwal loading, venue, armada mobil, finansial, multimedia add-ons, token akses crew)
+  - [x] Tabel `order_led_screens` (lebar x tinggi layar, pitch, kabinet 1m vs 50cm, box hardcase, prosesor, jumper, spare)
+  - [x] Tabel `spk_assignments` (penugasan Crew 1-7, armada mobil, kelengkapan surat kendaraan, gerbang keberangkatan & kepulangan)
+  - [x] Tabel `spk_checklist_items` (daftar bawaan barang 53 item Halaman 2 dan 48 item Halaman 3)
+- [x] Model Eloquent & Relasi Lengkap: `Customer`, `EventOrder`, `OrderLedScreen`, `SpkAssignment`, `SpkChecklistItem` beserta factory pengujiannya
+- [x] Service Engine Perhitungan Layar LED (`LedCalculationService`):
+  - [x] Kalkulasi otomatis meter persegi ($m^2$), kolom, kabinet 100cm & 50cm, estimasi box flight case
+  - [x] Rekomendasi prosesor Novastar berdasarkan kapasitas piksel (VX400, VX600, VX1000, VX20 + Fiber Optic)
+  - [x] Penghitungan otomatis kebutuhan kabel power jumper, LAN jumper, modul spare, receiving card, dan PSU cadangan
+  - [x] Generator otomatis checklist muatan 53 item Halaman 2 dan 48 item Halaman 3
+- [x] Kontroler & Antarmuka Cepat Admin LED (`EventOrderController`):
+  - [x] Antarmuka daftar pesanan event (`orders/index.blade.php`) lengkap dengan metrik omset, status, filter, dan tombol aksi
+  - [x] Formulir input cepat 30 detik (`orders/create.blade.php`) dengan toggle client baru/lama dan kalkulator layar real-time JavaScript & AJAX
+  - [x] Halaman pusat rincian pesanan (`orders/show.blade.php`) menampilkan rincian layar, ringkasan gerbang serah terima, dan tautan live token
+- [x] Kontroler & Tampilan Interaktif SPK 3 Lembar (`SpkController`):
+  - [x] Tampilan interaktif 3-tab (`spk/show.blade.php`) matching template hardcopy `spk_ref.pdf`
+  - [x] Pengesahan Gerbang Keberangkatan (Biru) & Kepulangan (Merah) dengan penegakan aturan: *"PIC Kepulangan Wajib Orang yg Berbeda"*
+  - [x] Live checkbox interaktif checklist barang (Keluar & Kembali) via AJAX API
+  - [x] Tampilan cetak presisi A4 (`spk/print.blade.php`) format cetak fisik identik 100% dengan `spk_ref.pdf`
+  - [x] Halaman mobile publik crew lapangan via token rahasia (`spk/crew-live.blade.php`) tanpa perlu login (akses rute maps, jadwal loading, roster crew, dan checklist muatan)
+- [x] Pengujian otomatis komprehensif: `LedCalculationServiceTest` (3 tests) & `EventOrderAndSpkManagementTest` (8 tests) — Total **40 tests lulus (100% Green), 248 assertions**
+
 ---
 
 ## 🔮 Roadmap Jangka Panjang (Operasional Lanjutan Sesuai PRD Global)
 - [ ] Integrasi Barcode / QR Code Fisik Scanner (Ditunda sementara sesuai arahan user agar fokus pematangan operasional)
-- [ ] Modul Customer & Order (Input order Admin via WhatsApp, Quotation & Revisi)
-- [ ] Modul SPK (Surat Perintah Kerja) & Cargo List / Surat Jalan
-- [ ] Gate Kesiapan Keberangkatan Event (Barang, Kru, Armada, Dana Operasional)
-- [ ] Demobilisasi & Rekonsiliasi Pasca-Event (Deteksi barang hilang/tertinggal di venue)
-- [ ] Modul Work Order Servis Internal & Pemeliharaan Modul LED
-- [ ] Modul Invoicing & Verifikasi Pembayaran (Finance)
+- [ ] Demobilisasi & Rekonsiliasi Pasca-Event Otomatis ke Stok Gudang (Otomatis potong modul rusak ke status Service / Maintenance)
+- [ ] Dashboard Analisis Manajer Operasional (Grafik utilisasi armada TRAGA 1/2/3, tren ukuran layar LED, performa crew)
+- [ ] Invoicing & Verifikasi Pembayaran Bertahap (DP vs Pelunasan via Rekening BCA/BRI)
+- [ ] Portal Pelacakan Mandiri oleh Customer (Tracking status persiapan LED screen via order token)

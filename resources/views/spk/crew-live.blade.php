@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jadwal & Checklist Crew - {{ $order->event_name }}</title>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen pb-12 font-sans antialiased selection:bg-indigo-500 selection:text-white">
+
+<div class="max-w-md mx-auto px-4 pt-6 space-y-4">
+    <!-- Top Branding -->
+    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div class="flex items-center gap-2">
+            <div class="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center font-bold text-xs text-white">
+                OV
+            </div>
+            <div>
+                <div class="text-xs font-bold tracking-tight text-white">OMAH VISUAL LED</div>
+                <div class="text-[10px] text-slate-400">Portal Crew Lapangan</div>
+            </div>
+        </div>
+        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+            Token Valid
+        </span>
+    </div>
+
+    <!-- Event Hero Card -->
+    <div class="bg-gradient-to-br from-indigo-950 via-slate-900 to-slate-900 p-5 rounded-2xl border border-indigo-800/50 shadow-xl space-y-3">
+        <div class="text-xs font-mono text-indigo-400 font-bold uppercase tracking-wider">
+            {{ $order->order_number }}
+        </div>
+        <h1 class="text-xl font-extrabold text-white leading-snug">
+            {{ $order->event_name }}
+        </h1>
+        <div class="text-xs text-slate-300 flex items-center gap-1.5">
+            <span>📍 {{ $order->venue_name }}</span>
+        </div>
+
+        @if($order->google_maps_url)
+            <a href="{{ $order->google_maps_url }}" target="_blank" class="w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/30 transition-all">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <span>Buka Rute Google Maps Venue</span>
+            </a>
+        @endif
+    </div>
+
+    <!-- Schedule Box -->
+    <div class="grid grid-cols-2 gap-3">
+        <div class="p-3.5 rounded-xl bg-slate-800/80 border border-slate-700/80">
+            <div class="text-[10px] uppercase font-bold text-slate-400">Jadwal Loading</div>
+            <div class="text-sm font-extrabold text-white mt-0.5">{{ $order->loading_date->format('d M Y') }}</div>
+            <div class="text-xs font-semibold text-amber-400 mt-0.5">🕒 Pukul {{ $order->loading_time }}</div>
+        </div>
+
+        <div class="p-3.5 rounded-xl bg-slate-800/80 border border-slate-700/80">
+            <div class="text-[10px] uppercase font-bold text-slate-400">Jadwal Acara</div>
+            <div class="text-sm font-extrabold text-white mt-0.5">{{ $order->event_start_date->format('d M Y') }}</div>
+            <div class="text-xs font-semibold text-emerald-400 mt-0.5">{{ $order->ready_time ?? 'Show Siap' }}</div>
+        </div>
+    </div>
+
+    <!-- LED Screen Technical Summary -->
+    <div class="p-4 rounded-xl bg-slate-800/60 border border-slate-700/60 space-y-2.5">
+        <div class="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center justify-between">
+            <span>🖥️ Spek Layar LED (Total {{ $order->total_sqm }} m²)</span>
+            <span class="text-[11px] text-indigo-400 font-mono">{{ $order->screens->count() }} Layar</span>
+        </div>
+
+        @foreach($order->screens as $screen)
+            <div class="p-2.5 rounded-lg bg-slate-900/80 border border-slate-800 text-xs space-y-1">
+                <div class="flex items-center justify-between font-bold text-white">
+                    <span>{{ $screen->screen_name }} ({{ $screen->width_m }}m × {{ $screen->height_m }}m)</span>
+                    <span class="text-indigo-400">{{ $screen->total_sqm }} m²</span>
+                </div>
+                <div class="text-slate-400 text-[11px] flex justify-between">
+                    <span>Seri: {{ $screen->brand_series }} ({{ $screen->pixel_pitch }})</span>
+                    <span>{{ $screen->total_cabinets }} Kabinet ({{ $screen->total_hardcases }} Box)</span>
+                </div>
+                <div class="text-[11px] text-emerald-400 font-medium">
+                    Prosesor: {{ $screen->processor_model }}
+                </div>
+            </div>
+        @endforeach
+    </div>
+
+    <!-- Crew Roster & Vehicle -->
+    @if($order->spkAssignment)
+        <div class="p-4 rounded-xl bg-slate-800/60 border border-slate-700/60 space-y-2.5">
+            <div class="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center justify-between">
+                <span>🚐 Tim Lapangan & Armada</span>
+                <span class="text-xs font-semibold text-slate-400">{{ $order->spkAssignment->vehicle_name ?? 'TRAGA 1' }}</span>
+            </div>
+
+            <div class="text-xs text-slate-300">
+                PIC Event: <span class="font-bold text-white">{{ $order->spkAssignment->crew_pic_event_name ?? '-' }}</span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-1.5 pt-1 text-xs">
+                @for($i = 1; $i <= 7; $i++)
+                    @php $field = "crew_{$i}_name"; @endphp
+                    @if(!empty($order->spkAssignment->$field))
+                        <div class="p-1.5 rounded bg-slate-900/60 border border-slate-800 flex items-center gap-1.5">
+                            <span class="text-[10px] text-slate-500 font-mono">#{{ $i }}</span>
+                            <span class="font-medium text-slate-200 truncate">{{ $order->spkAssignment->$field }}</span>
+                        </div>
+                    @endif
+                @endfor
+            </div>
+        </div>
+
+        <!-- Quick Checklist Accordion for Mobile Crew -->
+        <div class="p-4 rounded-xl bg-slate-800/60 border border-slate-700/60 space-y-3">
+            <div class="flex items-center justify-between">
+                <div class="text-xs font-bold uppercase tracking-wider text-slate-300">
+                    📦 Checklist Muatan Barang
+                </div>
+                <span class="text-[11px] text-slate-400">
+                    {{ $order->spkAssignment->checklistItems->count() }} Item
+                </span>
+            </div>
+
+            <div class="space-y-1.5 max-h-80 overflow-y-auto pr-1">
+                @foreach($order->spkAssignment->checklistItems as $item)
+                    <div class="p-2 rounded-lg bg-slate-900/80 border border-slate-800 flex items-center justify-between text-xs">
+                        <div class="pr-2">
+                            <div class="font-medium text-slate-200">{{ $item->item_name }}</div>
+                            <div class="text-[10px] text-slate-500">{{ $item->item_detail ?? $item->category }}</div>
+                        </div>
+                        <div class="text-right shrink-0">
+                            <div class="font-bold text-indigo-400">{{ $item->quantity }} {{ $item->unit }}</div>
+                            <span class="text-[10px] {{ $item->checked_out ? 'text-emerald-400' : 'text-slate-500' }}">
+                                {{ $item->checked_out ? '✓ Keluar' : '○ Pending' }}
+                            </span>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    @endif
+
+    <div class="text-center text-[10px] text-slate-500 pt-4">
+        Omah Visual LED ERP System • Halaman Resmi Tim Lapangan
+    </div>
+</div>
+
+</body>
+</html>
+

@@ -17,7 +17,7 @@
     <!-- Location Header Card with Photo -->
     <div class="p-6 md:p-8 rounded-2xl bg-slate-900/60 border border-slate-800 shadow-xl">
         <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-            
+
             <div class="flex flex-col sm:flex-row items-start sm:items-center gap-5">
                 <!-- Foto Visual Lokasi -->
                 <div class="w-28 h-24 sm:w-36 sm:h-28 rounded-2xl bg-slate-950 border border-slate-800 overflow-hidden shrink-0 shadow-md flex items-center justify-center">
@@ -52,11 +52,11 @@
 
             <div class="flex flex-wrap items-center gap-3">
                 <div class="flex items-center gap-3 text-xs">
-                    <div class="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800 text-center min-w-[90px]">
+                    <div class="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800 text-center min-w-22.5">
                         <span class="text-slate-400 block text-[10px] uppercase font-semibold">Unit Aset</span>
                         <span class="text-xl font-bold text-white font-mono">{{ $location->assets->count() }}</span>
                     </div>
-                    <div class="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800 text-center min-w-[90px]">
+                    <div class="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800 text-center min-w-22.5">
                         <span class="text-slate-400 block text-[10px] uppercase font-semibold">Item Stok</span>
                         <span class="text-xl font-bold text-white font-mono">{{ $location->stockBalances->count() }}</span>
                     </div>
