@@ -139,6 +139,18 @@ Berdasarkan analisis 2 file Excel (`DATA TOOLS BOX .2` dan `DEV_STOCK OPNAME by 
 - [x] **Dokumentasi Proyek Komprehensif:** Menyusun [`README.md`](file:///d:/Job/ID_CV%20Han%20Media%20Tekindo/operational-omahvisual/README.md) resmi yang merinci profil proyek, arsitektur, cara kerja, akun demo, dan roadmap lanjutan.
 - [x] **Catatan Barcode Scanner:** Ditunda sementara atas persetujuan pengguna agar alur operasional utama matang terlebih dahulu sebelum integrasi fisik scanner.
 
+### Tahap 3.5: Visualisasi Foto Titik Lokasi / Lemari & Simulasi Stok Awal (SELESAI ✅)
+- [x] **Manajemen & Unggah Foto Titik Lokasi / Lemari (`locations.image_path`):**
+  - Migrasi penambahan kolom `image_path` pada tabel `locations`.
+  - Implementasi CRUD penuh pada [`LocationController.php`](file:///d:/Job/ID_CV%20Han%20Media%20Tekindo/operational-omahvisual/app/Http/Controllers/LocationController.php) (index, create, store, show, edit, update, destroy).
+  - Formulir unggah foto titik lokasi (`create.blade.php` dan `edit.blade.php`) dengan *live preview* gambar JavaScript dan pembersihan file dari storage saat dihapus/diganti.
+  - Tampilan kartu lokasi visual di [`locations/index.blade.php`](file:///d:/Job/ID_CV%20Han%20Media%20Tekindo/operational-omahvisual/resources/views/locations/index.blade.php) dengan foto fisik lemari dan *fallback visual placeholder* bergaya LED broadcast Omah Visual sesuai tipe zona (`cabinet`, `staging_area`, `locker`, `building`).
+  - Header detail lokasi di [`locations/show.blade.php`](file:///d:/Job/ID_CV%20Han%20Media%20Tekindo/operational-omahvisual/resources/views/locations/show.blade.php) dengan banner foto fisik dan tombol quick edit foto.
+- [x] **Simulasi & Dinamisasi Notifikasi Sahkan Stok Awal:**
+  - Indikator menu sidebar dinamis: Dot amber berkedip (*animate-ping*) aktif saat ada sesi yang belum diverifikasi, dan otomatis berubah menjadi centang hijau tenang (`✓`) ketika disahkan resmi.
+  - Tombol simulasi reset (`resetSimulation`) untuk memfasilitasi pengujian alur verifikasi berkali-kali tanpa merusak basis data.
+- [x] **Pengujian Otomatis:** Menambahkan [`LocationPhotoManagementTest.php`](file:///d:/Job/ID_CV%20Han%20Media%20Tekindo/operational-omahvisual/tests/Feature/LocationPhotoManagementTest.php) (6 tests baru). Total suite pengujian: **23 Tests, 156 Assertions, 100% Lulus (Green)**.
+
 ---
 
 ## 🔮 6. Roadmap Jangka Panjang (Operasional Lanjutan Sesuai PRD Global)

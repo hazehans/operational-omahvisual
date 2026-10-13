@@ -80,6 +80,20 @@
 - [x] Penambahan test suite untuk memastikan ke-16 link tabel di katalog Database Manager valid dan menghasilkan HTTP 200 (131 assertions lulus 100%)
 - [x] Dokumentasi lengkap proyek di `README.md`, `TODO.md`, dan `PROJECT_PROGRESS.md`
 
+### 14. Visualisasi & Manajemen Foto Titik Lokasi / Lemari Gudang — ✅ Selesai
+- [x] Migrasi database: Kolom `image_path` pada tabel `locations`
+- [x] Model `Location`: Penambahan `$fillable` dan accessor `image_url`
+- [x] `LocationController`: Implementasi penuh CRUD (create, store, edit, update, destroy) dengan otorisasi hak akses `manage locations`
+- [x] Fitur upload berkas gambar lokasi (JPG, PNG, WebP) dengan live preview JavaScript dan opsi penghapusan foto
+- [x] Tampilan kartu lokasi visual di `locations/index.blade.php` dengan fallback visual placeholder bertema LED sesuai zona (`cabinet`, `staging_area`, `locker`, `building`)
+- [x] Header kartu detail lokasi di `locations/show.blade.php` lengkap dengan foto visual dan tombol quick edit/ganti foto
+- [x] Pengujian otomatis komprehensif di `tests/Feature/LocationPhotoManagementTest.php` (6 tests baru lulus 100%)
+
+### 15. Simulasi Interaktif & Dinamisasi Notifikasi Sahkan Stok Awal — ✅ Selesai
+- [x] Dinamisasi indikator menu sidebar: Dot kuning berkedip (*animate-ping*) aktif hanya ketika ada sesi stok awal `pending_verification`, dan otomatis berubah menjadi centang hijau tenang (`✓`) saat stok telah disahkan resmi
+- [x] Tombol simulasi reset (`resetSimulation`): Memungkinkan pengguna menguji ulang alur pengesahan stok awal kapan saja untuk keperluan simulasi/demo
+- [x] Pengujian otomatis pengesahan dan reset simulasi di `InventoryFeatureTest.php`
+
 ---
 
 ## 🔮 Roadmap Jangka Panjang (Operasional Lanjutan Sesuai PRD Global)
