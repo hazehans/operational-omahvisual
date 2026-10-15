@@ -18,6 +18,18 @@ class UpdateUserRequest extends FormRequest
     }
 
     /**
+     * Prepare the data for validation.
+     */
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('role') && ! $this->has('roles')) {
+            $this->merge([
+                'roles' => is_array($this->input('role')) ? $this->input('role') : [$this->input('role')],
+            ]);
+        }
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, ValidationRule|array<mixed>|string>
@@ -33,7 +45,8 @@ class UpdateUserRequest extends FormRequest
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users', 'email')->ignore($userId)],
             'phone' => ['nullable', 'string', 'max:30'],
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
-            'role' => ['required', 'string', 'exists:roles,name'],
+            'roles' => ['required', 'array', 'min:1'],
+            'roles.*' => ['required', 'string', 'exists:roles,name'],
         ];
     }
 
@@ -49,7 +62,8 @@ class UpdateUserRequest extends FormRequest
             'email' => 'Alamat Email',
             'phone' => 'Nomor WhatsApp / HP',
             'password' => 'Kata Sandi Baru',
-            'role' => 'Peran / Hak Akses',
+            'roles' => 'Peran / Hak Akses',
+            'roles.*' => 'Peran / Hak Akses',
         ];
     }
 }

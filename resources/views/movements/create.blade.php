@@ -26,9 +26,9 @@
             <div>
                 <label class="block text-xs font-semibold text-slate-300 mb-1.5 uppercase">Jenis Transaksi *</label>
                 <select name="type" id="type-select" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-xs text-white focus:outline-none focus:border-indigo-500">
-                    <option value="transfer" {{ old('type') == 'transfer' ? 'selected' : '' }}>Transfer Antar Lemari / Lokasi</option>
-                    <option value="inbound" {{ old('type') == 'inbound' ? 'selected' : '' }}>Barang Masuk (Inbound / Pengadaan)</option>
-                    <option value="outbound" {{ old('type') == 'outbound' ? 'selected' : '' }}>Barang Keluar (Outbound / Operasional)</option>
+                    <option value="transfer" {{ old('type', request('type')) == 'transfer' ? 'selected' : '' }}>Transfer Antar Lemari / Lokasi</option>
+                    <option value="inbound" {{ old('type', request('type')) == 'inbound' ? 'selected' : '' }}>Barang Masuk (Inbound / Pengadaan)</option>
+                    <option value="outbound" {{ old('type', request('type')) == 'outbound' ? 'selected' : '' }}>Barang Keluar (Outbound / Operasional)</option>
                 </select>
             </div>
 
@@ -39,7 +39,7 @@
                     <select name="source_location_id" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-xs text-white focus:outline-none focus:border-indigo-500">
                         <option value="">Pilih Lokasi Asal...</option>
                         @foreach($locations as $loc)
-                            <option value="{{ $loc->id }}" {{ old('source_location_id') == $loc->id ? 'selected' : '' }}>
+                            <option value="{{ $loc->id }}" {{ old('source_location_id', request('source_location_id')) == $loc->id ? 'selected' : '' }}>
                                 {{ $loc->name }} ({{ $loc->code }})
                             </option>
                         @endforeach
@@ -50,7 +50,7 @@
                     <select name="destination_location_id" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-xs text-white focus:outline-none focus:border-indigo-500">
                         <option value="">Pilih Lokasi Tujuan...</option>
                         @foreach($locations as $loc)
-                            <option value="{{ $loc->id }}" {{ old('destination_location_id') == $loc->id ? 'selected' : '' }}>
+                            <option value="{{ $loc->id }}" {{ old('destination_location_id', request('destination_location_id')) == $loc->id ? 'selected' : '' }}>
                                 {{ $loc->name }} ({{ $loc->code }})
                             </option>
                         @endforeach
@@ -64,7 +64,7 @@
                 <select name="product_id" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-xs text-white focus:outline-none focus:border-indigo-500">
                     <option value="">Pilih Barang...</option>
                     @foreach($products as $prod)
-                        <option value="{{ $prod->id }}" {{ old('product_id') == $prod->id ? 'selected' : '' }}>
+                        <option value="{{ $prod->id }}" {{ old('product_id', request('product_id')) == $prod->id ? 'selected' : '' }}>
                             {{ $prod->code }} — {{ $prod->name }} ({{ $prod->unit->symbol ?? 'unit' }})
                         </option>
                     @endforeach

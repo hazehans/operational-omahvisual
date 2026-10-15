@@ -8,10 +8,13 @@ use App\Models\Location;
 use App\Models\Product;
 use App\Models\StockAdjustment;
 use App\Models\User;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 
 class InventoryFeatureTest extends TestCase
 {
+    use DatabaseTransactions;
+
     protected User $owner;
 
     protected User $warehouse;
@@ -189,5 +192,86 @@ class InventoryFeatureTest extends TestCase
         $adjustment->refresh();
         $this->assertEquals('approved', $adjustment->status);
         $this->assertEquals($this->owner->id, $adjustment->approved_by);
+    }
+
+    public function test_warehouse_can_view_create_asset_form_and_store_new_asset(): void
+    {
+        $product = Product::where('tracking_type', 'individual')->firstOrFail();
+        $location = Location::firstOrFail();
+
+        $responseCreate = $this->actingAs($this->warehouse)->get(route('assets.create', ['product_id' => $product->id]));
+        $responseCreate->assertStatus(200);
+        $responseCreate->assertSee('Registrasi Unit Aset Serial Baru');
+
+        $serial = 'SN-TEST-'.uniqid();
+        $responseStore = $this->actingAs($this->warehouse)->post(route('assets.store'), [
+            'product_id' => $product->id,
+            'current_location_id' => $location->id,
+            'serial_number' => $serial,
+            'ownership' => 'company',
+            'condition' => 'available',
+            'status' => 'in_storage',
+            'notes' => 'Unit uji coba pengadaan',
+        ]);
+
+        $createdAsset = Asset::where('serial_number', $serial)->first();
+        $this->assertNotNull($createdAsset);
+        $responseStore->assertRedirect(route('assets.show', $createdAsset));
+        $this->assertNotNull($createdAsset->asset_code);
+        $this->assertEquals($product->id, $createdAsset->product_id);
+    }
+
+    public function test_teknisi_is_forbidden_from_creating_assets(): void
+    {
+        $teknisi = User::role('Teknisi Servis')->firstOrFail();
+
+        $response = $this->actingAs($teknisi)->get(route('assets.create'));
+        $response->assertStatus(403);
+
+        $responsePost = $this->actingAs($teknisi)->post(route('assets.store'), [
+            'product_id' => 1,
+            'current_location_id' => 1,
+            'ownership' => 'company',
+            'condition' => 'available',
+            'status' => 'in_storage',
+        ]);
+        $responsePost->assertStatus(403);
+    }
+
+    public function test_products_show_renders_quick_action_buttons(): void
+    {
+        $product = Product::firstOrFail();
+
+        $response = $this->actingAs($this->warehouse)->get(route('products.show', $product));
+        $response->assertStatus(200);
+        $response->assertSee(route('adjustments.create', ['product_id' => $product->id]));
+
+        if ($product->tracking_type === 'individual') {
+            $response->assertSee(route('assets.create', ['product_id' => $product->id]));
+        } else {
+            $response->assertSee(route('movements.create', ['product_id' => $product->id, 'type' => 'inbound']));
+        }
+    }
+
+    public function test_movements_and_adjustments_create_forms_preselect_query_parameters(): void
+    {
+        $product = Product::firstOrFail();
+        $location = Location::firstOrFail();
+
+        $resMovement = $this->actingAs($this->warehouse)->get(route('movements.create', [
+            'product_id' => $product->id,
+            'type' => 'inbound',
+        ]));
+        $resMovement->assertStatus(200);
+        $resMovement->assertSee('value="inbound" selected', false);
+        $resMovement->assertSee('value="'.$product->id.'" selected', false);
+
+        $resAdjustment = $this->actingAs($this->warehouse)->get(route('adjustments.create', [
+            'product_id' => $product->id,
+            'location_id' => $location->id,
+        ]));
+        $resAdjustment->assertStatus(200);
+        $resAdjustment->assertSee('value="'.$product->id.'" selected', false);
+        $resAdjustment->assertSee('value="'.$location->id.'" selected', false);
     }
 }

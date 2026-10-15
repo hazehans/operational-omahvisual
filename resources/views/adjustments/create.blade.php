@@ -29,7 +29,7 @@
                     <select name="location_id" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-xs text-white focus:outline-none focus:border-indigo-500">
                         <option value="">Pilih Titik Lokasi...</option>
                         @foreach($locations as $loc)
-                            <option value="{{ $loc->id }}" {{ old('location_id') == $loc->id ? 'selected' : '' }}>
+                            <option value="{{ $loc->id }}" {{ old('location_id', request('location_id')) == $loc->id ? 'selected' : '' }}>
                                 {{ $loc->name }} ({{ $loc->code }})
                             </option>
                         @endforeach
@@ -41,7 +41,7 @@
                     <select name="product_id" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-xs text-white focus:outline-none focus:border-indigo-500">
                         <option value="">Pilih Barang...</option>
                         @foreach($products as $prod)
-                            <option value="{{ $prod->id }}" {{ old('product_id') == $prod->id ? 'selected' : '' }}>
+                            <option value="{{ $prod->id }}" {{ old('product_id', request('product_id')) == $prod->id ? 'selected' : '' }}>
                                 {{ $prod->code }} — {{ $prod->name }}
                             </option>
                         @endforeach

@@ -244,7 +244,7 @@
 
                     @if(!in_array($ticket->status, ['completed', 'scrapped']))
                         @can('execute service ticket')
-                        <button type="button" onclick="document.getElementById('addSparepartModal').classList.remove('hidden')" class="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs transition-all flex items-center gap-1.5 shadow-md shadow-purple-600/20">
+                        <button type="button" onclick="openSparepartModal()" class="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs transition-all flex items-center gap-1.5 shadow-md shadow-purple-600/20">
                             <span>+ Ambil Suku Cadang (Opsional)</span>
                         </button>
                         @endcan
@@ -477,16 +477,18 @@
     </div>
 
 </div>
+@endsection
 
+@push('modals')
 <!-- Modal Ambil Sparepart -->
-<div id="addSparepartModal" class="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 backdrop-blur-sm items-center justify-center p-4 hidden">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
+<div id="addSparepartModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4 my-auto relative">
         <div class="flex items-center justify-between border-b border-slate-800 pb-3">
             <div>
                 <h3 class="font-extrabold text-white text-base">Ambil Suku Cadang / Komponen (Opsional)</h3>
                 <p class="text-xs text-slate-400 mt-0.5">Hanya untuk penggantian komponen utama (IC, Receive Card, PSU). Bahan habis pakai tidak perlu diinput.</p>
             </div>
-            <button type="button" onclick="document.getElementById('addSparepartModal').classList.add('hidden')" class="text-slate-400 hover:text-white font-bold ml-2">✕</button>
+            <button type="button" onclick="closeSparepartModal()" class="text-slate-400 hover:text-white font-bold ml-2 p-1 rounded-lg hover:bg-slate-800 transition-colors">✕</button>
         </div>
 
         <form action="{{ route('service-tickets.spareparts.store', $ticket) }}" method="POST" class="space-y-4">
@@ -536,7 +538,7 @@
             </div>
 
             <div class="flex justify-end gap-2 pt-3 border-t border-slate-800">
-                <button type="button" onclick="document.getElementById('addSparepartModal').classList.add('hidden')" class="px-4 py-2 rounded-xl border border-slate-700 text-xs font-semibold text-slate-300 hover:text-white transition-colors">
+                <button type="button" onclick="closeSparepartModal()" class="px-4 py-2 rounded-xl border border-slate-700 text-xs font-semibold text-slate-300 hover:text-white transition-colors">
                     Batal
                 </button>
                 <button type="submit" class="px-5 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs shadow-md">
@@ -546,5 +548,23 @@
         </form>
     </div>
 </div>
-@endsection
+
+<script>
+    function openSparepartModal() {
+        const modal = document.getElementById('addSparepartModal');
+        if (modal) {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+    }
+
+    function closeSparepartModal() {
+        const modal = document.getElementById('addSparepartModal');
+        if (modal) {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+    }
+</script>
+@endpush
 

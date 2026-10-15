@@ -13,9 +13,17 @@
             <p class="text-sm text-slate-400 mt-1">Pelacakan unit bernomor seri unik: 25 Processor Novastar, TV, & Toolbox</p>
         </div>
         <div class="flex items-center gap-2">
-            <span class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-indigo-500/15 text-indigo-400 border border-indigo-500/30">
+            <span class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-indigo-500/15 text-indigo-400 border border-indigo-500/30">
                 Total Terdata: {{ $assets->total() }} Unit
             </span>
+            @if(!auth()->user()->hasRole('Teknisi Servis'))
+                <a href="{{ route('assets.create') }}" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-lg shadow-indigo-600/30">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    <span>+ Tambah Unit Serial</span>
+                </a>
+            @endif
         </div>
     </div>
 

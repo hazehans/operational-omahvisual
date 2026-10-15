@@ -107,9 +107,15 @@ class ProductController extends Controller
     {
         $product->load(['category', 'unit', 'assets.currentLocation', 'stockBalances.location']);
 
-        $totalStockAvailable = $product->stockBalances->where('condition', 'available')->sum('quantity');
-        $totalStockDamaged = $product->stockBalances->where('condition', 'damaged')->sum('quantity');
-        $totalStockInService = $product->stockBalances->where('condition', 'in_service')->sum('quantity');
+        if ($product->isIndividual()) {
+            $totalStockAvailable = $product->assets->where('condition', 'available')->where('status', 'in_storage')->count();
+            $totalStockDamaged = $product->assets->where('condition', 'damaged')->count();
+            $totalStockInService = $product->assets->where('condition', 'in_service')->count();
+        } else {
+            $totalStockAvailable = $product->stockBalances->where('condition', 'available')->sum('quantity');
+            $totalStockDamaged = $product->stockBalances->where('condition', 'damaged')->sum('quantity');
+            $totalStockInService = $product->stockBalances->where('condition', 'in_service')->sum('quantity');
+        }
 
         return view('products.show', compact(
             'product',

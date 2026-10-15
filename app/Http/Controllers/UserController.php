@@ -80,15 +80,17 @@ class UserController extends Controller
             'password' => Hash::make($validated['password']),
         ]);
 
-        $user->syncRoles([$validated['role']]);
+        $user->syncRoles($validated['roles']);
+
+        $roleNames = implode(', ', $validated['roles']);
 
         AuditLog::log(
             action: 'create_user',
             entityType: 'User',
             entityId: $user->id,
             oldValues: null,
-            newValues: ['name' => $user->name, 'email' => $user->email, 'role' => $validated['role']],
-            description: "Membuat akun pengguna baru: {$user->name} ({$user->email}) dengan peran {$validated['role']}"
+            newValues: ['name' => $user->name, 'email' => $user->email, 'roles' => $validated['roles']],
+            description: "Membuat akun pengguna baru: {$user->name} ({$user->email}) dengan peran {$roleNames}"
         );
 
         return redirect()->route('users.index')->with('success', "Akun pengguna {$user->name} berhasil dibuat!");
@@ -102,9 +104,10 @@ class UserController extends Controller
         $this->authorizeAdmin();
 
         $roles = Role::orderBy('name')->get();
-        $userRole = $user->roles->first()?->name;
+        $userRoles = $user->roles->pluck('name')->toArray();
+        $userRole = $userRoles[0] ?? null;
 
-        return view('users.edit', compact('user', 'roles', 'userRole'));
+        return view('users.edit', compact('user', 'roles', 'userRoles', 'userRole'));
     }
 
     /**
@@ -114,16 +117,16 @@ class UserController extends Controller
     {
         $validated = $request->validated();
 
-        $oldRole = $user->roles->first()?->name;
+        $oldRoles = $user->roles->pluck('name')->toArray();
         $oldValues = [
             'name' => $user->name,
             'email' => $user->email,
             'phone' => $user->phone,
-            'role' => $oldRole,
+            'roles' => $oldRoles,
         ];
 
         // Guard against removing the last superuser
-        if ($user->hasRole('Superuser') && $validated['role'] !== 'Superuser') {
+        if ($user->hasRole('Superuser') && ! in_array('Superuser', $validated['roles'])) {
             if (User::role('Superuser')->count() <= 1) {
                 return back()->with('error', 'Tidak dapat mengubah peran: harus ada minimal 1 akun Superuser di sistem.');
             }
@@ -138,7 +141,9 @@ class UserController extends Controller
         }
 
         $user->save();
-        $user->syncRoles([$validated['role']]);
+        $user->syncRoles($validated['roles']);
+
+        $roleNames = implode(', ', $validated['roles']);
 
         AuditLog::log(
             action: 'update_user',
@@ -149,7 +154,7 @@ class UserController extends Controller
                 'name' => $user->name,
                 'email' => $user->email,
                 'phone' => $user->phone,
-                'role' => $validated['role'],
+                'roles' => $validated['roles'],
                 'password_changed' => ! empty($validated['password']),
             ],
             description: "Memperbarui data pengguna: {$user->name} ({$user->email})"
@@ -177,7 +182,7 @@ class UserController extends Controller
 
         $name = $user->name;
         $email = $user->email;
-        $role = $user->roles->first()?->name;
+        $roles = $user->roles->pluck('name')->toArray();
 
         $user->delete();
 
@@ -185,7 +190,7 @@ class UserController extends Controller
             action: 'delete_user',
             entityType: 'User',
             entityId: $user->id,
-            oldValues: ['name' => $name, 'email' => $email, 'role' => $role],
+            oldValues: ['name' => $name, 'email' => $email, 'roles' => $roles],
             newValues: null,
             description: "Menghapus akun pengguna: {$name} ({$email})"
         );

@@ -117,9 +117,12 @@
 
             <!-- Role Selection with Explanations -->
             <div class="pt-4 border-t border-slate-800 space-y-3">
-                <label class="block text-xs font-bold uppercase tracking-wider text-slate-400">
-                    Pilih Peran &amp; Hak Akses (Role) <span class="text-rose-500">*</span>
-                </label>
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400">
+                        Pilih Peran &amp; Hak Akses (Multi-Role) <span class="text-rose-500">*</span>
+                    </label>
+                    <span class="text-[11px] text-slate-500">Centang satu atau beberapa peran sesuai tanggung jawab staf</span>
+                </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                     @php
@@ -155,6 +158,7 @@
                                 'desc' => 'Administrator sistem penuh: akses raw database manager, manajemen akun pengguna, dan konfigurasi inti.',
                             ],
                         ];
+                        $selectedRoles = old('roles', old('role') ? (array)old('role') : ($userRoles ?? [$userRole]));
                     @endphp
 
                     @foreach($roles as $role)
@@ -164,10 +168,10 @@
                                 'icon' => '👤',
                                 'desc' => 'Hak akses standar sistem.',
                             ];
-                            $isChecked = old('role', $userRole) === $role->name;
+                            $isChecked = in_array($role->name, (array)$selectedRoles);
                         @endphp
                         <label class="relative flex items-start gap-3 p-4 rounded-xl bg-slate-950/60 border border-slate-800 hover:border-indigo-500/50 cursor-pointer transition-all has-checked:border-indigo-500 has-checked:bg-indigo-950/20">
-                            <input type="radio" name="role" value="{{ $role->name }}" {{ $isChecked ? 'checked' : '' }} class="mt-1 text-indigo-600 focus:ring-indigo-500">
+                            <input type="checkbox" name="roles[]" value="{{ $role->name }}" {{ $isChecked ? 'checked' : '' }} class="mt-1 rounded text-indigo-600 focus:ring-indigo-500">
                             <div class="space-y-1">
                                 <div class="flex items-center gap-2">
                                     <span class="text-base">{{ $info['icon'] }}</span>
@@ -181,7 +185,10 @@
                         </label>
                     @endforeach
                 </div>
-                @error('role')
+                @error('roles')
+                    <p class="text-xs text-rose-500 mt-1">{{ $message }}</p>
+                @enderror
+                @error('roles.*')
                     <p class="text-xs text-rose-500 mt-1">{{ $message }}</p>
                 @enderror
             </div>

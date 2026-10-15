@@ -138,4 +138,71 @@ class UserManagementTest extends TestCase
 
         $this->assertDatabaseMissing('users', ['id' => $userToDelete->id]);
     }
+
+    public function test_superuser_can_create_user_with_multiple_roles(): void
+    {
+        $email = 'multi.role.'.uniqid().'@omahvisual.com';
+
+        $response = $this->actingAs($this->superuser)->post(route('users.store'), [
+            'name' => 'Agus Warehouse & Teknisi',
+            'email' => $email,
+            'phone' => '081299887766',
+            'password' => 'password123',
+            'password_confirmation' => 'password123',
+            'roles' => ['Warehouse', 'Teknisi Servis'],
+        ]);
+
+        $response->assertRedirect(route('users.index'));
+        $response->assertSessionHas('success');
+
+        $newUser = User::where('email', $email)->first();
+        $this->assertNotNull($newUser);
+        $this->assertTrue($newUser->hasRole('Warehouse'));
+        $this->assertTrue($newUser->hasRole('Teknisi Servis'));
+        $this->assertEquals(2, $newUser->roles()->count());
+    }
+
+    public function test_superuser_can_update_user_to_multiple_roles(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'single.to.multi.'.uniqid().'@omahvisual.com',
+        ]);
+        $user->assignRole('Warehouse');
+
+        $response = $this->actingAs($this->superuser)->put(route('users.update', $user), [
+            'name' => $user->name,
+            'email' => $user->email,
+            'roles' => ['Warehouse', 'Teknisi Servis', 'Admin LED'],
+        ]);
+
+        $response->assertRedirect(route('users.index'));
+        $response->assertSessionHas('success');
+
+        $user->refresh();
+        $this->assertTrue($user->hasRole('Warehouse'));
+        $this->assertTrue($user->hasRole('Teknisi Servis'));
+        $this->assertTrue($user->hasRole('Admin LED'));
+        $this->assertEquals(3, $user->roles()->count());
+    }
+
+    public function test_cannot_remove_superuser_role_if_only_one_superuser(): void
+    {
+        // Ensure there is only 1 superuser
+        $otherSuperusers = User::role('Superuser')->where('id', '!=', $this->superuser->id)->get();
+        foreach ($otherSuperusers as $other) {
+            $other->removeRole('Superuser');
+        }
+
+        $response = $this->actingAs($this->superuser)->put(route('users.update', $this->superuser), [
+            'name' => $this->superuser->name,
+            'email' => $this->superuser->email,
+            'roles' => ['Teknisi Servis'],
+        ]);
+
+        $response->assertRedirect();
+        $response->assertSessionHas('error');
+
+        $this->superuser->refresh();
+        $this->assertTrue($this->superuser->hasRole('Superuser'));
+    }
 }

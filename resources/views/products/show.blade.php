@@ -7,7 +7,7 @@
 <div class="space-y-6">
 
     <!-- Top Navigation & Action -->
-    <div class="flex items-center justify-between">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <a href="{{ route('products.index') }}" class="text-sm font-semibold text-slate-400 hover:text-white flex items-center gap-1.5 transition-colors">
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -15,12 +15,41 @@
             <span>Kembali ke Master Barang</span>
         </a>
 
-        <a href="{{ route('products.edit', $product) }}" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-semibold border border-slate-700 transition-all flex items-center gap-2">
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-            </svg>
-            <span>Edit Barang</span>
-        </a>
+        <div class="flex items-center gap-2.5 flex-wrap">
+            @if(!auth()->user()->hasRole('Teknisi Servis'))
+                @if($product->tracking_type === 'individual')
+                    <a href="{{ route('assets.create', ['product_id' => $product->id]) }}" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-lg shadow-emerald-600/20">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                        <span>+ Tambah Unit Serial</span>
+                    </a>
+                @else
+                    <a href="{{ route('movements.create', ['product_id' => $product->id, 'type' => 'inbound']) }}" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-lg shadow-emerald-600/20">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                        <span>+ Tambah Stok (Beli/Masuk)</span>
+                    </a>
+                @endif
+
+                <a href="{{ route('adjustments.create', ['product_id' => $product->id]) }}" class="px-3.5 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 text-xs font-bold transition-all flex items-center gap-1.5">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    <span>Lapor Selisih / Hilang</span>
+                </a>
+            @endif
+
+            @can('edit product')
+                <a href="{{ route('products.edit', $product) }}" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition-all flex items-center gap-1.5">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                    </svg>
+                    <span>Edit Data</span>
+                </a>
+            @endcan
+        </div>
     </div>
 
     <!-- Product Profile Card -->
@@ -119,6 +148,14 @@
                     <h2 class="text-base font-bold text-white">Daftar Unit Serial Terdaftar ({{ $product->assets->count() }} Unit)</h2>
                     <p class="text-sm text-slate-400">Unit individual yang memiliki ID fisik dan status tersendiri</p>
                 </div>
+                @if(!auth()->user()->hasRole('Teknisi Servis'))
+                    <a href="{{ route('assets.create', ['product_id' => $product->id]) }}" class="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-md shadow-indigo-600/30">
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                        <span>+ Daftarkan Unit Baru</span>
+                    </a>
+                @endif
             </div>
 
             <div class="overflow-x-auto">
@@ -148,7 +185,7 @@
                                 <td class="px-5 py-4">
                                     @if($ast->condition === 'available')
                                         <span class="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
-                                            Bagus / Siap
+                                             Bagus / Siap
                                         </span>
                                     @elseif($ast->condition === 'damaged')
                                         <span class="px-3 py-1 rounded-full text-xs font-semibold bg-rose-500/15 text-rose-400 border border-rose-500/30">
@@ -190,6 +227,14 @@
                     <h2 class="text-base font-bold text-white">Sebaran Saldo Stok per Lokasi</h2>
                     <p class="text-sm text-slate-400">Rincian saldo fisik di lemari dan area gudang</p>
                 </div>
+                @if(!auth()->user()->hasRole('Teknisi Servis'))
+                    <a href="{{ route('movements.create', ['product_id' => $product->id, 'type' => 'inbound']) }}" class="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-md shadow-emerald-600/20">
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                        <span>+ Catat Masuk ke Lokasi</span>
+                    </a>
+                @endif
             </div>
 
             <div class="overflow-x-auto">

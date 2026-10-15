@@ -360,6 +360,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
     @include('components.image-cropper-modal')
 
+    <!-- Modals Stack (Renders at Root DOM to avoid stacking context issues) -->
+    @stack('modals')
+
+    <!-- Scripts Stack -->
+    @stack('scripts')
+
     <!-- Theme Toggle Script -->
     <script>
         function toggleTheme() {

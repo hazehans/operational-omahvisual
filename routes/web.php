@@ -44,6 +44,8 @@ Route::middleware('auth')->group(function () {
 
     // Individual Serialized Assets
     Route::get('/assets', [AssetController::class, 'index'])->name('assets.index');
+    Route::get('/assets/create', [AssetController::class, 'create'])->name('assets.create');
+    Route::post('/assets', [AssetController::class, 'store'])->name('assets.store');
     Route::get('/assets/{asset}', [AssetController::class, 'show'])->name('assets.show');
     Route::put('/assets/{asset}/status', [AssetController::class, 'updateStatus'])->name('assets.update-status');
 
