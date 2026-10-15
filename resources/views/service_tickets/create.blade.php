@@ -18,10 +18,10 @@
     </div>
 
     <!-- Main Card -->
-    <div class="p-6 md:p-8 rounded-2xl bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800/80 shadow-xl space-y-6">
+    <div class="p-6 md:p-8 rounded-2xl bg-slate-900/60 border border-slate-800 shadow-xl space-y-6">
         <div>
-            <h1 class="text-xl md:text-2xl font-black text-slate-900 dark:text-white">Formulir Karantina & Tiket Servis</h1>
-            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Barang yang didaftarkan ke tiket ini akan otomatis dipindahkan ke area Workshop dan saldo siap sewanya dikunci sementara.</p>
+            <h1 class="text-xl md:text-2xl font-black text-white">Formulir Karantina & Tiket Servis</h1>
+            <p class="text-sm text-slate-400 mt-1">Barang yang didaftarkan ke tiket ini akan otomatis dipindahkan ke area Workshop dan saldo siap sewanya dikunci sementara.</p>
         </div>
 
         <form action="{{ route('service-tickets.store') }}" method="POST" class="space-y-6">
@@ -29,10 +29,10 @@
 
             <!-- Product Selection -->
             <div>
-                <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
                     Pilih Produk / Barang <span class="text-rose-500">*</span>
                 </label>
-                <select name="product_id" id="product_id" required onchange="handleProductChange(this)" class="w-full px-4 py-2.5 rounded-xl text-sm bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <select name="product_id" id="product_id" required onchange="handleProductChange(this)" class="w-full px-4 py-2.5 rounded-xl text-sm bg-slate-950/60 border border-slate-800 text-white focus:outline-none focus:border-indigo-500">
                     <option value="">-- Pilih Jenis Barang --</option>
                     @foreach($products as $p)
                         <option value="{{ $p->id }}" data-tracking="{{ $p->tracking_type }}" {{ (old('product_id', $preselectedProduct->id ?? '') == $p->id) ? 'selected' : '' }}>
@@ -46,11 +46,11 @@
             </div>
 
             <!-- Asset Specific Selection (Conditional for Individual) -->
-            <div id="asset_section" class="p-4 rounded-xl bg-indigo-50/50 dark:bg-indigo-950/20 border border-indigo-200 dark:border-indigo-900/40 space-y-2 {{ (old('product_id', $preselectedProduct->tracking_type ?? '') === 'individual') ? '' : 'hidden' }}">
+            <div id="asset_section" class="p-4 rounded-xl bg-indigo-950/30 border border-indigo-900/50 space-y-2 {{ (old('product_id', $preselectedProduct->tracking_type ?? '') === 'individual') ? '' : 'hidden' }}">
                 <label class="block text-xs font-bold uppercase tracking-wider text-indigo-400 mb-1">
                     Pilih Unit Aset Bernomor Seri <span class="text-rose-500">*</span>
                 </label>
-                <select name="asset_id" id="asset_id" class="w-full px-4 py-2.5 rounded-xl text-sm bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <select name="asset_id" id="asset_id" class="w-full px-4 py-2.5 rounded-xl text-sm bg-slate-900 border border-slate-800 text-white focus:outline-none focus:border-indigo-500">
                     <option value="">-- Pilih Unit Aset --</option>
                     @foreach($assets as $a)
                         <option value="{{ $a->id }}" data-product="{{ $a->product_id }}" data-location="{{ $a->current_location_id }}" {{ (old('asset_id', $preselectedAsset->id ?? '') == $a->id) ? 'selected' : '' }}>
@@ -66,11 +66,11 @@
 
             <!-- Quantity (For Bulk Products) -->
             <div id="quantity_section" class="{{ (old('product_id', $preselectedProduct->tracking_type ?? '') === 'individual') ? 'hidden' : '' }}">
-                <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
                     Jumlah Barang Rusak / Masuk Servis <span class="text-rose-500">*</span>
                 </label>
                 <div class="flex items-center gap-3">
-                    <input type="number" step="0.01" min="0.01" name="quantity" id="quantity" value="{{ old('quantity', 1) }}" required class="w-40 px-4 py-2.5 rounded-xl text-sm bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white font-mono font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <input type="number" step="0.01" min="0.01" name="quantity" id="quantity" value="{{ old('quantity', 1) }}" required class="w-40 px-4 py-2.5 rounded-xl text-sm bg-slate-950/60 border border-slate-800 text-white font-mono font-bold focus:outline-none focus:border-indigo-500">
                     <span class="text-sm text-slate-400">Unit / Pcs</span>
                 </div>
                 @error('quantity')
@@ -82,10 +82,10 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <!-- Source Location -->
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
                         Lokasi Asal (Tempat Barang Diambil) <span class="text-rose-500">*</span>
                     </label>
-                    <select name="source_location_id" id="source_location_id" required class="w-full px-4 py-2.5 rounded-xl text-sm bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <select name="source_location_id" id="source_location_id" required class="w-full px-4 py-2.5 rounded-xl text-sm bg-slate-950/60 border border-slate-800 text-white focus:outline-none focus:border-indigo-500">
                         @foreach($locations as $loc)
                             <option value="{{ $loc->id }}" {{ (old('source_location_id', $preselectedAsset->current_location_id ?? '') == $loc->id) ? 'selected' : '' }}>
                                 {{ $loc->name }}
@@ -99,10 +99,10 @@
 
                 <!-- Workshop Location -->
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
                         Tujuan Bengkel Servis <span class="text-rose-500">*</span>
                     </label>
-                    <select name="workshop_location_id" id="workshop_location_id" required class="w-full px-4 py-2.5 rounded-xl text-sm bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <select name="workshop_location_id" id="workshop_location_id" required class="w-full px-4 py-2.5 rounded-xl text-sm bg-slate-950/60 border border-slate-800 text-white focus:outline-none focus:border-indigo-500">
                         @foreach($locations as $loc)
                             <option value="{{ $loc->id }}" {{ (old('workshop_location_id', $defaultWorkshop->id ?? '') == $loc->id) ? 'selected' : '' }}>
                                 {{ $loc->name }}
@@ -118,10 +118,10 @@
             <!-- Priority & Technician -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
                         Tingkat Prioritas <span class="text-rose-500">*</span>
                     </label>
-                    <select name="priority" required class="w-full px-4 py-2.5 rounded-xl text-sm bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <select name="priority" required class="w-full px-4 py-2.5 rounded-xl text-sm bg-slate-950/60 border border-slate-800 text-white focus:outline-none focus:border-indigo-500">
                         <option value="normal" {{ old('priority', 'normal') === 'normal' ? 'selected' : '' }}>🔵 Normal (Jadwal Reguler)</option>
                         <option value="high" {{ old('priority') === 'high' ? 'selected' : '' }}>🟠 Tinggi (Persiapan Event Minggu Ini)</option>
                         <option value="urgent" {{ old('priority') === 'urgent' ? 'selected' : '' }}>🔴 Darurat (Krusial / Segera Berangkat)</option>
@@ -130,10 +130,10 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
                         Teknisi Penanggung Jawab (Opsional)
                     </label>
-                    <select name="technician_id" class="w-full px-4 py-2.5 rounded-xl text-sm bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <select name="technician_id" class="w-full px-4 py-2.5 rounded-xl text-sm bg-slate-950/60 border border-slate-800 text-white focus:outline-none focus:border-indigo-500">
                         <option value="">-- Belum Ditugaskan / Bebas Antrean --</option>
                         @foreach($technicians as $tech)
                             <option value="{{ $tech->id }}" {{ old('technician_id') == $tech->id ? 'selected' : '' }}>
@@ -146,10 +146,10 @@
 
             <!-- Issue Description -->
             <div>
-                <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
                     Deskripsi Masalah / Gejala Kerusakan <span class="text-rose-500">*</span>
                 </label>
-                <textarea name="issue_description" rows="3" required placeholder="Contoh: Modul mati 5 titik lampu merah di baris 4. IC driver ICN2053 tampak panas berlebih saat tes pola warna putih..." class="w-full px-4 py-2.5 rounded-xl text-sm bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 leading-relaxed">{{ old('issue_description') }}</textarea>
+                <textarea name="issue_description" rows="3" required placeholder="Contoh: Modul mati 5 titik lampu merah di baris 4. IC driver ICN2053 tampak panas berlebih saat tes pola warna putih..." class="w-full px-4 py-2.5 rounded-xl text-sm bg-slate-950/60 border border-slate-800 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 leading-relaxed">{{ old('issue_description') }}</textarea>
                 @error('issue_description')
                     <p class="text-xs text-rose-500 mt-1">{{ $message }}</p>
                 @enderror
@@ -157,15 +157,15 @@
 
             <!-- Notes -->
             <div>
-                <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
                     Catatan Tambahan (Opsional)
                 </label>
-                <input type="text" name="notes" value="{{ old('notes') }}" placeholder="Contoh: Ditemukan pasca-event di Grand Mercure, kotak flightcase no 3" class="w-full px-4 py-2.5 rounded-xl text-sm bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <input type="text" name="notes" value="{{ old('notes') }}" placeholder="Contoh: Ditemukan pasca-event di Grand Mercure, kotak flightcase no 3" class="w-full px-4 py-2.5 rounded-xl text-sm bg-slate-950/60 border border-slate-800 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500">
             </div>
 
             <!-- Submit Buttons -->
-            <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-200 dark:border-slate-800">
-                <a href="{{ route('service-tickets.index') }}" class="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+            <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-800">
+                <a href="{{ route('service-tickets.index') }}" class="px-5 py-2.5 rounded-xl border border-slate-700 text-sm font-semibold text-slate-300 hover:bg-slate-800 transition-colors">
                     Batal
                 </a>
                 <button type="submit" class="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm shadow-md shadow-indigo-600/20 transition-all flex items-center gap-2">

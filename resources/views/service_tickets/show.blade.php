@@ -18,8 +18,8 @@
     </div>
 
     <!-- Ticket Master Header Card -->
-    <div class="p-6 md:p-8 rounded-2xl bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800/80 shadow-xl space-y-6">
-        <div class="flex flex-col md:flex-row md:items-start justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-6">
+    <div class="p-6 md:p-8 rounded-2xl bg-slate-900/60 border border-slate-800 shadow-xl space-y-6">
+        <div class="flex flex-col md:flex-row md:items-start justify-between gap-4 border-b border-slate-800 pb-6">
             <div class="space-y-2">
                 <div class="flex items-center gap-2 flex-wrap">
                     <span class="px-3 py-1 rounded-full text-xs font-bold font-mono bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
@@ -33,13 +33,13 @@
                     </span>
                 </div>
 
-                <h1 class="text-2xl md:text-3xl font-black text-slate-900 dark:text-white">
+                <h1 class="text-2xl md:text-3xl font-black text-white">
                     {{ $ticket->product->name }}
                 </h1>
 
                 @if($ticket->asset)
                     <div class="flex items-center gap-3 pt-1">
-                        <span class="px-3 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 text-xs font-mono font-bold border border-slate-300 dark:border-slate-700">
+                        <span class="px-3 py-1 rounded-xl bg-slate-800 text-slate-200 text-xs font-mono font-bold border border-slate-700">
                             Unit ID: {{ $ticket->asset->asset_code }}
                         </span>
                         @if($ticket->asset->serial_number)
@@ -57,9 +57,9 @@
             </div>
 
             <!-- Metric Box / Current Location -->
-            <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-950/70 border border-slate-200 dark:border-slate-800 text-right min-w-56 space-y-1">
+            <div class="p-4 rounded-xl bg-slate-950/60 border border-slate-800 text-right min-w-56 space-y-1">
                 <span class="text-[10px] uppercase tracking-wider font-bold text-slate-400 block">Posisi Fisik Saat Ini</span>
-                <span class="text-sm font-extrabold text-amber-500 dark:text-amber-400 block">
+                <span class="text-sm font-extrabold text-amber-400 block">
                     📍 {{ $ticket->workshopLocation->name ?? 'Workshop' }}
                 </span>
                 <span class="text-[11px] text-slate-400 block">
@@ -77,13 +77,13 @@
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs pt-2">
             <div>
                 <span class="text-slate-400 block mb-1">Tanggal Masuk:</span>
-                <span class="font-bold text-slate-700 dark:text-slate-200 font-mono">
+                <span class="font-bold text-slate-200 font-mono">
                     {{ $ticket->intake_date ? $ticket->intake_date->format('d M Y, H:i') : '-' }}
                 </span>
             </div>
             <div>
                 <span class="text-slate-400 block mb-1">Pelapor Kerusakan:</span>
-                <span class="font-bold text-slate-700 dark:text-slate-200">
+                <span class="font-bold text-slate-200">
                     {{ $ticket->reporter->name ?? 'Staf Gudang' }}
                 </span>
             </div>
@@ -95,7 +95,7 @@
             </div>
             <div>
                 <span class="text-slate-400 block mb-1">Durasi Karantina:</span>
-                <span class="font-bold text-slate-700 dark:text-slate-200 font-mono">
+                <span class="font-bold text-slate-200 font-mono">
                     {{ $ticket->intake_date ? $ticket->intake_date->diffForHumans() : '-' }}
                 </span>
             </div>
@@ -109,14 +109,14 @@
         <div class="lg:col-span-2 space-y-6">
 
             <!-- Issue Description Card -->
-            <div class="p-6 rounded-2xl bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800/80 shadow-md space-y-3">
-                <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-amber-500 dark:text-amber-400">
+            <div class="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 shadow-md space-y-3">
+                <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-amber-400">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                     </svg>
                     <span>Laporan Masalah / Gejala Awal</span>
                 </div>
-                <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 text-sm text-slate-800 dark:text-slate-200 leading-relaxed font-sans">
+                <div class="p-4 rounded-xl bg-slate-950/60 border border-slate-800 text-sm text-slate-200 leading-relaxed font-sans">
                     {{ $ticket->issue_description }}
                 </div>
                 @if($ticket->notes)
@@ -127,7 +127,7 @@
             </div>
 
             <!-- Technician Diagnosis & Action Update Form -->
-            <div class="p-6 rounded-2xl bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800/80 shadow-md space-y-4">
+            <div class="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 shadow-md space-y-4">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-indigo-400">
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -146,7 +146,7 @@
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">
                                 Teknisi Penanggung Jawab
                             </label>
-                            <select name="technician_id" class="w-full px-3 py-2 rounded-xl text-sm bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white">
+                            <select name="technician_id" class="w-full px-3 py-2 rounded-xl text-sm bg-slate-950/60 border border-slate-800 text-white focus:outline-none focus:border-indigo-500">
                                 <option value="">-- Pilih Teknisi --</option>
                                 @foreach($technicians as $tech)
                                     <option value="{{ $tech->id }}" {{ old('technician_id', $ticket->technician_id) == $tech->id ? 'selected' : '' }}>
@@ -160,7 +160,7 @@
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">
                                 Tingkat Prioritas
                             </label>
-                            <select name="priority" class="w-full px-3 py-2 rounded-xl text-sm bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white">
+                            <select name="priority" class="w-full px-3 py-2 rounded-xl text-sm bg-slate-950/60 border border-slate-800 text-white focus:outline-none focus:border-indigo-500">
                                 <option value="low" {{ $ticket->priority === 'low' ? 'selected' : '' }}>⚪ Rendah</option>
                                 <option value="normal" {{ $ticket->priority === 'normal' ? 'selected' : '' }}>🔵 Normal</option>
                                 <option value="high" {{ $ticket->priority === 'high' ? 'selected' : '' }}>🟠 Tinggi</option>
@@ -173,18 +173,18 @@
                         <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">
                             Diagnosa Kerusakan Fisik / Elektronik
                         </label>
-                        <textarea name="diagnosis" rows="2" placeholder="Catat hasil pemeriksaan: misal IC Driver baris 3 korslet, jalur PCB putus, elco PSU kembung..." class="w-full px-4 py-2.5 rounded-xl text-sm bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 leading-relaxed">{{ old('diagnosis', $ticket->diagnosis) }}</textarea>
+                        <textarea name="diagnosis" rows="2" placeholder="Catat hasil pemeriksaan: misal IC Driver baris 3 korslet, jalur PCB putus, elco PSU kembung..." class="w-full px-4 py-2.5 rounded-xl text-sm bg-slate-950/60 border border-slate-800 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 leading-relaxed">{{ old('diagnosis', $ticket->diagnosis) }}</textarea>
                     </div>
 
                     <div>
                         <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">
                             Tindakan Perbaikan yang Dilakukan
                         </label>
-                        <textarea name="action_taken" rows="2" placeholder="Tindakan yang diambil: misal solder ulang kaki IC, ganti 2 titik mata LED merah, kalibrasi ulang parameter port..." class="w-full px-4 py-2.5 rounded-xl text-sm bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 leading-relaxed">{{ old('action_taken', $ticket->action_taken) }}</textarea>
+                        <textarea name="action_taken" rows="2" placeholder="Tindakan yang diambil: misal solder ulang kaki IC, ganti 2 titik mata LED merah, kalibrasi ulang parameter port..." class="w-full px-4 py-2.5 rounded-xl text-sm bg-slate-950/60 border border-slate-800 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 leading-relaxed">{{ old('action_taken', $ticket->action_taken) }}</textarea>
                     </div>
 
                     <div class="flex justify-end">
-                        <button type="submit" class="px-5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs transition-colors flex items-center gap-1.5 shadow-xs">
+                        <button type="submit" class="px-5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs border border-slate-700 transition-colors flex items-center gap-1.5 shadow-xs">
                             <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                             </svg>
@@ -195,7 +195,7 @@
             </div>
 
             <!-- Spareparts Consumption Card (Direct Inventory Integration) -->
-            <div class="p-6 rounded-2xl bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800/80 shadow-md space-y-4">
+            <div class="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 shadow-md space-y-4">
                 <div class="flex items-center justify-between flex-wrap gap-2">
                     <div>
                         <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-purple-400">
@@ -215,9 +215,9 @@
                 </div>
 
                 <!-- Table of Used Spareparts -->
-                <div class="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800">
+                <div class="overflow-x-auto rounded-xl border border-slate-800">
                     <table class="w-full text-left text-xs">
-                        <thead class="bg-slate-100 dark:bg-slate-800/80 text-slate-400 uppercase tracking-wider font-semibold">
+                        <thead class="bg-slate-800/70 text-slate-300 uppercase tracking-wider font-semibold">
                             <tr>
                                 <th class="px-4 py-3">Nama Suku Cadang</th>
                                 <th class="px-4 py-3">Sumber Lemari</th>
@@ -226,10 +226,10 @@
                                 <th class="px-4 py-3 text-right">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-slate-200 dark:divide-slate-800/60">
+                        <tbody class="divide-y divide-slate-800/60">
                             @forelse($ticket->spareparts as $sp)
-                                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/30">
-                                    <td class="px-4 py-3 font-bold text-slate-900 dark:text-white">
+                                <tr class="hover:bg-slate-800/30">
+                                    <td class="px-4 py-3 font-bold text-white">
                                         {{ $sp->product->name }}
                                         @if($sp->notes)
                                             <span class="block text-[10px] text-slate-400 font-normal">{{ $sp->notes }}</span>
@@ -276,7 +276,7 @@
         <div class="space-y-6">
 
             <!-- Status Transition Controller Card -->
-            <div class="p-6 rounded-2xl bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800/80 shadow-md space-y-5">
+            <div class="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 shadow-md space-y-5">
                 <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-400">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
@@ -332,7 +332,7 @@
                 </div>
 
                 <!-- Action Transition Buttons Form -->
-                <div class="pt-4 border-t border-slate-200 dark:border-slate-800 space-y-3">
+                <div class="pt-4 border-t border-slate-800 space-y-3">
                     @if($ticket->status === 'pending_inspection')
                         <form action="{{ route('service-tickets.update-status', $ticket) }}" method="POST">
                             @csrf
@@ -359,7 +359,7 @@
                                 @csrf
                                 @method('PUT')
                                 <input type="hidden" name="status" value="{{ $ticket->status === 'waiting_parts' ? 'in_progress' : 'waiting_parts' }}">
-                                <button type="submit" class="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs transition-all">
+                                <button type="submit" class="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs transition-all border border-slate-700">
                                     {{ $ticket->status === 'waiting_parts' ? 'Part Tiba (Lanjut)' : '⏳ Tunggu Part' }}
                                 </button>
                             </form>
@@ -380,7 +380,7 @@
                                 <label class="block text-[11px] font-semibold text-slate-300">
                                     Kembalikan ke Rak / Lemari:
                                 </label>
-                                <select name="return_location_id" required class="w-full px-3 py-2 rounded-xl text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white">
+                                <select name="return_location_id" required class="w-full px-3 py-2 rounded-xl text-xs bg-slate-950/60 border border-slate-800 text-white focus:outline-none focus:border-indigo-500">
                                     @foreach($locations as $loc)
                                         <option value="{{ $loc->id }}" {{ $loc->id == $ticket->source_location_id ? 'selected' : '' }}>
                                             {{ $loc->name }}
@@ -425,9 +425,9 @@
 
 <!-- Modal Ambil Sparepart -->
 <div id="addSparepartModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
-        <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
-            <h3 class="font-extrabold text-slate-900 dark:text-white text-base">Ambil Suku Cadang dari Lemari</h3>
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+            <h3 class="font-extrabold text-white text-base">Ambil Suku Cadang dari Lemari</h3>
             <button type="button" onclick="document.getElementById('addSparepartModal').classList.add('hidden')" class="text-slate-400 hover:text-white font-bold">✕</button>
         </div>
 
@@ -438,7 +438,7 @@
                 <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">
                     Pilih Jenis Suku Cadang / Sparepart <span class="text-rose-500">*</span>
                 </label>
-                <select name="sparepart_product_id" required class="w-full px-3 py-2 rounded-xl text-sm bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white">
+                <select name="sparepart_product_id" required class="w-full px-3 py-2 rounded-xl text-sm bg-slate-950 border border-slate-800 text-white focus:outline-none focus:border-indigo-500">
                     <option value="">-- Pilih Suku Cadang --</option>
                     @foreach($sparepartProducts as $spProd)
                         <option value="{{ $spProd->id }}">
@@ -453,7 +453,7 @@
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">
                         Sumber Lemari <span class="text-rose-500">*</span>
                     </label>
-                    <select name="source_location_id" required class="w-full px-3 py-2 rounded-xl text-sm bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white">
+                    <select name="source_location_id" required class="w-full px-3 py-2 rounded-xl text-sm bg-slate-950 border border-slate-800 text-white focus:outline-none focus:border-indigo-500">
                         @foreach($locations as $loc)
                             <option value="{{ $loc->id }}" {{ $loc->id == 3 ? 'selected' : '' }}>
                                 {{ $loc->name }}
@@ -466,7 +466,7 @@
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">
                         Jumlah Dipakai <span class="text-rose-500">*</span>
                     </label>
-                    <input type="number" step="0.01" min="0.01" name="quantity" value="1" required class="w-full px-3 py-2 rounded-xl text-sm bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white font-mono font-bold">
+                    <input type="number" step="0.01" min="0.01" name="quantity" value="1" required class="w-full px-3 py-2 rounded-xl text-sm bg-slate-950 border border-slate-800 text-white font-mono font-bold focus:outline-none focus:border-indigo-500">
                 </div>
             </div>
 
@@ -474,11 +474,11 @@
                 <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">
                     Keterangan Penempatan (Opsional)
                 </label>
-                <input type="text" name="notes" placeholder="Misal: Pasang di modul baris 2 kolom 3" class="w-full px-3 py-2 rounded-xl text-sm bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white placeholder-slate-500">
+                <input type="text" name="notes" placeholder="Misal: Pasang di modul baris 2 kolom 3" class="w-full px-3 py-2 rounded-xl text-sm bg-slate-950 border border-slate-800 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500">
             </div>
 
-            <div class="flex justify-end gap-2 pt-3 border-t border-slate-200 dark:border-slate-800">
-                <button type="button" onclick="document.getElementById('addSparepartModal').classList.add('hidden')" class="px-4 py-2 rounded-xl border border-slate-700 text-xs font-semibold text-slate-300">
+            <div class="flex justify-end gap-2 pt-3 border-t border-slate-800">
+                <button type="button" onclick="document.getElementById('addSparepartModal').classList.add('hidden')" class="px-4 py-2 rounded-xl border border-slate-700 text-xs font-semibold text-slate-300 hover:text-white transition-colors">
                     Batal
                 </button>
                 <button type="submit" class="px-5 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs shadow-md">

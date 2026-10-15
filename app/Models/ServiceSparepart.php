@@ -37,4 +37,3 @@ class ServiceSparepart extends Model
         return $this->belongsTo(Location::class, 'source_location_id');
     }
 }
-
