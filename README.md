@@ -59,10 +59,10 @@ Aplikasi ini mengintegrasikan data fisik riil dari spreadsheet inventori lapanga
 * Fitur *Raw Create*, *Raw Edit*, dan *Raw Delete* dengan dialog konfirmasi keamanan serta pencatatan audit log otomatis.
 * Keamanan password pada tabel `users` otomatis menggunakan hashing Bcrypt.
 
-### 🎨 D. Antarmuka Pengguna Modern & Aksesibilitas
-* Tema antarmuka bertema *Broadcast LED Event* (slate gelap elegan dengan aksen indigo/cyan Omah Visual).
-* Mendukung **Mode Gelap (Dark Mode)** dan **Mode Terang (Light Mode)** dengan penyimpanan preferensi di `localStorage`.
-* Tipografi yang proporsional, nyaman dibaca, dan kontras warna yang ramah pengguna.
+### 🛠️ E. Modul Servis, Workshop & Manajemen Pengguna Multi-Role
+* **Tiket Servis Modul LED (`/service-tickets`):** Alur antrean perbaikan, investigasi diagnosa teknisi, pengambilan sparepart lemari bengkel, dan uji QC.
+* **Manajemen Pengguna Multi-Role (`/users`):** Dukungan penetapan banyak peran per pengguna (misal Warehouse merangkap Teknisi) serta proteksi Superuser.
+* **Aksi Cepat Inventori & Aset Serial (`/products` & `/assets`):** Shortcut tambah stok masuk, registrasi unit serial baru, dan pelaporan selisih/kehilangan barang.
 
 ---
 
@@ -73,7 +73,7 @@ Aplikasi ini mengintegrasikan data fisik riil dari spreadsheet inventori lapanga
 * **Frontend:** Laravel Blade, Tailwind CSS v4, Vite
 * **Autentikasi & RBAC:** Session Guard + `spatie/laravel-permission` v8.3
 * **Code Formatter:** Laravel Pint
-* **Automated Testing:** PHPUnit (17 feature tests, 131 assertions, 100% Green)
+* **Automated Testing:** PHPUnit (67 feature tests, 398 assertions, 100% Green)
 
 ---
 

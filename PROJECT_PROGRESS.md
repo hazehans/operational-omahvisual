@@ -168,15 +168,46 @@ Berdasarkan analisis 2 file Excel (`DATA TOOLS BOX .2` dan `DEV_STOCK OPNAME by 
   - Penambahan tautan profil di Topbar navigasi lengkap dengan foto avatar/inisial dan role aktif.
 - [x] **Pengujian Otomatis:** Menambahkan suite [`UserProfileAndAvatarTest.php`](file:///d:/Job/ID_CV%20Han%20Media%20Tekindo/operational-omahvisual/tests/Feature/UserProfileAndAvatarTest.php) (6 tests baru). Total suite pengujian proyek kini mencapai: **29 Tests, 179 Assertions, 100% Lulus (Green)**.
 
+### Tahap 4: Modul Pemesanan Rental LED & SPK Lapangan (SELESAI ✅)
+- [x] **Kalkulator Panel LED & Order Persewaan (`/orders`):**
+  - Kalkulator kebutuhan kabinet LED otomatis berdasarkan dimensi panjang $\times$ tinggi target panggung.
+  - Alokasi stok kabinet dan aksesoris pendukung (hanging bar, kabel, processor) saat order dibuat.
+- [x] **Surat Perintah Kerja (SPK) & Cargo Checklist Lapangan (`/spk`):**
+  - Cetak dokumen SPK siap cetak (Halaman 1 Ringkasan, Halaman 2 Peta Panggung, Halaman 3 Cargo Checklist, Halaman 4 Berita Acara & Checklist Gate).
+  - Verifikasi Keberangkatan dan Kepulangan Gate dengan aturan PIC kepulangan wajib berbeda dari keberangkatan.
+  - Tautan Live View kru panggung tanpa login via token publik unik (`spk/live/{token}`).
+
+### Tahap 5: Modul Servis & Workshop Maintenance (SELESAI ✅)
+- [x] **Manajemen Tiket Servis (`/service-tickets`):**
+  - Siklus tiket servis perbaikan modul/hardware LED: *Antrean Servis*, *Diagnosa & Investigasi*, *Pengerjaan Perbaikan*, *Uji Coba & QC*, *Selesai Siap Pakai*.
+  - Pemisahan wewenang operasional: Warehouse membuka tiket saat inspeksi barang kembali, Teknisi mengeksekusi pengerjaan di workshop.
+  - Role baru `Teknisi Servis` dengan hak akses fokus bengkel (`manage service tickets`, `view inventory`).
+  - Fitur ambil dan catat penggunaan suku cadang/sparepart dari lemari dengan mutasi otomatis ke stok bengkel.
+  - Perbaikan bug UI dark mode, penataan modal pop-up sparepart berbasis stacking context `@stack('modals')`, dan type casting Intelephense pada controller.
+
+### Tahap 6: Manajemen Pengguna Multi-Role & Quick Action Inventori (SELESAI ✅)
+- [x] **Manajemen Pengguna & Dukungan Multi-Role (`/users`):**
+  - Pembaruan formulir pengguna (`users/create.blade.php`, `users/edit.blade.php`) menggunakan kartu checkbox multi-role interaktif.
+  - Staf dapat memegang lebih dari satu peran (misal: *Warehouse* merangkap *Teknisi Servis*).
+  - Sinkronisasi peran otomatis via Spatie Permission `syncRoles()` dan proteksi akun Superuser terakhir.
+  - Tampilan multi-badge warna tematik per role pada tabel daftar pengguna (`users/index.blade.php`).
+- [x] **Aksi Cepat Inventori & Pelacakan Kehilangan/Stok Masuk (`/products/{id}` & `/assets`):**
+  - Penambahan tombol pintas aksi cepat (*Quick Actions*) di halaman detail barang:
+    - `+ Tambah Stok (Beli/Masuk)` untuk barang kuantitas.
+    - `+ Tambah Unit Serial` untuk barang individual (Processor, TV, dll).
+    - `Lapor Selisih / Hilang` langsung ke form penyesuaian stok (*Stock Adjustment*).
+  - Pembuatan modul form pendaftaran unit serial baru ([`assets/create.blade.php`](file:///d:/Job/ID_CV%20Han%20Media%20Tekindo/operational-omahvisual/resources/views/assets/create.blade.php)) dengan auto-generate kode aset (`OVL-AST-YYYYMM-XXXX`), input serial pabrik, barcode, lokasi lemari, dan status unit.
+  - Preseleksi otomatis parameter query URL (`product_id`, `type`, `location_id`) pada form mutasi dan adjustment.
+  - Koreksi kalkulasi status stok fisik (Siap Sewa, Rusak, Servis) pada perangkat serial di `ProductController::show()`.
+- [x] **Pengujian Otomatis Menyeluruh:**
+  - Total test suite saat ini mencapai **67 Tests, 398 Assertions, 100% Lulus (Green)** tanpa kegagalan.
+
 ---
 
-## 🔮 6. Roadmap Jangka Panjang (Operasional Lanjutan Sesuai PRD Global)
+## 🔮 7. Roadmap Jangka Panjang (Operasional Lanjutan Sesuai PRD Global)
 - [ ] Integrasi Barcode / QR Code Fisik Scanner (Ditunda sementara sesuai arahan user agar fokus pematangan operasional)
-- [ ] Modul Customer & Order (Input order Admin via WhatsApp, Quotation & Revisi)
-- [ ] Modul SPK (Surat Perintah Kerja) & Cargo List / Surat Jalan
-- [ ] Gate Kesiapan Keberangkatan Event (Barang, Kru, Armada, Dana Operasional)
-- [ ] Demobilisasi & Rekonsiliasi Pasca-Event (Deteksi barang hilang/tertinggal di venue)
-- [ ] Modul Work Order Servis Internal & Pemeliharaan Modul LED
 - [ ] Modul Invoicing & Verifikasi Pembayaran (Finance)
+- [ ] Fitur Ekspor Laporan Bulanan (Excel/PDF) untuk Rekapitulasi Barang Hilang & Biaya Servis
+- [ ] Notifikasi Discrepancy Otomatis via WhatsApp / Email saat ada barang kurang pasca-event
 
 
