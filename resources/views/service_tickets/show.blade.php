@@ -424,7 +424,7 @@
 </div>
 
 <!-- Modal Ambil Sparepart -->
-<div id="addSparepartModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+<div id="addSparepartModal" class="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
         <div class="flex items-center justify-between border-b border-slate-800 pb-3">
             <h3 class="font-extrabold text-white text-base">Ambil Suku Cadang dari Lemari</h3>

@@ -133,6 +133,7 @@
                     Operasional Inventori
                 </div>
 
+                @can('record movement')
                 <!-- Mutasi Stok -->
                 <a href="{{ route('movements.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all {{ request()->routeIs('movements.*') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-slate-800/50' }}">
                     <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -140,7 +141,9 @@
                     </svg>
                     <span>Mutasi Stok</span>
                 </a>
+                @endcan
 
+                @can('conduct stock count')
                 <!-- Sahkan Stok Awal (Decision 2 User) -->
                 @php
                     $isPendingInitialCount = \App\Models\InventoryCount::where('status', '!=', 'verified')->exists();
@@ -163,7 +166,9 @@
                         @endif
                     </div>
                 </a>
+                @endcan
 
+                @can('request stock adjustment')
                 <!-- Penyesuaian & Approval -->
                 <a href="{{ route('adjustments.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all {{ request()->routeIs('adjustments.*') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-slate-800/50' }}">
                     <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -171,6 +176,7 @@
                     </svg>
                     <span>Koreksi & Approval</span>
                 </a>
+                @endcan
 
                 <!-- Servis & Workshop -->
                 @php
@@ -201,11 +207,24 @@
                 </a>
                 @endcan
 
-                @hasrole('Superuser')
-                <div class="pt-4 px-3 pb-1 text-xs font-bold uppercase tracking-wider text-rose-400">
-                    Sistem & Raw DB
+                @hasanyrole('Owner|Superuser')
+                <div class="pt-4 px-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                    Sistem &amp; Hak Akses
                 </div>
 
+                <!-- Manajemen Pengguna -->
+                <a href="{{ route('users.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all {{ request()->routeIs('users.*') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-slate-800/50' }}">
+                    <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                    <div class="flex items-center justify-between flex-1">
+                        <span>Manajemen Pengguna</span>
+                        <span class="px-1.5 py-0.5 text-[10px] rounded bg-indigo-500/20 text-indigo-400 font-mono font-bold">{{ \App\Models\User::count() }}</span>
+                    </div>
+                </a>
+                @endhasanyrole
+
+                @hasrole('Superuser')
                 <!-- Superuser Database Manager -->
                 <a href="{{ route('superuser.database.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all {{ request()->routeIs('superuser.database.*') ? 'bg-rose-600 text-white shadow-md shadow-rose-600/20' : 'text-rose-400/80 hover:text-rose-300 hover:bg-rose-500/10' }}">
                     <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">

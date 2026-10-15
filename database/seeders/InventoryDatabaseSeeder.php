@@ -31,6 +31,8 @@ class InventoryDatabaseSeeder extends Seeder
             'conduct stock count',
             'verify stock count',
             'view audit logs',
+            'manage service tickets',
+            'manage users',
         ];
 
         foreach ($permissions as $perm) {
@@ -45,17 +47,21 @@ class InventoryDatabaseSeeder extends Seeder
             'view inventory', 'create product', 'edit product', 'manage locations',
             'record movement', 'request stock adjustment', 'approve stock adjustment',
             'conduct stock count', 'verify stock count', 'view audit logs',
+            'manage service tickets',
         ]);
 
         $warehouseRole = Role::firstOrCreate(['name' => 'Warehouse']);
         $warehouseRole->syncPermissions([
             'view inventory', 'create product', 'edit product', 'manage locations',
             'record movement', 'request stock adjustment', 'conduct stock count',
-            'verify stock count',
+            'verify stock count', 'manage service tickets',
         ]);
 
         $adminRole = Role::firstOrCreate(['name' => 'Admin LED']);
         $adminRole->syncPermissions(['view inventory', 'record movement']);
+
+        $teknisiRole = Role::firstOrCreate(['name' => 'Teknisi Servis']);
+        $teknisiRole->syncPermissions(['view inventory', 'manage service tickets']);
 
         $superuserRole = Role::firstOrCreate(['name' => 'Superuser']);
         $superuserRole->syncPermissions(Permission::all());
@@ -78,6 +84,12 @@ class InventoryDatabaseSeeder extends Seeder
             ['name' => 'Admin LED', 'password' => Hash::make('password123')]
         );
         $adminUser->assignRole($adminRole);
+
+        $teknisiUser = User::firstOrCreate(
+            ['email' => 'teknisi@omahvisual.com'],
+            ['name' => 'Teknisi Workshop', 'password' => Hash::make('password123'), 'phone' => '081234567894']
+        );
+        $teknisiUser->assignRole($teknisiRole);
 
         $superUser = User::firstOrCreate(
             ['email' => 'super@omahvisual.com'],

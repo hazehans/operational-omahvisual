@@ -14,6 +14,7 @@ use App\Http\Controllers\SpkController;
 use App\Http\Controllers\StockAdjustmentController;
 use App\Http\Controllers\StockMovementController;
 use App\Http\Controllers\SuperuserDatabaseController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 // Public Live Token Route for Crew Lapangan (No login required)
@@ -90,6 +91,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/spk/{assignment}/verify-departure', [SpkController::class, 'verifyDeparture'])->name('spk.verify-departure');
     Route::post('/spk/{assignment}/verify-return', [SpkController::class, 'verifyReturn'])->name('spk.verify-return');
     Route::post('/spk/items/{item}/toggle', [SpkController::class, 'toggleItem'])->name('spk.toggle-item');
+
+    // User & Role Management (Superuser & Owner)
+    Route::post('/users/{user}/reset-password', [UserController::class, 'resetPassword'])->name('users.reset-password');
+    Route::resource('users', UserController::class);
 
     // Superuser Raw Database Manager (Django-like Admin CRUD)
     Route::prefix('superuser/database')->name('superuser.database.')->group(function () {
