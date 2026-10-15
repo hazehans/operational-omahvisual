@@ -177,13 +177,15 @@
 ---
 
 ## 📌 Catatan Revisi & Penyempurnaan (Priority Status)
-- [x] **Revisi Skala & Margin Layout Printout A4 SPK (`spk/print.blade.php`)** — ✅ Selesai:
-  - [x] Eliminasi masalah *double margin*: `@page { margin: 8mm 10mm; }` dan pembersihan padding kontainer pada `@media print` sehingga area cetak presisi 100%.
-  - [x] Halaman 1 (Serah Terima): Merapikan jarak margin antar-blok, proporsi thumbnail blueprint (max-height 110px), dan kotak tanda tangan keberangkatan & kepulangan pas di lembar 1.
-  - [x] Halaman 2 (Checklist Muatan Tim): Kalibrasi padding tabel mikro (`1.5px 3px`, font 8px, line-height 1.15) sehingga seluruh 53 item barang kerja pas 1 lembar utuh tanpa tumpah ke halaman baru.
-  - [x] Halaman 3 (Checklist PIC): Kalibrasi padding tabel mikro sehingga seluruh 48 item kit & spares pas 1 lembar utuh.
-  - [x] Halaman 4 (Blueprint Teknis): Proporsi gambar Tampak Atas & Tampak Depan (max-height 165px), tabel spesifikasi rigging, dan box tanda tangan kelayakan pas 1 lembar utuh.
-  - [x] Bar Aksi Cetak Interaktif: Fitur cetak fleksibel per kebutuhan (Cetak Lengkap Hal 1-4, Cetak Hal 1 Surat Jalan, Cetak Hal 2-3 Checklist Gudang, atau Cetak Hal 4 Blueprint Rigging).
+- [x] **Peningkatan Skala Tipografi & Format Cetak Hybrid Portrait/Landscape (`spk/print.blade.php`)** — ✅ Selesai:
+  - [x] **Skalasi Ukuran Font (Membesar & Jelas Dibaca)**:
+    - Halaman 1: Font informasi klien, jadwal event/loading, armada mobil, dan kru diperbesar menjadi `11px` (sebelumnya `9.5px`), kotak tanda tangan diperbesar menjadi `10.5px`, teks lebih nyaman dibaca tanpa mengecilkan mata.
+    - Halaman 2 (Checklist 53 Item) & Halaman 3 (Checklist 48 Item): Font diperbesar dari `8px` menjadi `9px` / `9.5px` dengan padding sel `2px 4px`, tetap pas dalam 1 lembar A4 portrait tanpa tumpah ke halaman berikutnya.
+  - [x] **Halaman 4 Khusus Blueprint: Orientasi A4 LANDSCAPE (Wide)**:
+    - Menggunakan named page CSS `@page landscape-sheet { size: A4 landscape; margin: 8mm 10mm; }` sehingga lembar 4 otomatis berorientasi horizontal saat dicetak atau diekspor ke PDF.
+    - Layout **Side-by-Side (Berdampingan)**: Diagram Tampak Atas (Denah Panggung) dan Tampak Depan (Elevasi Penonton) ditampilkan berdampingan selebar layar dengan `max-height: 220px` (memanfaatkan aspek rasio 16:9 widescreen panggung LED secara dramatis lebih besar dan megah).
+    - Bagian bawah menampilkan Tabel Spesifikasi Rigging (kiri 62%) dan Kotak Tanda Tangan Kelayakan (kanan 38%) secara sejajar.
+  - [x] **Bar Aksi Cetak Cerdas**: Tombol cetak fleksibel (*Cetak Semua Hal 1-4*, *Hal 1 Surat Jalan*, *Hal 2-3 Checklist*, *Hal 4 Blueprint Landscape*).
 
 ---
 
