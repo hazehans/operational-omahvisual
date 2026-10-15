@@ -1023,35 +1023,46 @@
     // 1. TAMPAK ATAS (TOP-DOWN 2D FLOOR PLAN)
     function generate2DTopBlueprint() {
         const bpCanvas = document.createElement('canvas');
-        bpCanvas.width = 900;
-        bpCanvas.height = 500;
+        bpCanvas.width = 1200;
+        bpCanvas.height = 600;
         const ctx = bpCanvas.getContext('2d');
 
         // Dark Technical Blueprint Background
-        ctx.fillStyle = '#0f172a';
-        ctx.fillRect(0, 0, 900, 500);
+        ctx.fillStyle = '#0a0f1d';
+        ctx.fillRect(0, 0, bpCanvas.width, bpCanvas.height);
 
-        // Technical Grid (50px = 1 meter approx)
-        const scale = 50;
-        const centerX = 450;
-        const centerY = 240;
+        // Calculate dynamic bounds of stage and all screens
+        let minX = -stageConfig.width / 2;
+        let maxX = stageConfig.width / 2;
+        let minZ = -stageConfig.depth / 2;
+        let maxZ = stageConfig.depth / 2;
 
-        ctx.strokeStyle = '#1e293b';
-        ctx.lineWidth = 1;
-        for (let x = 0; x <= 900; x += scale) {
-            ctx.beginPath();
-            ctx.moveTo(x, 0);
-            ctx.lineTo(x, 500);
-            ctx.stroke();
-        }
-        for (let y = 0; y <= 500; y += scale) {
-            ctx.beginPath();
-            ctx.moveTo(0, y);
-            ctx.lineTo(900, y);
-            ctx.stroke();
-        }
+        currentScreens.forEach(sc => {
+            const rotRad = (sc.rotY || 0) * (Math.PI / 180);
+            const halfW = (sc.width / 2);
+            const pX1 = sc.x - halfW * Math.cos(rotRad);
+            const pX2 = sc.x + halfW * Math.cos(rotRad);
+            const pZ1 = sc.z - halfW * Math.sin(rotRad);
+            const pZ2 = sc.z + halfW * Math.sin(rotRad);
+            minX = Math.min(minX, pX1, pX2);
+            maxX = Math.max(maxX, pX1, pX2);
+            minZ = Math.min(minZ, pZ1, pZ2);
+            maxZ = Math.max(maxZ, pZ1, pZ2);
+        });
 
-        // Draw Stage Platform Outline
+        const totalW = Math.max(stageConfig.width, maxX - minX);
+        const totalD = Math.max(stageConfig.depth, maxZ - minZ);
+        const contentW = totalW + 0.8;
+        const contentD = totalD + 1.2;
+
+        // Tight margins so the diagram fills ~88% of canvas area
+        const marginX = 40;
+        const marginY = 35;
+        const scale = Math.min((bpCanvas.width - marginX * 2) / contentW, (bpCanvas.height - marginY * 2) / contentD);
+        const centerX = bpCanvas.width / 2;
+        const centerY = bpCanvas.height / 2 + 10;
+
+        // Draw Stage Platform Background first
         const stageW_px = stageConfig.width * scale;
         const stageD_px = stageConfig.depth * scale;
         const stageX = centerX - stageW_px / 2;
@@ -1059,13 +1070,48 @@
 
         ctx.fillStyle = '#1e293b';
         ctx.fillRect(stageX, stageY, stageW_px, stageD_px);
+
+        // Technical Grid (1 Meter Intervals) Covering FULL CANVAS with no empty voids
+        ctx.strokeStyle = '#1e293b';
+        ctx.lineWidth = 1;
+        for (let x = centerX; x <= bpCanvas.width; x += scale) {
+            ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, bpCanvas.height); ctx.stroke();
+        }
+        for (let x = centerX - scale; x >= 0; x -= scale) {
+            ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, bpCanvas.height); ctx.stroke();
+        }
+        for (let y = centerY; y <= bpCanvas.height; y += scale) {
+            ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(bpCanvas.width, y); ctx.stroke();
+        }
+        for (let y = centerY - scale; y >= 0; y -= scale) {
+            ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(bpCanvas.width, y); ctx.stroke();
+        }
+
+        // Inside Stage: Brighter Grid Lines so grid is prominently visible on the stage floor
+        ctx.strokeStyle = '#334155';
+        ctx.lineWidth = 1.5;
+        for (let x = centerX; x <= stageX + stageW_px; x += scale) {
+            ctx.beginPath(); ctx.moveTo(x, stageY); ctx.lineTo(x, stageY + stageD_px); ctx.stroke();
+        }
+        for (let x = centerX - scale; x >= stageX; x -= scale) {
+            ctx.beginPath(); ctx.moveTo(x, stageY); ctx.lineTo(x, stageY + stageD_px); ctx.stroke();
+        }
+        for (let y = centerY; y <= stageY + stageD_px; y += scale) {
+            ctx.beginPath(); ctx.moveTo(stageX, y); ctx.lineTo(stageX + stageW_px, y); ctx.stroke();
+        }
+        for (let y = centerY - scale; y >= stageY; y -= scale) {
+            ctx.beginPath(); ctx.moveTo(stageX, y); ctx.lineTo(stageX + stageW_px, y); ctx.stroke();
+        }
+
+        // Stage Platform Outline
         ctx.strokeStyle = '#64748b';
-        ctx.lineWidth = 2.5;
+        ctx.lineWidth = 3;
         ctx.strokeRect(stageX, stageY, stageW_px, stageD_px);
 
-        // Center line (dashed)
-        ctx.strokeStyle = '#475569';
-        ctx.setLineDash([4, 4]);
+        // Center line (dashed cyan)
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([6, 6]);
         ctx.beginPath();
         ctx.moveTo(centerX, stageY);
         ctx.lineTo(centerX, stageY + stageD_px);
@@ -1074,32 +1120,60 @@
 
         // Front Edge (Bibir Panggung) - Audience Line (Thick Amber Yellow)
         ctx.strokeStyle = '#facc15';
-        ctx.lineWidth = 5;
+        ctx.lineWidth = 7;
         ctx.beginPath();
         ctx.moveTo(stageX, stageY + stageD_px);
         ctx.lineTo(stageX + stageW_px, stageY + stageD_px);
         ctx.stroke();
 
         ctx.fillStyle = '#facc15';
-        ctx.font = 'bold 12px Arial';
+        ctx.font = 'bold 15px Arial';
         ctx.textAlign = 'center';
-        ctx.fillText('▼ BIBIR PANGGUNG (MENGHADAP PENONTON / AUDIENCE) ▼', centerX, stageY + stageD_px + 20);
+        ctx.fillText('▼ BIBIR PANGGUNG (MENGHADAP PENONTON / AUDIENCE) ▼', centerX, stageY + stageD_px + 26);
 
-        // Stage Dimensions Labels
-        ctx.fillStyle = '#94a3b8';
-        ctx.font = '11px Arial';
-        ctx.fillText(`Lebar Panggung: ${stageConfig.width} Meter`, centerX, stageY - 10);
+        // Stage Dimensions Labels (Larger & Bolder) with dimension line bar
+        const dimY = stageY - 18;
+        ctx.strokeStyle = '#64748b';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(stageX, dimY);
+        ctx.lineTo(stageX + stageW_px, dimY);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(stageX, dimY - 6); ctx.lineTo(stageX, dimY + 6);
+        ctx.moveTo(stageX + stageW_px, dimY - 6); ctx.lineTo(stageX + stageW_px, dimY + 6);
+        ctx.stroke();
+
+        const widthText = `LEBAR PANGGUNG: ${stageConfig.width} METER`;
+        ctx.font = 'bold 15px Arial';
+        const wMetrics = ctx.measureText(widthText);
+        const wBadgeW = wMetrics.width + 24;
+        ctx.fillStyle = '#0a0f1d';
+        ctx.fillRect(centerX - wBadgeW / 2, dimY - 12, wBadgeW, 24);
+        ctx.strokeStyle = '#475569';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(centerX - wBadgeW / 2, dimY - 12, wBadgeW, 24);
+
+        ctx.fillStyle = '#f8fafc';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(widthText, centerX, dimY);
+        ctx.textBaseline = 'alphabetic';
         
         ctx.save();
-        ctx.translate(stageX - 15, centerY);
+        ctx.translate(stageX - 18, centerY);
         ctx.rotate(-Math.PI / 2);
-        ctx.fillText(`Kedalaman: ${stageConfig.depth}m`, 0, 0);
+        ctx.font = 'bold 15px Arial';
+        ctx.fillStyle = '#f8fafc';
+        ctx.textAlign = 'center';
+        ctx.fillText(`KEDALAMAN: ${stageConfig.depth} METER`, 0, 0);
         ctx.restore();
 
         // Draw Each LED Screen on the 2D Stage
         currentScreens.forEach((sc, idx) => {
             const scW_px = sc.width * scale;
-            const scD_px = 12; // thickness in 2D
+            const scD_px = 24; // Thicker screen bar
             const scX = centerX + (sc.x * scale);
             const scY = centerY + (sc.z * scale);
             const rotRad = (sc.rotY || 0) * (Math.PI / 180);
@@ -1109,42 +1183,75 @@
             ctx.rotate(rotRad);
 
             // Screen box
-            ctx.fillStyle = idx === 0 ? '#1e40af' : '#0369a1';
+            ctx.fillStyle = idx === 0 ? '#1d4ed8' : '#0284c7';
             ctx.fillRect(-scW_px / 2, -scD_px / 2, scW_px, scD_px);
             ctx.strokeStyle = '#38bdf8';
-            ctx.lineWidth = 2;
+            ctx.lineWidth = 3;
             ctx.strokeRect(-scW_px / 2, -scD_px / 2, scW_px, scD_px);
 
-            // Screen Name & Size Label
+            // Inside screen bar: dimensions in yellow
+            if (scW_px > 90) {
+                ctx.fillStyle = '#fef08a';
+                ctx.font = 'bold 13px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(`${sc.width}m × ${sc.height}m`, 0, 0);
+                ctx.textBaseline = 'alphabetic';
+            }
+
+            // High-contrast Pill Badge for Screen Name
+            // If screen is placed at rear half of stage (sc.z <= 0, e.g. backdrop at z = -2.8),
+            // position badge IN FRONT of the screen (badgeY = scD_px / 2 + 20) on open stage floor
+            // so it NEVER overlaps with stage back boundary or LEBAR PANGGUNG text!
+            const isRear = (sc.z || 0) <= 0;
+            const badgeY = isRear ? (scD_px / 2 + 20) : (-scD_px / 2 - 20);
+
+            const labelText = `${sc.name} (${sc.width}m × ${sc.height}m)`;
+            ctx.font = 'bold 15px Arial';
+            const metrics = ctx.measureText(labelText);
+            const badgeW = metrics.width + 24;
+            const badgeH = 26;
+
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.95)';
+            ctx.fillRect(-badgeW / 2, badgeY - badgeH / 2, badgeW, badgeH);
+            ctx.strokeStyle = idx === 0 ? '#38bdf8' : '#34d399';
+            ctx.lineWidth = 1.5;
+            ctx.strokeRect(-badgeW / 2, badgeY - badgeH / 2, badgeW, badgeH);
+
             ctx.fillStyle = '#ffffff';
-            ctx.font = 'bold 11px Arial';
             ctx.textAlign = 'center';
-            ctx.fillText(`${sc.name} (${sc.width}m × ${sc.height}m)`, 0, -12);
+            ctx.textBaseline = 'middle';
+            ctx.fillText(labelText, 0, badgeY);
+            ctx.textBaseline = 'alphabetic';
 
             if (sc.rotY && sc.rotY !== 0) {
+                const angleY = isRear ? (-scD_px / 2 - 14) : (scD_px / 2 + 14);
                 ctx.fillStyle = '#f59e0b';
-                ctx.font = '10px Arial';
-                ctx.fillText(`Sudut: ${sc.rotY}°`, 0, scD_px + 14);
+                ctx.font = 'bold 13px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(`Sudut: ${sc.rotY}°`, 0, angleY);
             }
 
             ctx.restore();
         });
 
         // Blueprint Header / Title Block
-        ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
-        ctx.fillRect(15, 15, 360, 60);
-        ctx.strokeStyle = '#334155';
-        ctx.lineWidth = 1;
-        ctx.strokeRect(15, 15, 360, 60);
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.95)';
+        ctx.fillRect(20, 20, 480, 70);
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(20, 20, 480, 70);
 
         ctx.fillStyle = '#38bdf8';
-        ctx.font = 'bold 13px Arial';
+        ctx.font = 'bold 16px Arial';
         ctx.textAlign = 'left';
-        ctx.fillText('OMAH VISUAL - BLUEPRINT TAMPAK ATAS (FLOOR PLAN)', 25, 35);
+        ctx.fillText('OMAH VISUAL - BLUEPRINT TAMPAK ATAS (FLOOR PLAN)', 32, 44);
+        ctx.fillStyle = '#e2e8f0';
+        ctx.font = '13px Arial';
+        ctx.fillText(`Format: Denah Panggung 2D • Total Layar: ${currentScreens.length} Unit`, 32, 63);
         ctx.fillStyle = '#94a3b8';
-        ctx.font = '11px Arial';
-        ctx.fillText(`Format: Denah Panggung 2D • Total Layar: ${currentScreens.length} Unit`, 25, 52);
-        ctx.fillText(`Skala: 1 Grid Kotak = 1 Meter Persegi`, 25, 67);
+        ctx.font = '12px Arial';
+        ctx.fillText(`Skala Grid: 1 Kotak = 1 Meter Persegi (${scale.toFixed(1)} px/m)`, 32, 80);
 
         // Convert to Base64 PNG Data URL
         const dataUrl = bpCanvas.toDataURL('image/png');
@@ -1169,64 +1276,82 @@
     // 2. TAMPAK DEPAN (FRONT ELEVATION / PERSPEKTIF PENONTON)
     function generate2DFrontBlueprint() {
         const bpCanvas = document.createElement('canvas');
-        bpCanvas.width = 900;
-        bpCanvas.height = 500;
+        bpCanvas.width = 1200;
+        bpCanvas.height = 600;
         const ctx = bpCanvas.getContext('2d');
 
         // Dark Technical Blueprint Background
-        ctx.fillStyle = '#0f172a';
-        ctx.fillRect(0, 0, 900, 500);
+        ctx.fillStyle = '#0a0f1d';
+        ctx.fillRect(0, 0, bpCanvas.width, bpCanvas.height);
 
-        const scale = 50; // 50px = 1 meter
-        const centerX = 450;
-        const groundY = 400; // Baseline floor (±0.00m)
+        // Calculate dynamic vertical and horizontal bounds
+        const maxScreenH = currentScreens.reduce((max, sc) => Math.max(max, sc.height || 3), 3);
+        const hasHanging = currentScreens.some(sc => sc.rigging === 'hanging');
+        const totalHM = stageConfig.height + maxScreenH + (hasHanging ? 1.4 : 0.5) + 0.6;
+        const contentW = Math.max(stageConfig.width + 1.0, 6);
 
-        // Technical Grid
+        const marginX = 45;
+        const marginY = 35;
+        const scale = Math.min((bpCanvas.width - marginX * 2) / contentW, (bpCanvas.height - marginY * 2) / totalHM);
+        const centerX = bpCanvas.width / 2;
+        const groundY = bpCanvas.height - 42; // Baseline floor (±0.00m) near bottom
+
+        // Draw Stage Platform Podium Base Fill
+        const stageW_px = stageConfig.width * scale;
+        const stageH_px = Math.max(24, stageConfig.height * scale);
+        const stageX = centerX - stageW_px / 2;
+        const stageTopY = groundY - stageH_px;
+
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(stageX, stageTopY, stageW_px, stageH_px);
+
+        // Technical Grid (1 Meter Intervals) Covering FULL CANVAS
         ctx.strokeStyle = '#1e293b';
         ctx.lineWidth = 1;
-        for (let x = 0; x <= 900; x += scale) {
-            ctx.beginPath();
-            ctx.moveTo(x, 0);
-            ctx.lineTo(x, 500);
-            ctx.stroke();
+        for (let x = centerX; x <= bpCanvas.width; x += scale) {
+            ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, bpCanvas.height); ctx.stroke();
         }
-        for (let y = 0; y <= 500; y += scale) {
-            ctx.beginPath();
-            ctx.moveTo(0, y);
-            ctx.lineTo(900, y);
-            ctx.stroke();
+        for (let x = centerX - scale; x >= 0; x -= scale) {
+            ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, bpCanvas.height); ctx.stroke();
+        }
+        for (let y = groundY; y >= 0; y -= scale) {
+            ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(bpCanvas.width, y); ctx.stroke();
+        }
+        for (let y = groundY + scale; y <= bpCanvas.height; y += scale) {
+            ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(bpCanvas.width, y); ctx.stroke();
+        }
+
+        // Inside Stage: Brighter Grid Lines
+        ctx.strokeStyle = '#334155';
+        ctx.lineWidth = 1.5;
+        for (let x = centerX; x <= stageX + stageW_px; x += scale) {
+            ctx.beginPath(); ctx.moveTo(x, stageTopY); ctx.lineTo(x, groundY); ctx.stroke();
+        }
+        for (let x = centerX - scale; x >= stageX; x -= scale) {
+            ctx.beginPath(); ctx.moveTo(x, stageTopY); ctx.lineTo(x, groundY); ctx.stroke();
         }
 
         // Draw Ground Level (±0.00m)
         ctx.strokeStyle = '#475569';
-        ctx.lineWidth = 3;
+        ctx.lineWidth = 4;
         ctx.beginPath();
         ctx.moveTo(0, groundY);
-        ctx.lineTo(900, groundY);
+        ctx.lineTo(bpCanvas.width, groundY);
         ctx.stroke();
 
-        ctx.fillStyle = '#64748b';
-        ctx.font = 'bold 11px Arial';
+        ctx.fillStyle = '#cbd5e1';
+        ctx.font = 'bold 14px Arial';
         ctx.textAlign = 'right';
-        ctx.fillText('LANTAI DASAR / GROUND LEVEL (±0.00m)', 880, groundY + 18);
+        ctx.fillText('LANTAI DASAR / GROUND LEVEL (±0.00m)', bpCanvas.width - 25, groundY + 22);
 
-        // Draw Stage Platform Podium
-        const stageW_px = stageConfig.width * scale;
-        const stageH_px = Math.max(16, stageConfig.height * scale);
-        const stageX = centerX - stageW_px / 2;
-        const stageTopY = groundY - stageH_px;
-
-        // Stage body fill
-        ctx.fillStyle = '#1e293b';
-        ctx.fillRect(stageX, stageTopY, stageW_px, stageH_px);
+        // Stage platform outline & skirt vertical slats
         ctx.strokeStyle = '#64748b';
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 2.5;
         ctx.strokeRect(stageX, stageTopY, stageW_px, stageH_px);
 
-        // Skirt vertical slats pattern on stage front
         ctx.strokeStyle = '#334155';
         ctx.lineWidth = 1;
-        for (let sx = stageX + 20; sx < stageX + stageW_px; sx += 25) {
+        for (let sx = stageX + 25; sx < stageX + stageW_px; sx += 30) {
             ctx.beginPath();
             ctx.moveTo(sx, stageTopY);
             ctx.lineTo(sx, groundY);
@@ -1235,16 +1360,17 @@
 
         // Stage Level text
         ctx.fillStyle = '#facc15';
-        ctx.font = 'bold 11px Arial';
+        ctx.font = 'bold 15px Arial';
         ctx.textAlign = 'center';
-        ctx.fillText(`LEVEL PANGGUNG (+${stageConfig.height}m) • LEBAR: ${stageConfig.width}m`, centerX, stageTopY + (stageH_px > 24 ? stageH_px / 2 + 4 : -6));
+        ctx.fillText(`LEVEL PANGGUNG (+${stageConfig.height}m) • LEBAR: ${stageConfig.width}m`, centerX, stageTopY + (stageH_px > 30 ? stageH_px / 2 + 5 : -10));
 
         // Center line dashed
-        ctx.strokeStyle = '#334155';
-        ctx.setLineDash([4, 4]);
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([6, 6]);
         ctx.beginPath();
-        ctx.moveTo(centerX, 80);
-        ctx.lineTo(centerX, groundY + 40);
+        ctx.moveTo(centerX, 90);
+        ctx.lineTo(centerX, groundY);
         ctx.stroke();
         ctx.setLineDash([]);
 
@@ -1252,7 +1378,7 @@
         currentScreens.forEach((sc, idx) => {
             const rotRad = (sc.rotY || 0) * (Math.PI / 180);
             // Projected visual width from front view
-            const scW_px = Math.max(30, sc.width * scale * Math.max(0.65, Math.abs(Math.cos(rotRad))));
+            const scW_px = Math.max(50, sc.width * scale * Math.max(0.65, Math.abs(Math.cos(rotRad))));
             const scH_px = sc.height * scale;
             const scX = centerX + (sc.x * scale);
 
@@ -1265,61 +1391,59 @@
             // Draw Rigging Hardware
             if (isHanging) {
                 // Truss Beam above screen
-                const trussY = Math.max(65, scTopY - 35);
-                const trussW = scW_px + 30;
+                const trussY = Math.max(70, scTopY - 45);
+                const trussW = scW_px + 40;
                 ctx.fillStyle = '#334155';
-                ctx.fillRect(scX - trussW / 2, trussY, trussW, 14);
+                ctx.fillRect(scX - trussW / 2, trussY, trussW, 18);
                 ctx.strokeStyle = '#94a3b8';
-                ctx.lineWidth = 1.5;
-                ctx.strokeRect(scX - trussW / 2, trussY, trussW, 14);
+                ctx.lineWidth = 2;
+                ctx.strokeRect(scX - trussW / 2, trussY, trussW, 18);
 
                 // Truss webbing pattern
-                for (let tx = scX - trussW / 2 + 10; tx < scX + trussW / 2; tx += 15) {
+                for (let tx = scX - trussW / 2 + 10; tx < scX + trussW / 2; tx += 20) {
                     ctx.beginPath();
                     ctx.moveTo(tx, trussY);
-                    ctx.lineTo(tx + 8, trussY + 14);
+                    ctx.lineTo(tx + 10, trussY + 18);
                     ctx.stroke();
                 }
 
                 // Hanging Wire Ropes / Hoists
                 ctx.strokeStyle = '#e2e8f0';
-                ctx.lineWidth = 2;
-                // Left cable
+                ctx.lineWidth = 3;
                 ctx.beginPath();
-                ctx.moveTo(scX - scW_px * 0.4, trussY + 14);
+                ctx.moveTo(scX - scW_px * 0.4, trussY + 18);
                 ctx.lineTo(scX - scW_px * 0.4, scTopY);
                 ctx.stroke();
-                // Right cable
                 ctx.beginPath();
-                ctx.moveTo(scX + scW_px * 0.4, trussY + 14);
+                ctx.moveTo(scX + scW_px * 0.4, trussY + 18);
                 ctx.lineTo(scX + scW_px * 0.4, scTopY);
                 ctx.stroke();
 
                 ctx.fillStyle = '#94a3b8';
-                ctx.font = 'bold 9px Arial';
+                ctx.font = 'bold 12px Arial';
                 ctx.textAlign = 'center';
-                ctx.fillText('TRUSS RIGGING GANTUNG', scX, trussY - 5);
+                ctx.fillText('TRUSS RIGGING GANTUNG', scX, trussY - 7);
             } else {
                 // Ground Stack Base Feet on Stage
                 ctx.fillStyle = '#475569';
-                ctx.fillRect(scX - scW_px * 0.45, stageTopY - 4, 16, 4);
-                ctx.fillRect(scX + scW_px * 0.45 - 16, stageTopY - 4, 16, 4);
-                if (scW_px > 120) {
-                    ctx.fillRect(scX - 8, stageTopY - 4, 16, 4);
+                ctx.fillRect(scX - scW_px * 0.45, stageTopY - 7, 24, 7);
+                ctx.fillRect(scX + scW_px * 0.45 - 24, stageTopY - 7, 24, 7);
+                if (scW_px > 140) {
+                    ctx.fillRect(scX - 12, stageTopY - 7, 24, 7);
                 }
             }
 
             // Screen Main Box
-            ctx.fillStyle = idx === 0 ? '#1e40af' : '#0369a1';
+            ctx.fillStyle = idx === 0 ? '#1d4ed8' : '#0284c7';
             ctx.fillRect(scX - scW_px / 2, scTopY, scW_px, scH_px);
             ctx.strokeStyle = '#38bdf8';
-            ctx.lineWidth = 2;
+            ctx.lineWidth = 3;
             ctx.strokeRect(scX - scW_px / 2, scTopY, scW_px, scH_px);
 
             // Cabinet Division Lines (0.5m grid approx)
-            ctx.strokeStyle = idx === 0 ? '#1d4ed8' : '#0284c7';
+            ctx.strokeStyle = idx === 0 ? '#1e40af' : '#0369a1';
             ctx.lineWidth = 1;
-            const cabStepX = 25; // 0.5m
+            const cabStepX = scale * 0.5;
             for (let cx = scX - scW_px / 2 + cabStepX; cx < scX + scW_px / 2; cx += cabStepX) {
                 ctx.beginPath();
                 ctx.moveTo(cx, scTopY);
@@ -1333,66 +1457,67 @@
                 ctx.stroke();
             }
 
-            // Screen Labels inside screen
+            // Screen Labels inside screen (BIG & BOLD)
             ctx.fillStyle = '#ffffff';
-            ctx.font = 'bold 12px Arial';
+            ctx.font = 'bold 18px Arial';
             ctx.textAlign = 'center';
-            ctx.fillText(sc.name, scX, scTopY + (scH_px / 2) - 8);
+            ctx.fillText(sc.name, scX, scTopY + (scH_px / 2) - 16);
 
             ctx.fillStyle = '#fef08a';
-            ctx.font = 'bold 11px Arial';
-            ctx.fillText(`${sc.width}m × ${sc.height}m`, scX, scTopY + (scH_px / 2) + 8);
+            ctx.font = 'bold 16px Arial';
+            ctx.fillText(`${sc.width}m × ${sc.height}m`, scX, scTopY + (scH_px / 2) + 6);
 
-            ctx.fillStyle = '#e2e8f0';
-            ctx.font = '9px Arial';
-            ctx.fillText(`${isHanging ? 'Rigging Gantung' : 'Ground Stack'} • ${(sc.width * sc.height).toFixed(1)} m²`, scX, scTopY + (scH_px / 2) + 22);
+            ctx.fillStyle = '#38bdf8';
+            ctx.font = 'bold 13px Arial';
+            ctx.fillText(`${isHanging ? 'Rigging Truss Gantung' : 'Ground Stack'} • ${(sc.width * sc.height).toFixed(1)} m²`, scX, scTopY + (scH_px / 2) + 26);
 
             // Vertical Height Dimension Indicator
-            const dimLineX = scX - scW_px / 2 - 12;
+            const dimLineX = scX - scW_px / 2 - 16;
             ctx.strokeStyle = '#94a3b8';
-            ctx.lineWidth = 1;
+            ctx.lineWidth = 1.5;
             ctx.beginPath();
             ctx.moveTo(dimLineX, scTopY);
             ctx.lineTo(dimLineX, scBottomY);
             ctx.stroke();
-            // Arrow caps
             ctx.beginPath();
-            ctx.moveTo(dimLineX - 3, scTopY); ctx.lineTo(dimLineX + 3, scTopY);
-            ctx.moveTo(dimLineX - 3, scBottomY); ctx.lineTo(dimLineX + 3, scBottomY);
+            ctx.moveTo(dimLineX - 4, scTopY); ctx.lineTo(dimLineX + 4, scTopY);
+            ctx.moveTo(dimLineX - 4, scBottomY); ctx.lineTo(dimLineX + 4, scBottomY);
             ctx.stroke();
 
             ctx.save();
-            ctx.translate(dimLineX - 6, scTopY + scH_px / 2);
+            ctx.translate(dimLineX - 8, scTopY + scH_px / 2);
             ctx.rotate(-Math.PI / 2);
-            ctx.fillStyle = '#94a3b8';
-            ctx.font = '9px Arial';
+            ctx.fillStyle = '#e2e8f0';
+            ctx.font = 'bold 13px Arial';
             ctx.textAlign = 'center';
-            ctx.fillText(`T: ${sc.height}m`, 0, 0);
+            ctx.fillText(`Tinggi: ${sc.height}m`, 0, 0);
             ctx.restore();
 
             // Elevation Marker at Peak
             const totalPeak = (stageConfig.height + sc.height + clearanceM).toFixed(2);
             ctx.fillStyle = '#38bdf8';
-            ctx.font = 'bold 10px Arial';
+            ctx.font = 'bold 14px Arial';
             ctx.textAlign = 'center';
-            ctx.fillText(`▲ Puncak: +${totalPeak}m`, scX, scTopY - 8);
+            ctx.fillText(`▲ Puncak: +${totalPeak}m`, scX, scTopY - 12);
         });
 
         // Blueprint Header / Title Block
-        ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
-        ctx.fillRect(15, 15, 360, 60);
-        ctx.strokeStyle = '#334155';
-        ctx.lineWidth = 1;
-        ctx.strokeRect(15, 15, 360, 60);
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.95)';
+        ctx.fillRect(20, 20, 480, 70);
+        ctx.strokeStyle = '#facc15';
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(20, 20, 480, 70);
 
         ctx.fillStyle = '#facc15';
-        ctx.font = 'bold 13px Arial';
+        ctx.font = 'bold 16px Arial';
         ctx.textAlign = 'left';
-        ctx.fillText('OMAH VISUAL - BLUEPRINT ELEVASI TAMPAK DEPAN', 25, 35);
+        ctx.fillText('OMAH VISUAL - BLUEPRINT ELEVASI TAMPAK DEPAN', 32, 44);
+        ctx.fillStyle = '#e2e8f0';
+        ctx.font = '13px Arial';
+        ctx.fillText(`Format: Tampak Depan Penonton • Total Layar: ${currentScreens.length} Unit`, 32, 63);
         ctx.fillStyle = '#94a3b8';
-        ctx.font = '11px Arial';
-        ctx.fillText(`Format: Tampak Depan Penonton • Total Layar: ${currentScreens.length} Unit`, 25, 52);
-        ctx.fillText(`Level Panggung: +${stageConfig.height}m • Skala: 1 Meter = 50px`, 25, 67);
+        ctx.font = '12px Arial';
+        ctx.fillText(`Level Panggung: +${stageConfig.height}m • Skala Dinamis: ${scale.toFixed(1)} px/m`, 32, 80);
 
         // Convert to Base64 PNG Data URL
         const dataUrl = bpCanvas.toDataURL('image/png');

@@ -192,6 +192,12 @@
                     <button type="submit" class="w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs uppercase tracking-wider shadow-lg shadow-indigo-600/25 transition-all">
                         Perbarui Status Unit
                     </button>
+
+                    <div class="pt-2 border-t border-slate-800">
+                        <a href="{{ route('service-tickets.create', ['asset_id' => $asset->id]) }}" class="w-full py-2.5 px-4 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 text-xs font-bold transition-all flex items-center justify-center gap-2">
+                            <span>🛠️ Buka Tiket Servis Workshop</span>
+                        </a>
+                    </div>
                 </form>
             </div>
         </div>

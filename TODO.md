@@ -177,15 +177,39 @@
 ---
 
 ## 📌 Catatan Revisi & Penyempurnaan (Priority Status)
-- [x] **Peningkatan Skala Tipografi & Format Cetak Hybrid Portrait/Landscape (`spk/print.blade.php`)** — ✅ Selesai:
-  - [x] **Skalasi Ukuran Font (Membesar & Jelas Dibaca)**:
-    - Halaman 1: Font informasi klien, jadwal event/loading, armada mobil, dan kru diperbesar menjadi `11px` (sebelumnya `9.5px`), kotak tanda tangan diperbesar menjadi `10.5px`, teks lebih nyaman dibaca tanpa mengecilkan mata.
-    - Halaman 2 (Checklist 53 Item) & Halaman 3 (Checklist 48 Item): Font diperbesar dari `8px` menjadi `9px` / `9.5px` dengan padding sel `2px 4px`, tetap pas dalam 1 lembar A4 portrait tanpa tumpah ke halaman berikutnya.
-  - [x] **Halaman 4 Khusus Blueprint: Orientasi A4 LANDSCAPE (Wide)**:
-    - Menggunakan named page CSS `@page landscape-sheet { size: A4 landscape; margin: 8mm 10mm; }` sehingga lembar 4 otomatis berorientasi horizontal saat dicetak atau diekspor ke PDF.
-    - Layout **Side-by-Side (Berdampingan)**: Diagram Tampak Atas (Denah Panggung) dan Tampak Depan (Elevasi Penonton) ditampilkan berdampingan selebar layar dengan `max-height: 220px` (memanfaatkan aspek rasio 16:9 widescreen panggung LED secara dramatis lebih besar dan megah).
-    - Bagian bawah menampilkan Tabel Spesifikasi Rigging (kiri 62%) dan Kotak Tanda Tangan Kelayakan (kanan 38%) secara sejajar.
-  - [x] **Bar Aksi Cetak Cerdas**: Tombol cetak fleksibel (*Cetak Semua Hal 1-4*, *Hal 1 Surat Jalan*, *Hal 2-3 Checklist*, *Hal 4 Blueprint Landscape*).
+- [x] **Penyempurnaan Kalibrasi Cetak SPK A4 Sesuai Review Hans (`spk/print.blade.php` & `stage-designer-3d.blade.php`)** — ✅ Selesai:
+  - [x] **Skalasi Tipografi & Keterbacaan Cetak Menyeluruh (Dibuat Jauh Lebih Besar & Tegas)**:
+    - **Halaman 1 (Serah Terima & Surat Jalan)**: Font isi tabel detail event, penugasan kru, dan kelengkapan armada mobil diperbesar menjadi `11.5px` (sebelumnya `9.5px` - `11px`), judul header `16px`, tabel tanda tangan `10.5px` dengan tinggi bidang tanda tangan `44px`.
+    - **Halaman 1 (Docking Tanda Tangan ke Dasar Halaman)**: Blok pernyataan tanggung jawab (*"- Dengan menandatangani checklist ini, berarti kamu bertanggung jawab penuh atas isi checklist..."*) beserta banner KEBERANGKATAN, peringatan PIC Berbeda, dan banner KEPULANGAN didorong rapat ke bagian paling bawah lembar cetak menggunakan flexbox column (`min-height: 275mm` dengan `margin-top: auto;`), berfungsi rapi menyerupai grounded footer.
+    - **Halaman 2 (Checklist 53 Item) & Halaman 3 (Checklist 48 Item)**: Font isi tabel dinaikkan menjadi `10px`, judul kategori `10.5px bold`, padding sel `2.5px 4px`, mengisi bidang vertikal lembar A4 secara mantap dan nyaman dibaca saat berdiri tanpa tumpah ke lembar berikutnya.
+  - [x] **Halaman 4 (Blueprint Teknis Panggung & Formasi Layar LED - A4 Portrait Vertikal)**:
+    - **Peningkatan Resolusi & Skala Maksimal (~88% Kanvas)**: Resolusi kanvas dinaikkan ke **1200 × 600 px** (dari 1000 × 460) dengan margin ketat, sehingga panggung dan seluruh layar LED terproyeksikan hingga **70-100+ px/meter** (meningkat lebih dari +55% lebih besar dibanding versi awal).
+    - **Skalasi Tipografi Ekstra Besar (14px s/d 18px Bold)**:
+      - Judul layar dan dimensi dilengkapi *contrast pill badge* berbingkai neon dengan font `15px - 18px bold` putih dan kuning menyala, sangat kontras di atas grid.
+      - Peringatan bibir panggung, ukuran panggung, elevasi puncak (+X.XXm), dan ketinggian vertikal diperbesar ke `13px - 16px bold`.
+    - **Susunan Vertikal (ATAS - BAWAH) Selebar Penuh Kertas**:
+      1. **Atas**: Diagram 1 Tampak Atas (Top-Down Floor Plan) lebar 100% dengan `max-height: 94mm`.
+      2. **Bawah**: Diagram 2 Tampak Depan (Front Elevation / Perspektif Penonton) lebar 100% dengan `max-height: 94mm`.
+      3. **Dasar**: Tabel Spesifikasi Rigging (kiri 62%) dan Lembar Pengesahan Kelayakan Rigging (kanan 38%).
+    - **Resolusi Overlap Label Layar & Dimensi Panggung**: Label badge layar belakang (seperti *Main Screen*) kini secara cerdas diposisikan di sisi depan layar (`badgeY = +scD_px/2 + 20` mengarah ke lantai panggung yang lapang), dan teks `LEBAR PANGGUNG: XX METER` dilengkapi bilah garis dimensi arsitektural dengan batas tick mark mandiri di atas panggung, sehingga 100% bebas dari tumpang tindih teks dalam posisi formasi apa pun.
+    - **Engine Auto-Render Real-Time di View Cetak**: File `print.blade.php` kini dilengkapi auto-renderer berbasis client-side canvas yang otomatis me-render blueprint resolusi tinggi 1200x600 saat halaman cetak dibuka, sehingga hasil cetak fisik maupun PDF selalu mendapatkan kualitas grafis terbaik tanpa terpengaruh cache gambar lama di database.
+  - [x] **Restriksi Akses Menu Event & Persewaan LED (Fokus Operasional Inventori Murni)**:
+    - Menu sidebar "Event & Persewaan LED" (`orders.index`, `spk.*`) kini dibatasi hanya dapat dilihat oleh user dengan role **Owner** dan **Superuser** via `@hasanyrole('Owner|Superuser')` di `layouts/app.blade.php`.
+    - User staf gudang (Warehouse/Admin) difokuskan 100% pada alur inventori fisik murni (Master Barang, Lemari 1-3, Saldo Awal, dan Mutasi Stok harian).
+  - [x] **Modul Terintegrasi: Servis & Pemeliharaan Unit LED (Workshop & Karantina Inventori)** — ✅ Selesai:
+    - [x] **Skema Basis Data**: Tabel `service_tickets` (nomor tiket `SRV-YYYYMM-XXXX`, pelapor, teknisi PJ, prioritas, diagnosa, tindakan, mutasi lokasi) dan `service_spareparts` (suku cadang terpakai).
+    - [x] **Siklus Hidup Karantina & Mutasi Stok Otomatis**:
+      - Saat tiket dibuat: Unit individual otomatis berganti status menjadi `maintenance` & `in_service` dan ditransfer ke *Workshop*. Untuk barang kuantitas (modul/kabel), saldo `available` dipotong dan saldo `in_service` di Workshop bertambah.
+      - Konsumsi sparepart: Mengambil komponen dari Lemari 2 (IC driver, PSU, mata LED) langsung memotong stok via mutasi *outbound*.
+      - Penyelesaian Lolos QC: Status barang otomatis kembali menjadi `available` & `in_storage` dan ditransfer kembali ke rak tujuan, memulihkan saldo siap sewa.
+      - Opsi Afkir / Rusak Total: Barang ditandai sebagai `scrapped` / `damaged`.
+    - [x] **Antarmuka Pengguna Lengkap**:
+      - Katalog tiket servis (`service_tickets/index.blade.php`) dengan kartu metrik (Antrean, Pengerjaan, Tunggu Part, Uji QC, Selesai).
+      - Formulir tiket baru (`service_tickets/create.blade.php`) terintegrasi langsung dengan pilihan aset dan kuantitas.
+      - Lembar kerja teknisi (`service_tickets/show.blade.php`) dengan timeline status, form diagnosa, tabel konsumsi sparepart modal, dan tombol pengembalian ke rak siap sewa.
+      - Pintasan cepat *"🛠️ Buka Tiket Servis Workshop"* di halaman profil detail aset (`assets/show.blade.php`).
+      - Peningkatan kolom tabel [Master Barang](file:///d:/Job/ID_CV%20Han%20Media%20Tekindo/operational-omahvisual/resources/views/products/index.blade.php) yang kini secara tegas menampilkan **"X unit siap sewa"** dan badge **"[Y dalam servis]"** secara real-time.
+    - [x] **Pengujian Otomatis Komprehensif**: `tests/Feature/ServiceTicketAndWorkshopTest.php` (7 tests baru lulus 100%, total suite **50 tests, 319 assertions**).
 
 ---
 

@@ -9,6 +9,7 @@ use App\Http\Controllers\InitialCountController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ServiceTicketController;
 use App\Http\Controllers\SpkController;
 use App\Http\Controllers\StockAdjustmentController;
 use App\Http\Controllers\StockMovementController;
@@ -64,6 +65,16 @@ Route::middleware('auth')->group(function () {
     Route::post('/adjustments', [StockAdjustmentController::class, 'store'])->name('adjustments.store');
     Route::post('/adjustments/{adjustment}/approve', [StockAdjustmentController::class, 'approve'])->name('adjustments.approve');
     Route::post('/adjustments/{adjustment}/reject', [StockAdjustmentController::class, 'reject'])->name('adjustments.reject');
+
+    // Service & Workshop Maintenance
+    Route::get('/service-tickets', [ServiceTicketController::class, 'index'])->name('service-tickets.index');
+    Route::get('/service-tickets/create', [ServiceTicketController::class, 'create'])->name('service-tickets.create');
+    Route::post('/service-tickets', [ServiceTicketController::class, 'store'])->name('service-tickets.store');
+    Route::get('/service-tickets/{ticket}', [ServiceTicketController::class, 'show'])->name('service-tickets.show');
+    Route::put('/service-tickets/{ticket}', [ServiceTicketController::class, 'update'])->name('service-tickets.update');
+    Route::put('/service-tickets/{ticket}/status', [ServiceTicketController::class, 'updateStatus'])->name('service-tickets.update-status');
+    Route::post('/service-tickets/{ticket}/spareparts', [ServiceTicketController::class, 'addSparepart'])->name('service-tickets.spareparts.store');
+    Route::delete('/service-tickets/{ticket}/spareparts/{sparepart}', [ServiceTicketController::class, 'removeSparepart'])->name('service-tickets.spareparts.destroy');
 
     // Audit Trail
     Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');

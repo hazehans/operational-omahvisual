@@ -18,7 +18,7 @@ class ProductController extends Controller
      */
     public function index(Request $request): View
     {
-        $query = Product::with(['category', 'unit', 'stockBalances.location'])
+        $query = Product::with(['category', 'unit', 'stockBalances.location', 'assets'])
             ->withCount(['assets', 'stockBalances']);
 
         if ($request->filled('search')) {

@@ -53,6 +53,11 @@ class Product extends Model
         return $this->hasMany(StockBalance::class);
     }
 
+    public function serviceTickets(): HasMany
+    {
+        return $this->hasMany(ServiceTicket::class);
+    }
+
     public function isIndividual(): bool
     {
         return $this->tracking_type === 'individual';

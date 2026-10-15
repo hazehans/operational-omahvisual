@@ -134,13 +134,31 @@
                             </td>
                             <td class="px-5 py-4 text-center">
                                 @if($prod->tracking_type === 'individual')
-                                    <span class="font-mono font-bold text-white text-base">{{ $prod->assets_count }}</span>
-                                    <span class="text-xs text-slate-400 block">unit terdaftar</span>
+                                    @php
+                                        $readyCount = $prod->assets->where('condition', 'available')->where('status', 'in_storage')->count();
+                                        $serviceCount = $prod->assets->whereIn('condition', ['in_service', 'damaged'])->count();
+                                    @endphp
+                                    <span class="font-mono font-bold text-emerald-400 text-base">{{ $readyCount }}</span>
+                                    <span class="text-xs text-slate-400 block">siap sewa (dari {{ $prod->assets_count }})</span>
+                                    @if($serviceCount > 0)
+                                        <span class="inline-block mt-0.5 px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                                            {{ $serviceCount }} dalam servis
+                                        </span>
+                                    @endif
                                 @else
-                                    <span class="font-mono font-bold text-white text-base">
-                                        {{ (float) $prod->stockBalances->where('condition', 'available')->sum('quantity') }}
+                                    @php
+                                        $readyQty = (float) $prod->stockBalances->where('condition', 'available')->sum('quantity');
+                                        $serviceQty = (float) $prod->stockBalances->where('condition', 'in_service')->sum('quantity');
+                                    @endphp
+                                    <span class="font-mono font-bold text-emerald-400 text-base">
+                                        {{ $readyQty }}
                                     </span>
-                                    <span class="text-xs text-emerald-400 font-medium block">siap sewa</span>
+                                    <span class="text-xs text-slate-400 block">{{ $prod->unit->symbol ?? 'unit' }} siap sewa</span>
+                                    @if($serviceQty > 0)
+                                        <span class="inline-block mt-0.5 px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                                            {{ $serviceQty }} dalam servis
+                                        </span>
+                                    @endif
                                 @endif
                             </td>
                             <td class="px-5 py-4 text-right space-x-2">

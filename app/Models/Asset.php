@@ -38,6 +38,11 @@ class Asset extends Model
         return $this->hasMany(StockMovementItem::class);
     }
 
+    public function serviceTickets(): HasMany
+    {
+        return $this->hasMany(ServiceTicket::class);
+    }
+
     /**
      * Auto-generate kode aset unik Omah Visual LED
      * Format: OVL-AST-YYYYMM-XXXX (contoh: OVL-AST-202610-0001)
