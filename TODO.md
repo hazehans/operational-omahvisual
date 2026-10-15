@@ -176,10 +176,14 @@
 
 ---
 
-## 📌 Catatan Revisi & Prioritas Sesi Berikutnya (Next Session Priority)
-- [ ] **Revisi Skala & Margin Layout Printout A4 SPK (`spk/print.blade.php`)**:
-  - Investigasi dan penyesuaian CSS print `@page { size: A4 portrait; margin: ... }` agar seluruh elemen di Halaman 1 s/d Halaman 4 tercetak 100% pas tanpa ada bagian tepi/tabel yang terpotong saat diekspor ke PDF atau dicetak printer fisik.
-  - Opsi pengaturan zoom/skala atau penyesuaian padding tabel data Halaman 2, 3, dan 4.
+## 📌 Catatan Revisi & Penyempurnaan (Priority Status)
+- [x] **Revisi Skala & Margin Layout Printout A4 SPK (`spk/print.blade.php`)** — ✅ Selesai:
+  - [x] Eliminasi masalah *double margin*: `@page { margin: 8mm 10mm; }` dan pembersihan padding kontainer pada `@media print` sehingga area cetak presisi 100%.
+  - [x] Halaman 1 (Serah Terima): Merapikan jarak margin antar-blok, proporsi thumbnail blueprint (max-height 110px), dan kotak tanda tangan keberangkatan & kepulangan pas di lembar 1.
+  - [x] Halaman 2 (Checklist Muatan Tim): Kalibrasi padding tabel mikro (`1.5px 3px`, font 8px, line-height 1.15) sehingga seluruh 53 item barang kerja pas 1 lembar utuh tanpa tumpah ke halaman baru.
+  - [x] Halaman 3 (Checklist PIC): Kalibrasi padding tabel mikro sehingga seluruh 48 item kit & spares pas 1 lembar utuh.
+  - [x] Halaman 4 (Blueprint Teknis): Proporsi gambar Tampak Atas & Tampak Depan (max-height 165px), tabel spesifikasi rigging, dan box tanda tangan kelayakan pas 1 lembar utuh.
+  - [x] Bar Aksi Cetak Interaktif: Fitur cetak fleksibel per kebutuhan (Cetak Lengkap Hal 1-4, Cetak Hal 1 Surat Jalan, Cetak Hal 2-3 Checklist Gudang, atau Cetak Hal 4 Blueprint Rigging).
 
 ---
 
