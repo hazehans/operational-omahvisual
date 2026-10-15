@@ -50,6 +50,8 @@ class ProductController extends Controller
      */
     public function create(): View
     {
+        abort_if(! auth()->user()->can('create product'), 403, 'Anda tidak memiliki hak akses untuk menambah barang.');
+
         $categories = Category::where('is_active', true)->orderBy('name')->get();
         $units = Unit::orderBy('name')->get();
 
@@ -61,6 +63,7 @@ class ProductController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        abort_if(! auth()->user()->can('create product'), 403, 'Anda tidak memiliki hak akses untuk menambah barang.');
         $validated = $request->validate([
             'category_id' => ['required', 'exists:categories,id'],
             'unit_id' => ['required', 'exists:units,id'],
@@ -121,6 +124,8 @@ class ProductController extends Controller
      */
     public function edit(Product $product): View
     {
+        abort_if(! auth()->user()->can('edit product'), 403, 'Anda tidak memiliki hak akses untuk mengedit data barang.');
+
         $categories = Category::where('is_active', true)->orderBy('name')->get();
         $units = Unit::orderBy('name')->get();
 
@@ -132,6 +137,7 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product): RedirectResponse
     {
+        abort_if(! auth()->user()->can('edit product'), 403, 'Anda tidak memiliki hak akses untuk mengedit data barang.');
         $validated = $request->validate([
             'category_id' => ['required', 'exists:categories,id'],
             'unit_id' => ['required', 'exists:units,id'],

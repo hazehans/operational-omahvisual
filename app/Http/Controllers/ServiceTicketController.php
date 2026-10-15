@@ -77,6 +77,8 @@ class ServiceTicketController extends Controller
      */
     public function create(Request $request): View
     {
+        abort_if(! Auth::user()->can('create service ticket'), 403, 'Anda tidak memiliki hak akses untuk membuka tiket servis baru.');
+
         $preselectedProduct = null;
         $preselectedAsset = null;
 
@@ -112,6 +114,17 @@ class ServiceTicketController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        abort_if(! Auth::user()->can('create service ticket'), 403, 'Anda tidak memiliki hak akses untuk membuka tiket servis baru.');
+
+        if (! $request->filled('workshop_location_id')) {
+            $defaultWorkshop = Location::where('name', 'ILIKE', '%Workshop%')->first()
+                ?? Location::where('name', 'ILIKE', '%Servis%')->first()
+                ?? Location::first();
+            if ($defaultWorkshop) {
+                $request->merge(['workshop_location_id' => $defaultWorkshop->id]);
+            }
+        }
+
         $validated = $request->validate([
             'product_id' => ['required', 'exists:products,id'],
             'asset_id' => ['nullable', 'exists:assets,id'],
@@ -208,7 +221,7 @@ class ServiceTicketController extends Controller
                     ->where('ownership', 'company')
                     ->first();
                 if ($srcBalance) {
-                    $srcBalance->decrement('quantity', $validated['quantity']);
+                    $srcBalance->decrement('quantity', (float) $validated['quantity']);
                 }
 
                 // Tambahkan ke workshop (kondisi in_service)
@@ -221,7 +234,7 @@ class ServiceTicketController extends Controller
                     ],
                     ['quantity' => 0]
                 );
-                $workshopBalance->increment('quantity', $validated['quantity']);
+                $workshopBalance->increment('quantity', (float) $validated['quantity']);
             }
 
             // Audit Trail
@@ -267,7 +280,12 @@ class ServiceTicketController extends Controller
             ->orderBy('name')
             ->get();
 
-        return view('service_tickets.show', compact('ticket', 'locations', 'technicians', 'sparepartProducts'));
+        $defaultSparepartLocation = Location::where('name', 'ILIKE', '%Sparepart%')->first()
+            ?? Location::where('name', 'ILIKE', '%Workshop%')->first()
+            ?? $ticket->workshopLocation
+            ?? $locations->first();
+
+        return view('service_tickets.show', compact('ticket', 'locations', 'technicians', 'sparepartProducts', 'defaultSparepartLocation'));
     }
 
     /**
@@ -275,6 +293,8 @@ class ServiceTicketController extends Controller
      */
     public function update(Request $request, ServiceTicket $ticket): RedirectResponse
     {
+        abort_if(! Auth::user()->can('execute service ticket'), 403, 'Hanya Teknisi Servis atau Superuser yang berwenang memperbarui lembar kerja teknisi.');
+
         $validated = $request->validate([
             'diagnosis' => ['nullable', 'string'],
             'action_taken' => ['nullable', 'string'],
@@ -303,6 +323,8 @@ class ServiceTicketController extends Controller
      */
     public function updateStatus(Request $request, ServiceTicket $ticket): RedirectResponse
     {
+        abort_if(! Auth::user()->can('execute service ticket'), 403, 'Hanya Teknisi Servis atau Superuser yang berwenang mengubah status pengerjaan atau menyelesaikan servis.');
+
         $validated = $request->validate([
             'status' => ['required', 'in:pending_inspection,in_progress,waiting_parts,quality_control,completed,scrapped'],
             'return_location_id' => ['nullable', 'required_if:status,completed', 'exists:locations,id'],
@@ -371,7 +393,7 @@ class ServiceTicketController extends Controller
                         ->where('ownership', 'company')
                         ->first();
                     if ($workshopBalance) {
-                        $workshopBalance->decrement('quantity', $ticket->quantity);
+                        $workshopBalance->decrement('quantity', (float) $ticket->quantity);
                     }
 
                     // Tambahkan available ke rak tujuan
@@ -384,7 +406,7 @@ class ServiceTicketController extends Controller
                         ],
                         ['quantity' => 0]
                     );
-                    $returnBalance->increment('quantity', $ticket->quantity);
+                    $returnBalance->increment('quantity', (float) $ticket->quantity);
                 }
             }
 
@@ -405,7 +427,7 @@ class ServiceTicketController extends Controller
                         ->where('ownership', 'company')
                         ->first();
                     if ($workshopBalance) {
-                        $workshopBalance->decrement('quantity', $ticket->quantity);
+                        $workshopBalance->decrement('quantity', (float) $ticket->quantity);
                     }
 
                     $damagedBalance = StockBalance::firstOrCreate(
@@ -417,7 +439,7 @@ class ServiceTicketController extends Controller
                         ],
                         ['quantity' => 0]
                     );
-                    $damagedBalance->increment('quantity', $ticket->quantity);
+                    $damagedBalance->increment('quantity', (float) $ticket->quantity);
                 }
             }
 
@@ -441,6 +463,18 @@ class ServiceTicketController extends Controller
      */
     public function addSparepart(Request $request, ServiceTicket $ticket): RedirectResponse
     {
+        abort_if(! Auth::user()->can('execute service ticket'), 403, 'Hanya Teknisi Servis atau Superuser yang berwenang mencatat pemakaian suku cadang.');
+
+        if (! $request->filled('source_location_id')) {
+            $defaultLocation = Location::where('name', 'ILIKE', '%Sparepart%')->first()
+                ?? Location::where('name', 'ILIKE', '%Workshop%')->first()
+                ?? $ticket->workshopLocation
+                ?? Location::first();
+            if ($defaultLocation) {
+                $request->merge(['source_location_id' => $defaultLocation->id]);
+            }
+        }
+
         $validated = $request->validate([
             'sparepart_product_id' => ['required', 'exists:products,id'],
             'source_location_id' => ['required', 'exists:locations,id'],
@@ -465,7 +499,7 @@ class ServiceTicketController extends Controller
 
         DB::transaction(function () use ($ticket, $sparepartProduct, $validated, $balance) {
             // 1. Kurangi stok suku cadang dari lemari
-            $balance->decrement('quantity', $validated['quantity']);
+            $balance->decrement('quantity', (float) $validated['quantity']);
 
             // 2. Buat record pemakaian suku cadang
             ServiceSparepart::create([
@@ -516,6 +550,8 @@ class ServiceTicketController extends Controller
      */
     public function removeSparepart(ServiceTicket $ticket, ServiceSparepart $sparepart): RedirectResponse
     {
+        abort_if(! Auth::user()->can('execute service ticket'), 403, 'Hanya Teknisi Servis atau Superuser yang berwenang membatalkan pemakaian suku cadang.');
+
         if ($sparepart->service_ticket_id !== $ticket->id) {
             abort(403);
         }
@@ -531,7 +567,7 @@ class ServiceTicketController extends Controller
                 ],
                 ['quantity' => 0]
             );
-            $balance->increment('quantity', $sparepart->quantity);
+            $balance->increment('quantity', (float) $sparepart->quantity);
 
             $sparepartName = $sparepart->product->name ?? 'Sparepart';
             $sparepart->delete();

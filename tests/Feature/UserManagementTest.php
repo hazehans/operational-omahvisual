@@ -3,11 +3,14 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
 class UserManagementTest extends TestCase
 {
+    use DatabaseTransactions;
+
     protected User $superuser;
 
     protected User $owner;
@@ -36,7 +39,7 @@ class UserManagementTest extends TestCase
 
     public function test_superuser_and_owner_can_view_users_index(): void
     {
-        $responseSuper = $this->actingAs($this->superuser)->get(route('users.index'));
+        $responseSuper = $this->actingAs($this->superuser)->get(route('users.index', ['search' => 'super@omahvisual.com']));
         $responseSuper->assertStatus(200);
         $responseSuper->assertSee('Manajemen Pengguna');
         $responseSuper->assertSee('super@omahvisual.com');

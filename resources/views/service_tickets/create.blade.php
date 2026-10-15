@@ -97,18 +97,19 @@
                     @enderror
                 </div>
 
-                <!-- Workshop Location -->
+                <!-- Workshop Location (Terkunci ke Ruang Servis / Workshop) -->
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
-                        Tujuan Bengkel Servis <span class="text-rose-500">*</span>
+                        Tujuan Bengkel Servis <span class="text-xs text-slate-500 font-normal">(Otomatis Ruang Servis)</span>
                     </label>
-                    <select name="workshop_location_id" id="workshop_location_id" required class="w-full px-4 py-2.5 rounded-xl text-sm bg-slate-950/60 border border-slate-800 text-white focus:outline-none focus:border-indigo-500">
-                        @foreach($locations as $loc)
-                            <option value="{{ $loc->id }}" {{ (old('workshop_location_id', $defaultWorkshop->id ?? '') == $loc->id) ? 'selected' : '' }}>
-                                {{ $loc->name }}
-                            </option>
-                        @endforeach
-                    </select>
+                    <input type="hidden" name="workshop_location_id" value="{{ $defaultWorkshop->id }}">
+                    <div class="w-full px-4 py-2.5 rounded-xl text-sm bg-slate-950/40 border border-slate-800 text-slate-200 flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <span class="text-base">🛠️</span>
+                            <span class="font-bold text-white">{{ $defaultWorkshop->name }}</span>
+                        </div>
+                        <span class="text-[11px] px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 font-medium">Terpusat di Ruang Servis</span>
+                    </div>
                     @error('workshop_location_id')
                         <p class="text-xs text-rose-500 mt-1">{{ $message }}</p>
                     @enderror

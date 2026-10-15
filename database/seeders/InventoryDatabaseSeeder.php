@@ -32,6 +32,8 @@ class InventoryDatabaseSeeder extends Seeder
             'verify stock count',
             'view audit logs',
             'manage service tickets',
+            'create service ticket',
+            'execute service ticket',
             'manage users',
         ];
 
@@ -47,21 +49,21 @@ class InventoryDatabaseSeeder extends Seeder
             'view inventory', 'create product', 'edit product', 'manage locations',
             'record movement', 'request stock adjustment', 'approve stock adjustment',
             'conduct stock count', 'verify stock count', 'view audit logs',
-            'manage service tickets',
+            'manage service tickets', 'create service ticket', 'execute service ticket',
         ]);
 
         $warehouseRole = Role::firstOrCreate(['name' => 'Warehouse']);
         $warehouseRole->syncPermissions([
             'view inventory', 'create product', 'edit product', 'manage locations',
             'record movement', 'request stock adjustment', 'conduct stock count',
-            'verify stock count', 'manage service tickets',
+            'verify stock count', 'create service ticket',
         ]);
 
         $adminRole = Role::firstOrCreate(['name' => 'Admin LED']);
         $adminRole->syncPermissions(['view inventory', 'record movement']);
 
         $teknisiRole = Role::firstOrCreate(['name' => 'Teknisi Servis']);
-        $teknisiRole->syncPermissions(['view inventory', 'manage service tickets']);
+        $teknisiRole->syncPermissions(['view inventory', 'execute service ticket']);
 
         $superuserRole = Role::firstOrCreate(['name' => 'Superuser']);
         $superuserRole->syncPermissions(Permission::all());

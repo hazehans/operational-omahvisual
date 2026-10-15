@@ -12,12 +12,14 @@
             <h1 class="text-2xl font-bold text-white">Master Barang & Spesifikasi</h1>
             <p class="text-sm text-slate-400 mt-1">Kelola data induk kabinet LED, processor, rigging, kabel, dan sparepart</p>
         </div>
+        @can('create product')
         <a href="{{ route('products.create') }}" class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-bold uppercase tracking-wider shadow-lg shadow-indigo-600/30 transition-all flex items-center gap-2 self-start sm:self-auto">
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
             </svg>
             <span>Tambah Barang Baru</span>
         </a>
+        @endcan
     </div>
 
     <!-- Filters & Search Bar -->
@@ -168,11 +170,13 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                     </svg>
                                 </a>
+                                @can('edit product')
                                 <a href="{{ route('products.edit', $prod) }}" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white inline-block transition-colors" title="Edit">
                                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                                     </svg>
                                 </a>
+                                @endcan
                             </td>
                         </tr>
                     @empty

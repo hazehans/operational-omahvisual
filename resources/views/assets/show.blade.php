@@ -142,63 +142,93 @@
         <!-- Form Ubah Kondisi & Status Cepat (1 Col) -->
         <div>
             <div class="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 shadow-xl space-y-5 sticky top-24">
-                <h3 class="text-sm font-bold text-white">Perbarui Status & Kondisi Fisik</h3>
-                <p class="text-xs text-slate-400">Gunakan form ini untuk mencatat unit yang rusak di lapangan atau masuk ke bengkel servis.</p>
-
-                <form action="{{ route('assets.update-status', $asset) }}" method="POST" class="space-y-4">
-                    @csrf
-                    @method('PUT')
-
-                    <!-- Kondisi Fisik -->
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-300 mb-1.5 uppercase">Kondisi Fisik *</label>
-                        <select name="condition" required class="w-full px-3 py-2 rounded-xl bg-slate-950/60 border border-slate-800 text-xs text-white focus:outline-none focus:border-indigo-500">
-                            <option value="available" {{ $asset->condition === 'available' ? 'selected' : '' }}>Bagus / Siap Sewa</option>
-                            <option value="damaged" {{ $asset->condition === 'damaged' ? 'selected' : '' }}>Rusak (Perlu Penanganan)</option>
-                            <option value="in_service" {{ $asset->condition === 'in_service' ? 'selected' : '' }}>Dalam Servis (Workshop)</option>
-                        </select>
+                @if(Auth::user()->hasRole('Teknisi Servis'))
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-indigo-400">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span>Status Terkunci Sistem</span>
+                        </div>
+                        <p class="text-xs text-slate-400 leading-relaxed">
+                            Status dan kondisi unit individual ini diperbarui secara otomatis melalui alur kerja <strong>Tiket Servis &amp; Workshop</strong> setelah lolos pengujian QC.
+                        </p>
+                        <div class="p-4 rounded-xl bg-slate-950/60 border border-slate-800 space-y-2.5 text-xs">
+                            <div class="flex justify-between">
+                                <span class="text-slate-400">Kondisi Fisik:</span>
+                                <span class="font-bold text-white">{{ $asset->condition_label }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-400">Status Penempatan:</span>
+                                <span class="font-bold text-white">{{ $asset->status_label }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-400">Lokasi Fisik:</span>
+                                <span class="font-bold text-amber-400">{{ $asset->currentLocation->name ?? 'Gudang' }}</span>
+                            </div>
+                        </div>
                     </div>
+                @else
+                    <h3 class="text-sm font-bold text-white">Perbarui Status &amp; Kondisi Fisik</h3>
+                    <p class="text-xs text-slate-400">Gunakan form ini untuk mencatat unit yang rusak di lapangan atau penyesuaian lokasi.</p>
 
-                    <!-- Status Penggunaan -->
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-300 mb-1.5 uppercase">Status Penempatan *</label>
-                        <select name="status" required class="w-full px-3 py-2 rounded-xl bg-slate-950/60 border border-slate-800 text-xs text-white focus:outline-none focus:border-indigo-500">
-                            <option value="in_storage" {{ $asset->status === 'in_storage' ? 'selected' : '' }}>Tersimpan di Gudang</option>
-                            <option value="deployed" {{ $asset->status === 'deployed' ? 'selected' : '' }}>Sedang di Venue / Event</option>
-                            <option value="maintenance" {{ $asset->status === 'maintenance' ? 'selected' : '' }}>Perbaikan / Servis</option>
-                            <option value="lost" {{ $asset->status === 'lost' ? 'selected' : '' }}>Hilang / Tertinggal</option>
-                        </select>
-                    </div>
+                    <form action="{{ route('assets.update-status', $asset) }}" method="POST" class="space-y-4">
+                        @csrf
+                        @method('PUT')
 
-                    <!-- Lokasi Penyimpanan -->
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-300 mb-1.5 uppercase">Lokasi / Lemari *</label>
-                        <select name="current_location_id" required class="w-full px-3 py-2 rounded-xl bg-slate-950/60 border border-slate-800 text-xs text-white focus:outline-none focus:border-indigo-500">
-                            @foreach($locations as $loc)
-                                <option value="{{ $loc->id }}" {{ $asset->current_location_id == $loc->id ? 'selected' : '' }}>
-                                    {{ $loc->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
+                        <!-- Kondisi Fisik -->
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1.5 uppercase">Kondisi Fisik *</label>
+                            <select name="condition" required class="w-full px-3 py-2 rounded-xl bg-slate-950/60 border border-slate-800 text-xs text-white focus:outline-none focus:border-indigo-500">
+                                <option value="available" {{ $asset->condition === 'available' ? 'selected' : '' }}>Bagus / Siap Sewa</option>
+                                <option value="damaged" {{ $asset->condition === 'damaged' ? 'selected' : '' }}>Rusak (Perlu Penanganan)</option>
+                                <option value="in_service" {{ $asset->condition === 'in_service' ? 'selected' : '' }}>Dalam Servis (Workshop)</option>
+                            </select>
+                        </div>
 
-                    <!-- Catatan -->
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-300 mb-1.5 uppercase">Keterangan / Alasan Perubahan</label>
-                        <textarea name="notes" rows="2" placeholder="Misal: Port HDMI 2 kendur saat event wedding..."
-                            class="w-full px-3 py-2 rounded-xl bg-slate-950/60 border border-slate-800 text-xs text-white focus:outline-none focus:border-indigo-500">{{ $asset->notes }}</textarea>
-                    </div>
+                        <!-- Status Penggunaan -->
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1.5 uppercase">Status Penempatan *</label>
+                            <select name="status" required class="w-full px-3 py-2 rounded-xl bg-slate-950/60 border border-slate-800 text-xs text-white focus:outline-none focus:border-indigo-500">
+                                <option value="in_storage" {{ $asset->status === 'in_storage' ? 'selected' : '' }}>Tersimpan di Gudang</option>
+                                <option value="deployed" {{ $asset->status === 'deployed' ? 'selected' : '' }}>Sedang di Venue / Event</option>
+                                <option value="maintenance" {{ $asset->status === 'maintenance' ? 'selected' : '' }}>Perbaikan / Servis</option>
+                                <option value="lost" {{ $asset->status === 'lost' ? 'selected' : '' }}>Hilang / Tertinggal</option>
+                            </select>
+                        </div>
 
-                    <button type="submit" class="w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs uppercase tracking-wider shadow-lg shadow-indigo-600/25 transition-all">
-                        Perbarui Status Unit
-                    </button>
+                        <!-- Lokasi Penyimpanan -->
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1.5 uppercase">Lokasi / Lemari *</label>
+                            <select name="current_location_id" required class="w-full px-3 py-2 rounded-xl bg-slate-950/60 border border-slate-800 text-xs text-white focus:outline-none focus:border-indigo-500">
+                                @foreach($locations as $loc)
+                                    <option value="{{ $loc->id }}" {{ $asset->current_location_id == $loc->id ? 'selected' : '' }}>
+                                        {{ $loc->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
 
-                    <div class="pt-2 border-t border-slate-800">
-                        <a href="{{ route('service-tickets.create', ['asset_id' => $asset->id]) }}" class="w-full py-2.5 px-4 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 text-xs font-bold transition-all flex items-center justify-center gap-2">
-                            <span>🛠️ Buka Tiket Servis Workshop</span>
-                        </a>
-                    </div>
-                </form>
+                        <!-- Catatan -->
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1.5 uppercase">Keterangan / Alasan Perubahan</label>
+                            <textarea name="notes" rows="2" placeholder="Misal: Port HDMI 2 kendur saat event wedding..."
+                                class="w-full px-3 py-2 rounded-xl bg-slate-950/60 border border-slate-800 text-xs text-white focus:outline-none focus:border-indigo-500">{{ $asset->notes }}</textarea>
+                        </div>
+
+                        <button type="submit" class="w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs uppercase tracking-wider shadow-lg shadow-indigo-600/25 transition-all">
+                            Perbarui Status Unit
+                        </button>
+
+                        @can('create service ticket')
+                        <div class="pt-2 border-t border-slate-800">
+                            <a href="{{ route('service-tickets.create', ['asset_id' => $asset->id]) }}" class="w-full py-2.5 px-4 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 text-xs font-bold transition-all flex items-center justify-center gap-2">
+                                <span>🛠️ Buka Tiket Servis Workshop</span>
+                            </a>
+                        </div>
+                        @endcan
+                    </form>
+                @endif
             </div>
         </div>
     </div>

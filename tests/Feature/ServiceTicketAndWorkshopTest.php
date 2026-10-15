@@ -38,6 +38,7 @@ class ServiceTicketAndWorkshopTest extends TestCase
         parent::setUp();
 
         $this->user = User::factory()->create(['name' => 'Hans Superuser']);
+        $this->user->givePermissionTo(['view inventory', 'create service ticket', 'execute service ticket']);
         $uid = uniqid();
 
         $this->mainGudang = Location::create([
@@ -353,5 +354,112 @@ class ServiceTicketAndWorkshopTest extends TestCase
         $this->assertEquals('damaged', $this->processorAsset->condition);
 
         $response->assertRedirect();
+    }
+
+    public function test_warehouse_can_create_ticket_but_cannot_execute_repair_or_add_sparepart(): void
+    {
+        $warehouseUser = User::factory()->create(['name' => 'Staf Bongkaran Gudang']);
+        $warehouseUser->givePermissionTo(['view inventory', 'create service ticket']);
+
+        // 1. Warehouse BISA membuka tiket servis saat bongkaran event
+        $createResponse = $this->actingAs($warehouseUser)->post(route('service-tickets.store'), [
+            'product_id' => $this->processorProd->id,
+            'asset_id' => $this->processorAsset->id,
+            'priority' => 'normal',
+            'quantity' => 1,
+            'issue_description' => 'Bongkaran panggung: lampu indikator padam.',
+            'source_location_id' => $this->mainGudang->id,
+            'workshop_location_id' => $this->workshop->id,
+        ]);
+
+        $createResponse->assertRedirect();
+        $ticket = ServiceTicket::where('issue_description', 'Bongkaran panggung: lampu indikator padam.')->firstOrFail();
+
+        // 2. Warehouse TIDAK BISA memperbarui lembar diagnosa teknisi (403)
+        $updateResponse = $this->actingAs($warehouseUser)->put(route('service-tickets.update', $ticket), [
+            'diagnosis' => 'Coba ubah diagnosa oleh gudang',
+            'priority' => 'normal',
+        ]);
+        $updateResponse->assertStatus(403);
+
+        // 3. Warehouse TIDAK BISA mengambil sparepart (403)
+        $partResponse = $this->actingAs($warehouseUser)->post(route('service-tickets.spareparts.store', $ticket), [
+            'sparepart_product_id' => $this->icDriver->id,
+            'source_location_id' => $this->lemariSparepart->id,
+            'quantity' => 1,
+        ]);
+        $partResponse->assertStatus(403);
+
+        // 4. Warehouse TIDAK BISA menyelesaikan servis atau mengubah status (403)
+        $statusResponse = $this->actingAs($warehouseUser)->put(route('service-tickets.update-status', $ticket), [
+            'status' => 'completed',
+            'return_location_id' => $this->mainGudang->id,
+        ]);
+        $statusResponse->assertStatus(403);
+    }
+
+    public function test_teknisi_cannot_create_ticket_but_can_execute_repair_and_finish(): void
+    {
+        $teknisiUser = User::factory()->create(['name' => 'Budi Teknisi Workshop']);
+        $teknisiUser->givePermissionTo(['view inventory', 'execute service ticket']);
+
+        // 1. Teknisi TIDAK BISA membuka tiket servis baru (403)
+        $createFormResponse = $this->actingAs($teknisiUser)->get(route('service-tickets.create'));
+        $createFormResponse->assertStatus(403);
+
+        $storeResponse = $this->actingAs($teknisiUser)->post(route('service-tickets.store'), [
+            'product_id' => $this->processorProd->id,
+            'priority' => 'normal',
+            'quantity' => 1,
+            'issue_description' => 'Coba buka tiket oleh teknisi',
+            'source_location_id' => $this->mainGudang->id,
+            'workshop_location_id' => $this->workshop->id,
+        ]);
+        $storeResponse->assertStatus(403);
+
+        // Tiket yang dibuka oleh warehouse
+        $ticket = ServiceTicket::create([
+            'ticket_number' => 'SRV-TEST-TECH-01',
+            'product_id' => $this->processorProd->id,
+            'asset_id' => $this->processorAsset->id,
+            'reported_by' => $this->user->id,
+            'status' => 'pending_inspection',
+            'priority' => 'normal',
+            'quantity' => 1,
+            'issue_description' => 'Kabel input longgar',
+            'source_location_id' => $this->mainGudang->id,
+            'workshop_location_id' => $this->workshop->id,
+        ]);
+
+        // 2. Teknisi BISA mengubah status ke in_progress & isi lembar kerja
+        $startResponse = $this->actingAs($teknisiUser)->put(route('service-tickets.update-status', $ticket), [
+            'status' => 'in_progress',
+        ]);
+        $startResponse->assertRedirect();
+
+        $updateResponse = $this->actingAs($teknisiUser)->put(route('service-tickets.update', $ticket), [
+            'diagnosis' => 'Solderan konektor DVI retak',
+            'action_taken' => 'Resolder ulang dan bersihkan PCB',
+            'priority' => 'normal',
+        ]);
+        $updateResponse->assertRedirect();
+
+        // 3. Teknisi BISA ambil suku cadang jika perlu
+        $partResponse = $this->actingAs($teknisiUser)->post(route('service-tickets.spareparts.store', $ticket), [
+            'sparepart_product_id' => $this->icDriver->id,
+            'source_location_id' => $this->lemariSparepart->id,
+            'quantity' => 1,
+        ]);
+        $partResponse->assertRedirect();
+
+        // 4. Teknisi BISA menyelesaikan servis dan kembalikan ke rak
+        $finishResponse = $this->actingAs($teknisiUser)->put(route('service-tickets.update-status', $ticket), [
+            'status' => 'completed',
+            'return_location_id' => $this->mainGudang->id,
+        ]);
+        $finishResponse->assertRedirect();
+
+        $ticket->refresh();
+        $this->assertEquals('completed', $ticket->status);
     }
 }

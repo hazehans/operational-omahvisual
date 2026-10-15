@@ -64,6 +64,8 @@ class AssetController extends Controller
      */
     public function updateStatus(Request $request, Asset $asset): RedirectResponse
     {
+        abort_if(auth()->user()->hasRole('Teknisi Servis'), 403, 'Teknisi tidak dapat mengubah status aset manual. Status dikelola otomatis melalui Tiket Servis.');
+
         $validated = $request->validate([
             'condition' => ['required', 'in:available,damaged,in_service'],
             'status' => ['required', 'in:in_storage,deployed,maintenance,lost'],

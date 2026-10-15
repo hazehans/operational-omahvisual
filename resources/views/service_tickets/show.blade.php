@@ -127,6 +127,7 @@
             </div>
 
             <!-- Technician Diagnosis & Action Update Form -->
+            <!-- Technician Diagnosis & Action Update Form -->
             <div class="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 shadow-md space-y-4">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-indigo-400">
@@ -137,6 +138,7 @@
                     </div>
                 </div>
 
+                @can('execute service ticket')
                 <form action="{{ route('service-tickets.update', $ticket) }}" method="POST" class="space-y-4">
                     @csrf
                     @method('PUT')
@@ -192,6 +194,39 @@
                         </button>
                     </div>
                 </form>
+                @else
+                <!-- Readonly View for non-technicians (Warehouse / Staff) -->
+                <div class="space-y-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                        <div class="p-3 rounded-xl bg-slate-950/40 border border-slate-800">
+                            <span class="text-slate-400 block mb-1">Teknisi Penanggung Jawab:</span>
+                            <span class="font-bold text-slate-200">{{ $ticket->technician->name ?? 'Belum Ditugaskan' }}</span>
+                        </div>
+                        <div class="p-3 rounded-xl bg-slate-950/40 border border-slate-800">
+                            <span class="text-slate-400 block mb-1">Tingkat Prioritas:</span>
+                            <span class="font-bold {{ $ticket->priority_badge_class }}">{{ $ticket->priority_label }}</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <span class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Diagnosa Kerusakan:</span>
+                        <div class="p-3.5 rounded-xl bg-slate-950/40 border border-slate-800 text-sm text-slate-300">
+                            {{ $ticket->diagnosis ?: 'Belum dicatat oleh teknisi servis.' }}
+                        </div>
+                    </div>
+
+                    <div>
+                        <span class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Tindakan Perbaikan:</span>
+                        <div class="p-3.5 rounded-xl bg-slate-950/40 border border-slate-800 text-sm text-slate-300">
+                            {{ $ticket->action_taken ?: 'Belum ada tindakan perbaikan yang dicatat.' }}
+                        </div>
+                    </div>
+
+                    <div class="p-3 rounded-xl bg-slate-800/40 border border-slate-700/50 text-slate-400 text-xs">
+                        🔒 Form diagnosa &amp; penanganan hanya dapat diedit oleh Teknisi Servis atau Superuser.
+                    </div>
+                </div>
+                @endcan
             </div>
 
             <!-- Spareparts Consumption Card (Direct Inventory Integration) -->
@@ -204,14 +239,21 @@
                             </svg>
                             <span>Suku Cadang Terpakai (Potong Stok Lemari)</span>
                         </div>
-                        <p class="text-xs text-slate-400 mt-0.5">Komponen yang diambil dari lemari untuk memperbaiki modul ini.</p>
+                        <p class="text-xs text-slate-400 mt-0.5">Komponen fisik yang dipasang ke modul. Konsumsi kecil (timah/flux) tidak perlu dicatat.</p>
                     </div>
 
                     @if(!in_array($ticket->status, ['completed', 'scrapped']))
+                        @can('execute service ticket')
                         <button type="button" onclick="document.getElementById('addSparepartModal').classList.remove('hidden')" class="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs transition-all flex items-center gap-1.5 shadow-md shadow-purple-600/20">
-                            <span>+ Ambil Suku Cadang</span>
+                            <span>+ Ambil Suku Cadang (Opsional)</span>
                         </button>
+                        @endcan
                     @endif
+                </div>
+
+                <!-- Helpful Info Note for Real-world Workshop -->
+                <div class="p-3 rounded-xl bg-purple-950/20 border border-purple-900/40 text-xs text-purple-300 leading-relaxed">
+                    💡 <strong>Catatan Suku Cadang:</strong> Pengambilan suku cadang ini bersifat <strong>OPSIONAL</strong> (hanya dicatat jika ada penggantian unit komponen utama seperti Modul IC, Receive Card, atau PSU). Bahan habis pakai workshop harian (seperti timah solder, pasta flux, kabel jumper) <strong>tidak perlu dicatat</strong> di sini karena masuk biaya operasional bulanan.
                 </div>
 
                 <!-- Table of Used Spareparts -->
@@ -246,6 +288,7 @@
                                     </td>
                                     <td class="px-4 py-3 text-right">
                                         @if(!in_array($ticket->status, ['completed', 'scrapped']))
+                                            @can('execute service ticket')
                                             <form action="{{ route('service-tickets.spareparts.destroy', [$ticket, $sp]) }}" method="POST" onsubmit="return confirm('Batalkan pemakaian sparepart ini? Stok akan dikembalikan ke lemari asal.')" class="inline">
                                                 @csrf
                                                 @method('DELETE')
@@ -253,6 +296,9 @@
                                                     ✕ Batal
                                                 </button>
                                             </form>
+                                            @else
+                                            <span class="text-slate-500">-</span>
+                                            @endcan
                                         @else
                                             <span class="text-slate-500">-</span>
                                         @endif
@@ -301,8 +347,8 @@
                             2
                         </div>
                         <div class="flex-1 text-xs">
-                            <span class="font-bold block {{ in_array($ticket->status, ['in_progress', 'waiting_parts']) ? 'text-indigo-400' : 'text-slate-300' }}">Pengerjaan &amp; Penggantian Part</span>
-                            <span class="text-slate-500 text-[10px]">Solder &amp; komponen elektronik</span>
+                            <span class="font-bold block {{ in_array($ticket->status, ['in_progress', 'waiting_parts']) ? 'text-indigo-400' : 'text-slate-300' }}">Pengerjaan Servis &amp; Perbaikan</span>
+                            <span class="text-slate-500 text-[10px]">Solder, diagnosa &amp; part bila perlu</span>
                         </div>
                     </div>
 
@@ -333,77 +379,86 @@
 
                 <!-- Action Transition Buttons Form -->
                 <div class="pt-4 border-t border-slate-800 space-y-3">
-                    @if($ticket->status === 'pending_inspection')
-                        <form action="{{ route('service-tickets.update-status', $ticket) }}" method="POST">
-                            @csrf
-                            @method('PUT')
-                            <input type="hidden" name="status" value="in_progress">
-                            <button type="submit" class="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition-all shadow-md shadow-indigo-600/20 flex items-center justify-center gap-2">
-                                <span>🛠️ Mulai Kerjakan Sekarang</span>
-                            </button>
-                        </form>
-                    @endif
-
-                    @if(in_array($ticket->status, ['in_progress', 'waiting_parts']))
-                        <div class="grid grid-cols-2 gap-2">
+                    @can('execute service ticket')
+                        @if($ticket->status === 'pending_inspection')
                             <form action="{{ route('service-tickets.update-status', $ticket) }}" method="POST">
                                 @csrf
                                 @method('PUT')
-                                <input type="hidden" name="status" value="quality_control">
-                                <button type="submit" class="w-full py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs transition-all shadow-md shadow-cyan-600/20">
-                                    🔬 Masuk Uji QC
+                                <input type="hidden" name="status" value="in_progress">
+                                <button type="submit" class="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition-all shadow-md shadow-indigo-600/20 flex items-center justify-center gap-2">
+                                    <span>🛠️ Mulai Kerjakan Sekarang</span>
                                 </button>
                             </form>
+                        @endif
 
-                            <form action="{{ route('service-tickets.update-status', $ticket) }}" method="POST">
+                        @if(in_array($ticket->status, ['in_progress', 'waiting_parts']))
+                            <div class="grid grid-cols-2 gap-2">
+                                <form action="{{ route('service-tickets.update-status', $ticket) }}" method="POST">
+                                    @csrf
+                                    @method('PUT')
+                                    <input type="hidden" name="status" value="quality_control">
+                                    <button type="submit" class="w-full py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs transition-all shadow-md shadow-cyan-600/20">
+                                        🔬 Masuk Uji QC
+                                    </button>
+                                </form>
+
+                                <form action="{{ route('service-tickets.update-status', $ticket) }}" method="POST">
+                                    @csrf
+                                    @method('PUT')
+                                    <input type="hidden" name="status" value="{{ $ticket->status === 'waiting_parts' ? 'in_progress' : 'waiting_parts' }}">
+                                    <button type="submit" class="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs transition-all border border-slate-700">
+                                        {{ $ticket->status === 'waiting_parts' ? 'Part Tiba (Lanjut)' : '⏳ Tunggu Part' }}
+                                    </button>
+                                </form>
+                            </div>
+                        @endif
+
+                        <!-- Final Completion (Return to Inventory) -->
+                        @if(in_array($ticket->status, ['in_progress', 'quality_control', 'waiting_parts']))
+                            <div class="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 space-y-3">
+                                <span class="text-xs font-bold text-emerald-400 block">
+                                    ✅ Penyelesaian &amp; Pengembalian Rak
+                                </span>
+                                <form action="{{ route('service-tickets.update-status', $ticket) }}" method="POST" class="space-y-2">
+                                    @csrf
+                                    @method('PUT')
+                                    <input type="hidden" name="status" value="completed">
+
+                                    <label class="block text-[11px] font-semibold text-slate-300">
+                                        Kembalikan ke Rak / Lemari:
+                                    </label>
+                                    <select name="return_location_id" required class="w-full px-3 py-2 rounded-xl text-xs bg-slate-950/60 border border-slate-800 text-white focus:outline-none focus:border-indigo-500">
+                                        @foreach($locations as $loc)
+                                            <option value="{{ $loc->id }}" {{ $loc->id == $ticket->source_location_id ? 'selected' : '' }}>
+                                                {{ $loc->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+
+                                    <button type="submit" onclick="return confirm('Pastikan barang sudah lolos uji QC. Barang akan otomatis kembali ke saldo siap sewa.')" class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md shadow-emerald-600/20 transition-all flex items-center justify-center gap-1.5 mt-2">
+                                        <span>Lolos QC &amp; Kembalikan ke Stok</span>
+                                    </button>
+                                </form>
+                            </div>
+
+                            <!-- Scrapped / Write-off -->
+                            <form action="{{ route('service-tickets.update-status', $ticket) }}" method="POST" onsubmit="return confirm('PERINGATAN: Barang ini akan ditandai sebagai AFKIR / RUSAK TOTAL dan tidak bisa diperbaiki lagi. Lanjutkan?')">
                                 @csrf
                                 @method('PUT')
-                                <input type="hidden" name="status" value="{{ $ticket->status === 'waiting_parts' ? 'in_progress' : 'waiting_parts' }}">
-                                <button type="submit" class="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs transition-all border border-slate-700">
-                                    {{ $ticket->status === 'waiting_parts' ? 'Part Tiba (Lanjut)' : '⏳ Tunggu Part' }}
+                                <input type="hidden" name="status" value="scrapped">
+                                <button type="submit" class="w-full py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 font-bold text-xs transition-all">
+                                    ⚠️ Tandai Afkir / Rusak Total (Scrap)
                                 </button>
                             </form>
-                        </div>
-                    @endif
-
-                    <!-- Final Completion (Return to Inventory) -->
-                    @if(in_array($ticket->status, ['in_progress', 'quality_control', 'waiting_parts']))
-                        <div class="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 space-y-3">
-                            <span class="text-xs font-bold text-emerald-400 block">
-                                ✅ Penyelesaian &amp; Pengembalian Rak
-                            </span>
-                            <form action="{{ route('service-tickets.update-status', $ticket) }}" method="POST" class="space-y-2">
-                                @csrf
-                                @method('PUT')
-                                <input type="hidden" name="status" value="completed">
-
-                                <label class="block text-[11px] font-semibold text-slate-300">
-                                    Kembalikan ke Rak / Lemari:
-                                </label>
-                                <select name="return_location_id" required class="w-full px-3 py-2 rounded-xl text-xs bg-slate-950/60 border border-slate-800 text-white focus:outline-none focus:border-indigo-500">
-                                    @foreach($locations as $loc)
-                                        <option value="{{ $loc->id }}" {{ $loc->id == $ticket->source_location_id ? 'selected' : '' }}>
-                                            {{ $loc->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-
-                                <button type="submit" onclick="return confirm('Pastikan barang sudah lolos uji QC. Barang akan otomatis kembali ke saldo siap sewa.')" class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md shadow-emerald-600/20 transition-all flex items-center justify-center gap-1.5 mt-2">
-                                    <span>Lolos QC &amp; Kembalikan ke Stok</span>
-                                </button>
-                            </form>
-                        </div>
-
-                        <!-- Scrapped / Write-off -->
-                        <form action="{{ route('service-tickets.update-status', $ticket) }}" method="POST" onsubmit="return confirm('PERINGATAN: Barang ini akan ditandai sebagai AFKIR / RUSAK TOTAL dan tidak bisa diperbaiki lagi. Lanjutkan?')">
-                            @csrf
-                            @method('PUT')
-                            <input type="hidden" name="status" value="scrapped">
-                            <button type="submit" class="w-full py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 font-bold text-xs transition-all">
-                                ⚠️ Tandai Afkir / Rusak Total (Scrap)
-                            </button>
-                        </form>
-                    @endif
+                        @endif
+                    @else
+                        @if(!in_array($ticket->status, ['completed', 'scrapped']))
+                            <div class="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-400 text-xs text-center space-y-1">
+                                <span class="font-bold text-slate-300 block">🔒 Hak Akses Pengerjaan Servis</span>
+                                <span>Tahapan pengerjaan fisik, uji QC, dan pengembalian unit hanya dapat dieksekusi oleh Teknisi Servis atau Superuser.</span>
+                            </div>
+                        @endif
+                    @endcan
 
                     @if($ticket->status === 'completed')
                         <div class="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-medium text-center">
@@ -424,11 +479,14 @@
 </div>
 
 <!-- Modal Ambil Sparepart -->
-<div id="addSparepartModal" class="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+<div id="addSparepartModal" class="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 backdrop-blur-sm items-center justify-center p-4 hidden">
     <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
         <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-            <h3 class="font-extrabold text-white text-base">Ambil Suku Cadang dari Lemari</h3>
-            <button type="button" onclick="document.getElementById('addSparepartModal').classList.add('hidden')" class="text-slate-400 hover:text-white font-bold">✕</button>
+            <div>
+                <h3 class="font-extrabold text-white text-base">Ambil Suku Cadang / Komponen (Opsional)</h3>
+                <p class="text-xs text-slate-400 mt-0.5">Hanya untuk penggantian komponen utama (IC, Receive Card, PSU). Bahan habis pakai tidak perlu diinput.</p>
+            </div>
+            <button type="button" onclick="document.getElementById('addSparepartModal').classList.add('hidden')" class="text-slate-400 hover:text-white font-bold ml-2">✕</button>
         </div>
 
         <form action="{{ route('service-tickets.spareparts.store', $ticket) }}" method="POST" class="space-y-4">
@@ -451,11 +509,11 @@
             <div class="grid grid-cols-2 gap-3">
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">
-                        Sumber Lemari <span class="text-rose-500">*</span>
+                        Sumber Lokasi / Lemari <span class="text-xs text-slate-500 font-normal">(Default Bengkel)</span>
                     </label>
-                    <select name="source_location_id" required class="w-full px-3 py-2 rounded-xl text-sm bg-slate-950 border border-slate-800 text-white focus:outline-none focus:border-indigo-500">
+                    <select name="source_location_id" class="w-full px-3 py-2 rounded-xl text-sm bg-slate-950 border border-slate-800 text-white focus:outline-none focus:border-indigo-500">
                         @foreach($locations as $loc)
-                            <option value="{{ $loc->id }}" {{ $loc->id == 3 ? 'selected' : '' }}>
+                            <option value="{{ $loc->id }}" {{ (old('source_location_id', $defaultSparepartLocation->id ?? '') == $loc->id) ? 'selected' : '' }}>
                                 {{ $loc->name }}
                             </option>
                         @endforeach
@@ -474,7 +532,7 @@
                 <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">
                     Keterangan Penempatan (Opsional)
                 </label>
-                <input type="text" name="notes" placeholder="Misal: Pasang di modul baris 2 kolom 3" class="w-full px-3 py-2 rounded-xl text-sm bg-slate-950 border border-slate-800 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500">
+                <input type="text" name="notes" placeholder="Misal: Ganti IC driver baris 2 modul LED" class="w-full px-3 py-2 rounded-xl text-sm bg-slate-950 border border-slate-800 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500">
             </div>
 
             <div class="flex justify-end gap-2 pt-3 border-t border-slate-800">
