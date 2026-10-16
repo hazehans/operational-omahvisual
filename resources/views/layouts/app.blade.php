@@ -12,10 +12,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Cropper.js CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css" />
+    <link rel="stylesheet" href="{{ asset('vendor/cropperjs/cropper.min.css') }}" />
 
     <!-- Alpine.js -->
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
+    <script defer src="{{ asset('vendor/alpine/alpine.min.js') }}"></script>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     
@@ -386,7 +386,7 @@
     </div>
 
     <!-- Cropper.js Library & Global Modal -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+    <script src="{{ asset('vendor/cropperjs/cropper.min.js') }}"></script>
     @include('components.image-cropper-modal')
 
     <!-- Modals Stack (Renders at Root DOM to avoid stacking context issues) -->
