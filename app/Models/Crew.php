@@ -16,11 +16,20 @@ class Crew extends Model
         'crew_code',
         'nickname',
         'full_name',
+        'birth_date',
         'phone',
+        'email',
         'emergency_phone',
         'position',
+        'positions',
+        'employment_type',
+        'hris_employee_id',
+        'join_date',
         'address',
         'city',
+        'photo_path',
+        'ktp_photo_path',
+        'rate_card_photo_path',
         'is_active',
         'user_id',
     ];
@@ -29,7 +38,19 @@ class Crew extends Model
     {
         return [
             'is_active' => 'boolean',
+            'positions' => 'array',
+            'birth_date' => 'date',
+            'join_date' => 'date',
         ];
+    }
+
+    public function getPositionsListAttribute(): string
+    {
+        if (is_array($this->positions) && count($this->positions) > 0) {
+            return implode(', ', $this->positions);
+        }
+
+        return $this->position ?? 'Crew';
     }
 
     public function user(): BelongsTo

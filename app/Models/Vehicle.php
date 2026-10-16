@@ -10,14 +10,21 @@ class Vehicle extends Model
     use HasFactory;
 
     protected $fillable = [
+        'vehicle_code',
         'name',
         'plate_number',
         'type',
+        'status',
+        'special_condition',
         'has_etoll',
         'has_kunci_ban',
         'has_stnk',
         'has_kir',
         'has_barcode_bbm',
+        'photo_path',
+        'stnk_photo_path',
+        'etoll_photo_path',
+        'barcode_bbm_photo_path',
         'notes',
         'is_active',
     ];

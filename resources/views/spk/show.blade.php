@@ -476,10 +476,10 @@
     <!-- MODAL 1: EDIT TIM & ARMADA LOGISTIK -->
     <div x-show="showAssignModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div x-show="showAssignModal" @click="showAssignModal = false" class="fixed inset-0 bg-slate-950/75 backdrop-blur-xs transition-opacity" aria-hidden="true"></div>
+            <div x-show="showAssignModal" @click="showAssignModal = false" class="fixed inset-0 bg-black/60 transition-opacity" aria-hidden="true"></div>
             <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
 
-            <div class="inline-block align-bottom bg-white dark:bg-slate-900 rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full border border-slate-200 dark:border-slate-800">
+            <div class="inline-block align-bottom bg-white dark:bg-slate-900 rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full border border-slate-300 dark:border-slate-700">
                 <form action="{{ route('spk.update-assignment', $assignment) }}" method="POST">
                     @csrf
                     @method('PUT')
@@ -489,7 +489,12 @@
                                 <h3 class="text-lg font-bold text-slate-900 dark:text-white">Edit Tim Lapangan & Armada</h3>
                                 <p class="text-xs text-slate-500">Sesuaikan roster 7 crew lapangan dan kelengkapan kendaraan sebelum keberangkatan.</p>
                             </div>
-                            <button type="button" @click="showAssignModal = false" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xl font-bold">&times;</button>
+                            <div class="flex items-center gap-2">
+                                <a href="{{ route('crews.create') }}" target="_blank" class="text-xs px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 font-bold hover:bg-indigo-100 dark:hover:bg-indigo-900/60 transition-colors flex items-center gap-1">
+                                    + Tambah Kru Baru
+                                </a>
+                                <button type="button" @click="showAssignModal = false" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xl font-bold">&times;</button>
+                            </div>
                         </div>
 
                         <!-- PIC Event -->
@@ -568,10 +573,10 @@
     <!-- MODAL 2: VERIFIKASI QC VENUE MANUAL -->
     <div x-show="showQcModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div x-show="showQcModal" @click="showQcModal = false" class="fixed inset-0 bg-slate-950/75 backdrop-blur-xs transition-opacity" aria-hidden="true"></div>
+            <div x-show="showQcModal" @click="showQcModal = false" class="fixed inset-0 bg-black/60 transition-opacity" aria-hidden="true"></div>
             <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
 
-            <div class="inline-block align-bottom bg-white dark:bg-slate-900 rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full border border-slate-200 dark:border-slate-800">
+            <div class="inline-block align-bottom bg-white dark:bg-slate-900 rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full border border-slate-300 dark:border-slate-700">
                 <form action="{{ route('spk.update-qc', $assignment) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="p-6 space-y-4">
@@ -636,8 +641,13 @@
         </div>
     </div>
 
-    <!-- Datalist Staff / Users -->
+    <!-- Datalist Staff / Users / Master Kru -->
     <datalist id="staff_list">
+        @if(isset($crews))
+            @foreach($crews as $crew)
+                <option value="{{ $crew->nickname }}">{{ $crew->nickname }} - {{ $crew->full_name }} ({{ is_array($crew->positions) ? implode(', ', $crew->positions) : ($crew->position ?? 'Kru') }})</option>
+            @endforeach
+        @endif
         @foreach($users as $user)
             <option value="{{ $user->name }}">{{ $user->name }} ({{ $user->roles->pluck('name')->implode(', ') }})</option>
         @endforeach

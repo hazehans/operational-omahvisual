@@ -133,13 +133,13 @@
         </div>
 
         <!-- Selected Screen Inspector Floating Widget (Panel CRUD) -->
-        <div id="screenInspectorBox" class="absolute top-16 right-3 bg-slate-950/95 backdrop-blur-md p-4 rounded-xl border border-slate-800 text-xs w-72 space-y-3 shadow-2xl transition-all hidden z-20">
+        <div id="screenInspectorBox" class="absolute top-14 right-3 max-h-[calc(100%-4.25rem)] overflow-y-auto bg-slate-950/95 backdrop-blur-md p-3.5 rounded-xl border border-slate-700 text-xs w-72 space-y-2.5 shadow-2xl transition-all hidden z-30">
             <div class="flex items-center justify-between border-b border-slate-800 pb-2">
                 <div class="font-bold text-white flex items-center gap-1.5 truncate flex-1 mr-2">
                     <span class="w-2.5 h-2.5 rounded-full bg-indigo-500 shrink-0"></span>
                     <input type="text" id="inspectScreenNameInput" value="Main Screen" class="w-full px-2 py-0.5 rounded bg-slate-900 border border-slate-700 text-xs font-bold text-white focus:ring-1 focus:ring-indigo-500">
                 </div>
-                <button type="button" id="btnCloseInspector" class="text-slate-400 hover:text-white font-bold text-xs p-1">✕</button>
+                <button type="button" id="btnCloseInspector" class="text-slate-400 hover:text-white font-bold text-xs p-1" title="Tutup Inspector">✕</button>
             </div>
 
             <div class="space-y-2 text-[11px]">
@@ -155,7 +155,7 @@
                 
                 <!-- Pos X Slider -->
                 <div>
-                    <div class="flex justify-between text-slate-400 mb-1">
+                    <div class="flex justify-between text-slate-400 mb-0.5">
                         <span>Geser Kiri / Kanan (X):</span>
                         <span class="font-bold text-indigo-400" id="inspectPosXVal">0.0m</span>
                     </div>
@@ -164,7 +164,7 @@
 
                 <!-- Pos Z Slider (Maju / Mundur) -->
                 <div>
-                    <div class="flex justify-between text-slate-400 mb-1">
+                    <div class="flex justify-between text-slate-400 mb-0.5">
                         <span>Maju / Mundur (Z):</span>
                         <span class="font-bold text-indigo-400" id="inspectPosZVal">-1.5m</span>
                     </div>
@@ -173,7 +173,7 @@
 
                 <!-- Rotation Y (Wing Angle) -->
                 <div>
-                    <div class="flex justify-between text-slate-400 mb-1">
+                    <div class="flex justify-between text-slate-400 mb-0.5">
                         <span>Kemiringan Sayap (Rotasi):</span>
                         <span class="font-bold text-amber-400" id="inspectRotYVal">0°</span>
                     </div>
@@ -183,7 +183,7 @@
                 <!-- Rigging Type Toggle -->
                 <div class="pt-1 border-t border-slate-800 flex items-center justify-between">
                     <span class="text-slate-400">Metode Pasang:</span>
-                    <select id="inspectRigging" class="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-slate-200 text-[10px]">
+                    <select id="inspectRigging" class="bg-slate-900 border border-slate-700 rounded px-2 py-0.5 text-slate-200 text-[10px]">
                         <option value="ground_stake">Ground Stack (Lantai)</option>
                         <option value="hanging">Hanging (Truss Gantung)</option>
                     </select>
@@ -191,7 +191,7 @@
 
                 <!-- Delete Screen Button (Panel CRUD) -->
                 <div class="pt-2 border-t border-slate-800">
-                    <button type="button" id="btnDeleteScreen" class="w-full py-1.5 px-3 rounded-lg bg-rose-600/20 hover:bg-rose-600/40 text-rose-400 border border-rose-500/30 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors">
+                    <button type="button" id="btnDeleteScreen" class="w-full py-1.5 px-3 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-md shadow-rose-900/40 transition-colors">
                         <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                         </svg>

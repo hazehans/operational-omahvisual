@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Crew;
 use App\Models\EventOrder;
 use App\Models\SpkAssignment;
 use App\Models\SpkChecklistItem;
@@ -21,9 +22,10 @@ class SpkController extends Controller
     {
         $assignment->load(['eventOrder.customer', 'eventOrder.screens', 'checklistItems']);
         $users = User::orderBy('name')->get();
+        $crews = Crew::where('is_active', true)->orderBy('nickname')->get();
         $vehicles = Vehicle::where('is_active', true)->orderBy('name')->get();
 
-        return view('spk.show', compact('assignment', 'users', 'vehicles'));
+        return view('spk.show', compact('assignment', 'users', 'crews', 'vehicles'));
     }
 
     /**

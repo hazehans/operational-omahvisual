@@ -18,6 +18,7 @@ return new class extends Migration
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
         // 1. Create new permissions
+        Permission::firstOrCreate(['name' => 'view inventory', 'guard_name' => 'web']);
         Permission::firstOrCreate(['name' => 'manage service tickets', 'guard_name' => 'web']);
         Permission::firstOrCreate(['name' => 'manage users', 'guard_name' => 'web']);
 

@@ -4,7 +4,7 @@
 @section('page_title', 'Tambah Kru & Teknisi Baru')
 
 @section('content')
-<div class="max-w-2xl mx-auto space-y-6">
+<div class="max-w-3xl mx-auto space-y-6">
     <!-- Header -->
     <div class="flex items-center justify-between">
         <div>
@@ -23,13 +23,19 @@
 
     <!-- Form -->
     <div class="bg-white dark:bg-slate-900/60 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
-        <form action="{{ route('crews.store') }}" method="POST" class="space-y-4">
+        <form action="{{ route('crews.store') }}" method="POST" enctype="multipart/form-data" class="space-y-5">
             @csrf
+
+            <!-- Section 1: Identitas Kru -->
+            <div class="border-b border-slate-200 dark:border-slate-800 pb-2">
+                <h2 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">1. Identitas Personal & HR</h2>
+                <p class="text-xs text-slate-500">Nama panggilan di panggung, nama lengkap KTP, dan tanggal lahir.</p>
+            </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Nama Panggilan (Nickname) *</label>
-                    <input type="text" name="nickname" value="{{ old('nickname') }}" required placeholder="Misal: Agus / Budi / Riko"
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Nama Panggilan (Nickname Lapangan) *</label>
+                    <input type="text" name="nickname" value="{{ old('nickname') }}" required placeholder="Misal: Agus / Boby / Kemal"
                         class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-sm text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
                     @error('nickname') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
                 </div>
@@ -44,32 +50,74 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Posisi / Spesialisasi *</label>
-                    <select name="position" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-sm text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
-                        <option value="Lead Technician" {{ old('position') === 'Lead Technician' ? 'selected' : '' }}>Lead Technician / PIC Lapangan</option>
-                        <option value="Visual Operator" {{ old('position') === 'Visual Operator' ? 'selected' : '' }}>Visual Operator (Novastar / VJ)</option>
-                        <option value="Rigger & Ground Tech" {{ old('position') === 'Rigger & Ground Tech' ? 'selected' : '' }}>Rigger & Ground Tech (Instalasi)</option>
-                        <option value="Electrical Specialist" {{ old('position') === 'Electrical Specialist' ? 'selected' : '' }}>Electrical & Genset Specialist</option>
-                        <option value="Driver & Logistik" {{ old('position') === 'Driver & Logistik' ? 'selected' : '' }}>Driver Armada & Logistik</option>
-                        <option value="Crew Lapangan" {{ old('position') === 'Crew Lapangan' ? 'selected' : '' }}>Crew Lapangan / Helper</option>
-                    </select>
-                    @error('position') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Tanggal Lahir</label>
+                    <input type="date" name="birth_date" value="{{ old('birth_date') }}"
+                        class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-sm text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
+                    @error('birth_date') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Akun Login Sistem (Opsional)</label>
-                    <select name="user_id" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-sm text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
-                        <option value="">-- Tidak ditautkan ke akun login --</option>
-                        @foreach($users as $user)
-                            <option value="{{ $user->id }}" {{ old('user_id') == $user->id ? 'selected' : '' }}>
-                                {{ $user->name }} ({{ $user->email }})
-                            </option>
-                        @endforeach
-                    </select>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Tanggal Awal Kerja</label>
+                    <input type="date" name="join_date" value="{{ old('join_date', date('Y-m-d')) }}"
+                        class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-sm text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
+                    @error('join_date') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
                 </div>
             </div>
 
+            <!-- Section 2: Posisi / Role (BISA LEBIH DARI SATU) & Status Kerja -->
+            <div class="border-b border-slate-200 dark:border-slate-800 pb-2 pt-2">
+                <h2 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">2. Jabatan & Tipe Hubungan Kerja</h2>
+                <p class="text-xs text-slate-500">Posisi dapat dipilih lebih dari satu (misal: PIC sekaligus Supir). Mendukung integrasi outsourcing / HRIS internal.</p>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2">
+                    Jabatan / Posisi Penugasan (Bisa Lebih Dari Satu) *
+                </label>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    @foreach($availablePositions as $posKey => $posLabel)
+                        <label class="flex items-start gap-2.5 p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 cursor-pointer hover:border-indigo-500 transition-colors">
+                            <input type="checkbox" name="positions[]" value="{{ $posKey }}"
+                                {{ in_array($posKey, old('positions', ['Crew'])) ? 'checked' : '' }}
+                                class="mt-0.5 rounded text-indigo-600 focus:ring-indigo-500">
+                            <div>
+                                <span class="block text-xs font-bold text-slate-900 dark:text-white">{{ $posKey }}</span>
+                                <span class="text-[10px] text-slate-500">{{ $posLabel }}</span>
+                            </div>
+                        </label>
+                    @endforeach
+                </div>
+                @error('positions') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
+            </div>
+
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Status Hubungan Kerja *</label>
+                    <select name="employment_type" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-sm text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
+                        @foreach($employmentTypes as $typeKey => $typeLabel)
+                            <option value="{{ $typeKey }}" {{ old('employment_type', 'freelance_outsourcing') === $typeKey ? 'selected' : '' }}>
+                                {{ $typeLabel }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('employment_type') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">ID Karyawan HRIS (Opsional)</label>
+                    <input type="text" name="hris_employee_id" value="{{ old('hris_employee_id') }}" placeholder="Misal: EMP-0042 (Jika dari webapp HRIS)"
+                        class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-sm text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
+                    <p class="text-[10px] text-slate-400 mt-1">Kosongkan jika crew freelance murni / outsourcing non-karyawan.</p>
+                </div>
+            </div>
+
+            <!-- Section 3: Kontak & Alamat -->
+            <div class="border-b border-slate-200 dark:border-slate-800 pb-2 pt-2">
+                <h2 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">3. Kontak & Domisili</h2>
+                <p class="text-xs text-slate-500">Nomor WhatsApp aktif, nomor darurat keluarga, dan alamat tempat tinggal.</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Nomor WhatsApp *</label>
                     <input type="text" name="phone" value="{{ old('phone') }}" required placeholder="081234567890"
@@ -78,32 +126,90 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Nomor Telepon Darurat (Keluarga)</label>
-                    <input type="text" name="emergency_phone" value="{{ old('emergency_phone') }}" placeholder="081298765432 (Istri/Ortu)"
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Nomor Darurat (Keluarga)</label>
+                    <input type="text" name="emergency_phone" value="{{ old('emergency_phone') }}" placeholder="081987654321"
                         class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-sm text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
                     @error('emergency_phone') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Email Kru</label>
+                    <input type="email" name="email" value="{{ old('email') }}" placeholder="crew@gmail.com"
+                        class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-sm text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
+                    @error('email') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
                 </div>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Kota Asal / Domisili</label>
-                    <input type="text" name="city" value="{{ old('city', 'Malang') }}" placeholder="Malang"
-                        class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-sm text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Alamat Tempat Tinggal</label>
+                    <textarea name="address" rows="2" placeholder="Alamat kos / domisili crew..."
+                        class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-sm text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500">{{ old('address') }}</textarea>
+                    @error('address') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Alamat Tinggal</label>
-                    <input type="text" name="address" value="{{ old('address') }}" placeholder="Jl. Raya Malang..."
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Kota Domisili</label>
+                    <input type="text" name="city" value="{{ old('city', 'Malang') }}" placeholder="Malang / Batu / Pasuruan"
                         class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-sm text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
+                    @error('city') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
                 </div>
             </div>
 
-            <div class="pt-2">
-                <label class="flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" name="is_active" value="1" {{ old('is_active', true) ? 'checked' : '' }} class="rounded text-indigo-600 focus:ring-indigo-500">
-                    <span class="text-xs font-semibold text-slate-700 dark:text-slate-300">Status Aktif & Siap Ditugaskan ke Event</span>
-                </label>
+            <!-- Section 4: Foto Dokumen & Rate Card -->
+            <div class="border-b border-slate-200 dark:border-slate-800 pb-2 pt-2">
+                <h2 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">4. Lampiran Foto, KTP, dan Rate Card</h2>
+                <p class="text-xs text-slate-500">Upload foto profil kru, kartu identitas KTP, dan foto tabel rate card bayaran kru.</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Foto Profil Kru</label>
+                    <input type="file" name="photo" accept="image/*"
+                        class="w-full text-xs text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 dark:file:bg-indigo-950/60 file:text-indigo-600 dark:file:text-indigo-400 hover:file:bg-indigo-100">
+                    <p class="text-[10px] text-slate-400 mt-1">Format: JPG, PNG (Max 5MB)</p>
+                    @error('photo') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Foto KTP Resmi</label>
+                    <input type="file" name="ktp_photo" accept="image/*"
+                        class="w-full text-xs text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 dark:file:bg-indigo-950/60 file:text-indigo-600 dark:file:text-indigo-400 hover:file:bg-indigo-100">
+                    <p class="text-[10px] text-slate-400 mt-1">Untuk arsip verifikasi keamanan gudang</p>
+                    @error('ktp_photo') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Foto Rate Card Bayaran</label>
+                    <input type="file" name="rate_card_photo" accept="image/*"
+                        class="w-full text-xs text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 dark:file:bg-indigo-950/60 file:text-indigo-600 dark:file:text-indigo-400 hover:file:bg-indigo-100">
+                    <p class="text-[10px] text-slate-400 mt-1">Daftar tarif harian / per event kru</p>
+                    @error('rate_card_photo') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
+                </div>
+            </div>
+
+            <!-- Tautkan User Login & Status Aktif -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-200 dark:border-slate-800">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Tautkan Akun Login Sistem (Opsional)</label>
+                    <select name="user_id" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-sm text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
+                        <option value="">-- Tidak Ditautkan (Kru Luar) --</option>
+                        @foreach($users as $user)
+                            <option value="{{ $user->id }}" {{ old('user_id') == $user->id ? 'selected' : '' }}>
+                                {{ $user->name }} ({{ $user->roles->pluck('name')->implode(', ') }})
+                            </option>
+                        @endforeach
+                    </select>
+                    <p class="text-[10px] text-slate-400 mt-1">Pilih jika kru ini memiliki akun login ke sistem operasional.</p>
+                </div>
+
+                <div class="flex items-center pt-6">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" name="is_active" value="1" {{ old('is_active', '1') == '1' ? 'checked' : '' }}
+                            class="rounded text-indigo-600 focus:ring-indigo-500 w-4 h-4">
+                        <span class="text-xs font-bold text-slate-700 dark:text-slate-300">Status Aktif (Tersedia untuk Ditugaskan SPK)</span>
+                    </label>
+                </div>
             </div>
 
             <div class="pt-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-end gap-3">
@@ -111,11 +217,10 @@
                     Batal
                 </a>
                 <button type="submit" class="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md shadow-indigo-600/30 transition-all">
-                    Simpan Kru
+                    Simpan Kru Baru
                 </button>
             </div>
         </form>
     </div>
 </div>
 @endsection
-

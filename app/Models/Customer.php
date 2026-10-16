@@ -16,13 +16,30 @@ class Customer extends Model
     protected $fillable = [
         'customer_code',
         'name',
+        'full_name',
+        'birth_date',
         'organization',
+        'category',
         'phone',
+        'email',
         'address',
+        'province',
         'city',
+        'pic_secondary_name',
+        'pic_secondary_phone',
+        'pic_secondary_relation',
+        'registration_date',
         'notes',
         'created_by',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'birth_date' => 'date',
+            'registration_date' => 'date',
+        ];
+    }
 
     public function orders(): HasMany
     {

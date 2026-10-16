@@ -4,7 +4,7 @@
 @section('page_title', 'Edit Data Armada Kendaraan')
 
 @section('content')
-<div class="max-w-2xl mx-auto space-y-6">
+<div class="max-w-3xl mx-auto space-y-6">
     <!-- Header -->
     <div class="flex items-center justify-between">
         <div>
@@ -23,73 +23,181 @@
 
     <!-- Form -->
     <div class="bg-white dark:bg-slate-900/60 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
-        <form action="{{ route('vehicles.update', $vehicle) }}" method="POST" class="space-y-4">
+        <form action="{{ route('vehicles.update', $vehicle) }}" method="POST" enctype="multipart/form-data" class="space-y-5">
             @csrf
             @method('PUT')
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <!-- Section 1: Profil Unit -->
+            <div class="border-b border-slate-200 dark:border-slate-800 pb-2 flex items-center justify-between">
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Nama / Panggilan Kendaraan *</label>
+                    <h2 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">1. Identitas Unit Kendaraan</h2>
+                    <p class="text-xs text-slate-500">Nama armada operasional, plat nomor polisi, dan tipe kendaraan.</p>
+                </div>
+                <span class="px-3 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 font-mono text-xs font-bold border border-indigo-200 dark:border-indigo-800">
+                    {{ $vehicle->vehicle_code ?? ('VH-' . str_pad($vehicle->id, 3, '0', STR_PAD_LEFT)) }}
+                </span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Nama Kendaraan *</label>
                     <input type="text" name="name" value="{{ old('name', $vehicle->name) }}" required
                         class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-sm text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
                     @error('name') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Nomor Polisi (Plat)</label>
-                    <input type="text" name="plate_number" value="{{ old('plate_number', $vehicle->plate_number) }}"
-                        class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-sm font-mono text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Plat Nomor Polisi</label>
+                    <input type="text" name="plate_number" value="{{ old('plate_number', $vehicle->plate_number) }}" placeholder="N 8123 AB"
+                        class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-sm text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
                     @error('plate_number') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
                 </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Jenis / Tipe Unit</label>
+                    <input type="text" name="type" value="{{ old('type', $vehicle->type ?? 'Pick Up Box') }}" placeholder="Pick Up / Engkel / Blindvan"
+                        class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-sm text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
+                    @error('type') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
+                </div>
+            </div>
+
+            <!-- Section 2: Status Ketersediaan & Kondisi Khusus -->
+            <div class="border-b border-slate-200 dark:border-slate-800 pb-2 pt-2">
+                <h2 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">2. Status Ketersediaan & Kondisi Khusus</h2>
+                <p class="text-xs text-slate-500">Status dinamis untuk penugasan loading event, atau jika sedang diservis/dipakai non-order.</p>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Jenis / Tipe Kendaraan</label>
-                    <select name="type" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-sm text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
-                        @foreach(['Pick Up', 'Blind Van', 'Truk Engkel', 'Truk Double', 'Mobil Pribadi'] as $tp)
-                            <option value="{{ $tp }}" {{ old('type', $vehicle->type) === $tp ? 'selected' : '' }}>{{ $tp }}</option>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Status Ketersediaan *</label>
+                    <select name="status" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-sm text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500 font-semibold">
+                        @foreach($statusOptions as $sKey => $sLabel)
+                            <option value="{{ $sKey }}" {{ old('status', $vehicle->status ?? 'tersedia') === $sKey ? 'selected' : '' }}>
+                                {{ $sLabel }}
+                            </option>
                         @endforeach
                     </select>
+                    @error('status') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Catatan Armada</label>
-                    <input type="text" name="notes" value="{{ old('notes', $vehicle->notes) }}"
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Kondisi Khusus Armada</label>
+                    <input type="text" name="special_condition" value="{{ old('special_condition', $vehicle->special_condition ?? 'Normal (Siap Jalan)') }}" placeholder="Normal / Servis di Bengkel / Ban Bocor / Dipakai Operasional"
                         class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-sm text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
+                    <p class="text-[10px] text-slate-400 mt-1">Catatan real-time kondisi armada saat ini.</p>
+                    @error('special_condition') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
                 </div>
             </div>
 
-            <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2">
-                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2">Standar Kelengkapan Kendaraan SPK</label>
-                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
-                    <label class="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" name="has_stnk" value="1" {{ old('has_stnk', $vehicle->has_stnk) ? 'checked' : '' }} class="rounded text-indigo-600">
-                        <span>STNK Asli Aktif</span>
-                    </label>
-                    <label class="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" name="has_kir" value="1" {{ old('has_kir', $vehicle->has_kir) ? 'checked' : '' }} class="rounded text-indigo-600">
-                        <span>Kartu / Uji KIR</span>
-                    </label>
-                    <label class="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" name="has_etoll" value="1" {{ old('has_etoll', $vehicle->has_etoll) ? 'checked' : '' }} class="rounded text-indigo-600">
-                        <span>Kartu E-Toll</span>
-                    </label>
-                    <label class="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" name="has_kunci_ban" value="1" {{ old('has_kunci_ban', $vehicle->has_kunci_ban) ? 'checked' : '' }} class="rounded text-indigo-600">
-                        <span>Kunci Ban & Dongkrak</span>
-                    </label>
-                    <label class="flex items-center gap-2 cursor-pointer col-span-2">
-                        <input type="checkbox" name="has_barcode_bbm" value="1" {{ old('has_barcode_bbm', $vehicle->has_barcode_bbm) ? 'checked' : '' }} class="rounded text-indigo-600">
-                        <span>Barcode Subsidi BBM (MyPertamina)</span>
-                    </label>
+            <!-- Section 3: Kelengkapan Fisik & Dokumen Bawaan -->
+            <div class="border-b border-slate-200 dark:border-slate-800 pb-2 pt-2">
+                <h2 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">3. Kelengkapan Standar Armada</h2>
+                <p class="text-xs text-slate-500">Peralatan wajib kendaraan sebelum keberangkatan kru ke lokasi panggung.</p>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                <label class="flex items-center gap-2 p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 cursor-pointer">
+                    <input type="checkbox" name="has_etoll" value="1" {{ old('has_etoll', $vehicle->has_etoll) ? 'checked' : '' }} class="rounded text-indigo-600 focus:ring-indigo-500">
+                    <span class="text-xs font-semibold text-slate-700 dark:text-slate-300">Kartu E-Toll Siap</span>
+                </label>
+                <label class="flex items-center gap-2 p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 cursor-pointer">
+                    <input type="checkbox" name="has_kunci_ban" value="1" {{ old('has_kunci_ban', $vehicle->has_kunci_ban) ? 'checked' : '' }} class="rounded text-indigo-600 focus:ring-indigo-500">
+                    <span class="text-xs font-semibold text-slate-700 dark:text-slate-300">Kunci Ban & Dongkrak</span>
+                </label>
+                <label class="flex items-center gap-2 p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 cursor-pointer">
+                    <input type="checkbox" name="has_stnk" value="1" {{ old('has_stnk', $vehicle->has_stnk) ? 'checked' : '' }} class="rounded text-indigo-600 focus:ring-indigo-500">
+                    <span class="text-xs font-semibold text-slate-700 dark:text-slate-300">STNK Asli Aktif</span>
+                </label>
+                <label class="flex items-center gap-2 p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 cursor-pointer">
+                    <input type="checkbox" name="has_kir" value="1" {{ old('has_kir', $vehicle->has_kir) ? 'checked' : '' }} class="rounded text-indigo-600 focus:ring-indigo-500">
+                    <span class="text-xs font-semibold text-slate-700 dark:text-slate-300">Uji KIR Berlaku</span>
+                </label>
+                <label class="flex items-center gap-2 p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 cursor-pointer sm:col-span-2">
+                    <input type="checkbox" name="has_barcode_bbm" value="1" {{ old('has_barcode_bbm', $vehicle->has_barcode_bbm) ? 'checked' : '' }} class="rounded text-indigo-600 focus:ring-indigo-500">
+                    <span class="text-xs font-semibold text-slate-700 dark:text-slate-300">Barcode Subsidi BBM (MyPertamina)</span>
+                </label>
+            </div>
+
+            <!-- Section 4: Foto Fisik & Dokumen Wajib -->
+            <div class="border-b border-slate-200 dark:border-slate-800 pb-2 pt-2">
+                <h2 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">4. Arsip Foto Dokumen & Kendaraan</h2>
+                <p class="text-xs text-slate-500">Foto fisik armada, foto STNK, foto kartu E-Toll, dan cetak barcode subsidi BBM.</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="space-y-2">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Foto Fisik Kendaraan</label>
+                    @if($vehicle->photo_path)
+                        <div class="relative w-32 h-20 rounded-xl overflow-hidden border border-slate-300 dark:border-slate-700 mb-1">
+                            <a href="{{ asset('storage/' . $vehicle->photo_path) }}" target="_blank">
+                                <img src="{{ asset('storage/' . $vehicle->photo_path) }}" alt="{{ $vehicle->name }}" class="w-full h-full object-cover">
+                            </a>
+                        </div>
+                    @endif
+                    <input type="file" name="photo" accept="image/*"
+                        class="w-full text-xs text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 dark:file:bg-indigo-950/60 file:text-indigo-600 dark:file:text-indigo-400 hover:file:bg-indigo-100">
+                    <p class="text-[10px] text-slate-400">Pilih file baru untuk mengganti</p>
+                    @error('photo') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
                 </div>
+
+                <div class="space-y-2">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Foto STNK Kendaraan</label>
+                    @if($vehicle->stnk_photo_path)
+                        <div class="relative w-32 h-20 rounded-xl overflow-hidden border border-slate-300 dark:border-slate-700 mb-1">
+                            <a href="{{ asset('storage/' . $vehicle->stnk_photo_path) }}" target="_blank">
+                                <img src="{{ asset('storage/' . $vehicle->stnk_photo_path) }}" alt="STNK {{ $vehicle->name }}" class="w-full h-full object-cover">
+                            </a>
+                        </div>
+                    @endif
+                    <input type="file" name="stnk_photo" accept="image/*"
+                        class="w-full text-xs text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 dark:file:bg-indigo-950/60 file:text-indigo-600 dark:file:text-indigo-400 hover:file:bg-indigo-100">
+                    <p class="text-[10px] text-slate-400">Pilih file baru untuk mengganti</p>
+                    @error('stnk_photo') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
+                </div>
+
+                <div class="space-y-2">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Foto Kartu E-Toll</label>
+                    @if($vehicle->etoll_photo_path)
+                        <div class="relative w-32 h-20 rounded-xl overflow-hidden border border-slate-300 dark:border-slate-700 mb-1">
+                            <a href="{{ asset('storage/' . $vehicle->etoll_photo_path) }}" target="_blank">
+                                <img src="{{ asset('storage/' . $vehicle->etoll_photo_path) }}" alt="E-Toll {{ $vehicle->name }}" class="w-full h-full object-cover">
+                            </a>
+                        </div>
+                    @endif
+                    <input type="file" name="etoll_photo" accept="image/*"
+                        class="w-full text-xs text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 dark:file:bg-indigo-950/60 file:text-indigo-600 dark:file:text-indigo-400 hover:file:bg-indigo-100">
+                    <p class="text-[10px] text-slate-400">Pilih file baru untuk mengganti</p>
+                    @error('etoll_photo') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
+                </div>
+
+                <div class="space-y-2">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Foto Barcode BBM (MyPertamina)</label>
+                    @if($vehicle->barcode_bbm_photo_path)
+                        <div class="relative w-32 h-20 rounded-xl overflow-hidden border border-slate-300 dark:border-slate-700 mb-1">
+                            <a href="{{ asset('storage/' . $vehicle->barcode_bbm_photo_path) }}" target="_blank">
+                                <img src="{{ asset('storage/' . $vehicle->barcode_bbm_photo_path) }}" alt="BBM {{ $vehicle->name }}" class="w-full h-full object-cover">
+                            </a>
+                        </div>
+                    @endif
+                    <input type="file" name="barcode_bbm_photo" accept="image/*"
+                        class="w-full text-xs text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 dark:file:bg-indigo-950/60 file:text-indigo-600 dark:file:text-indigo-400 hover:file:bg-indigo-100">
+                    <p class="text-[10px] text-slate-400">Pilih file baru untuk mengganti</p>
+                    @error('barcode_bbm_photo') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
+                </div>
+            </div>
+
+            <!-- Notes & Status Aktif -->
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Catatan Tambahan Armada</label>
+                <textarea name="notes" rows="2"
+                    class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-sm text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500">{{ old('notes', $vehicle->notes) }}</textarea>
+                @error('notes') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
             </div>
 
             <div class="pt-2">
                 <label class="flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" name="is_active" value="1" {{ old('is_active', $vehicle->is_active) ? 'checked' : '' }} class="rounded text-indigo-600 focus:ring-indigo-500">
-                    <span class="text-xs font-semibold text-slate-700 dark:text-slate-300">Status Aktif & Siap Operasi Pengiriman</span>
+                    <input type="checkbox" name="is_active" value="1" {{ old('is_active', $vehicle->is_active) ? 'checked' : '' }} class="rounded text-indigo-600 focus:ring-indigo-500 w-4 h-4">
+                    <span class="text-xs font-bold text-slate-700 dark:text-slate-300">Status Aktif dalam Sistem Operasional</span>
                 </label>
             </div>
 
@@ -105,4 +213,3 @@
     </div>
 </div>
 @endsection
-

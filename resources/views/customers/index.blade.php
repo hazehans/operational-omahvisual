@@ -71,24 +71,35 @@
                             </td>
                             <td class="px-4 py-3">
                                 <div class="font-bold text-slate-900 dark:text-white">{{ $c->name }}</div>
+                                @if($c->full_name)
+                                    <div class="text-[11px] text-slate-500 dark:text-slate-400">{{ $c->full_name }}</div>
+                                @endif
                                 @if($c->notes)
                                     <div class="text-[10px] text-slate-400 truncate max-w-xs">{{ $c->notes }}</div>
                                 @endif
                             </td>
                             <td class="px-4 py-3">
-                                <span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
-                                    {{ $c->organization ?: 'Personal' }}
-                                </span>
+                                <div class="font-semibold text-slate-800 dark:text-slate-200">{{ $c->organization ?: 'Personal' }}</div>
+                                @if($c->category)
+                                    <span class="inline-block mt-0.5 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800">
+                                        {{ $c->category }}
+                                    </span>
+                                @endif
                             </td>
                             <td class="px-4 py-3">
                                 <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $c->phone) }}" target="_blank" class="text-emerald-600 dark:text-emerald-400 hover:underline font-semibold flex items-center gap-1">
                                     <span>💬</span>
                                     <span>{{ $c->phone }}</span>
                                 </a>
+                                @if($c->email)
+                                    <div class="text-[10px] text-slate-400 truncate">{{ $c->email }}</div>
+                                @endif
                             </td>
                             <td class="px-4 py-3">
                                 <div class="font-medium text-slate-800 dark:text-slate-200">{{ $c->city ?: '-' }}</div>
-                                <div class="text-[10px] text-slate-400 truncate max-w-xs">{{ $c->address ?: '' }}</div>
+                                @if($c->province)
+                                    <div class="text-[10px] text-slate-400">{{ $c->province }}</div>
+                                @endif
                             </td>
                             <td class="px-4 py-3 text-center">
                                 <span class="px-2.5 py-0.5 rounded-full text-xs font-bold {{ $c->orders_count > 0 ? 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400' : 'bg-slate-100 dark:bg-slate-800 text-slate-500' }}">

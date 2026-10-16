@@ -10,6 +10,27 @@ use Illuminate\View\View;
 
 class CustomerController extends Controller
 {
+    public const PROVINCES = [
+        'Aceh', 'Sumatera Utara', 'Sumatera Barat', 'Riau', 'Kepulauan Riau', 'Jambi',
+        'Sumatera Selatan', 'Kepulauan Bangka Belitung', 'Bengkulu', 'Lampung',
+        'DKI Jakarta', 'Banten', 'Jawa Barat', 'Jawa Tengah', 'DI Yogyakarta', 'Jawa Timur',
+        'Bali', 'Nusa Tenggara Barat', 'Nusa Tenggara Timur',
+        'Kalimantan Barat', 'Kalimantan Tengah', 'Kalimantan Selatan', 'Kalimantan Timur', 'Kalimantan Utara',
+        'Sulawesi Utara', 'Gorontalo', 'Sulawesi Tengah', 'Sulawesi Barat', 'Sulawesi Selatan', 'Sulawesi Tenggara',
+        'Maluku', 'Maluku Utara', 'Papua', 'Papua Barat', 'Papua Selatan', 'Papua Tengah', 'Papua Pegunungan', 'Papua Barat Daya',
+    ];
+
+    public const CATEGORIES = [
+        'Event Organizer (EO)',
+        'Wedding Organizer (WO)',
+        'Corporate / Perusahaan',
+        'Pemerintahan / BUMN',
+        'Vendor Rental / Sound',
+        'Lembaga Pendidikan / Kampus',
+        'Individu / Pribadi',
+        'Lainnya',
+    ];
+
     /**
      * Display a listing of the customers.
      */
@@ -20,10 +41,13 @@ class CustomerController extends Controller
         if ($search = $request->input('search')) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('full_name', 'like', "%{$search}%")
                     ->orWhere('organization', 'like', "%{$search}%")
                     ->orWhere('phone', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%")
                     ->orWhere('customer_code', 'like', "%{$search}%")
-                    ->orWhere('city', 'like', "%{$search}%");
+                    ->orWhere('city', 'like', "%{$search}%")
+                    ->orWhere('province', 'like', "%{$search}%");
             });
         }
 
@@ -37,7 +61,10 @@ class CustomerController extends Controller
      */
     public function create(): View
     {
-        return view('customers.create');
+        $provinces = self::PROVINCES;
+        $categories = self::CATEGORIES;
+
+        return view('customers.create', compact('provinces', 'categories'));
     }
 
     /**
@@ -47,10 +74,19 @@ class CustomerController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
+            'full_name' => ['nullable', 'string', 'max:255'],
+            'birth_date' => ['nullable', 'date'],
             'phone' => ['required', 'string', 'max:50'],
+            'email' => ['nullable', 'email', 'max:255'],
             'organization' => ['nullable', 'string', 'max:255'],
+            'category' => ['nullable', 'string', 'max:100'],
             'address' => ['nullable', 'string'],
+            'province' => ['nullable', 'string', 'max:100'],
             'city' => ['nullable', 'string', 'max:100'],
+            'pic_secondary_name' => ['nullable', 'string', 'max:255'],
+            'pic_secondary_phone' => ['nullable', 'string', 'max:50'],
+            'pic_secondary_relation' => ['nullable', 'string', 'max:100'],
+            'registration_date' => ['nullable', 'date'],
             'notes' => ['nullable', 'string'],
         ]);
 
@@ -59,10 +95,19 @@ class CustomerController extends Controller
         Customer::create([
             'customer_code' => $code,
             'name' => $validated['name'],
+            'full_name' => $validated['full_name'] ?? null,
+            'birth_date' => $validated['birth_date'] ?? null,
             'phone' => $validated['phone'],
+            'email' => $validated['email'] ?? null,
             'organization' => $validated['organization'] ?? null,
+            'category' => $validated['category'] ?? 'Event Organizer (EO)',
             'address' => $validated['address'] ?? null,
+            'province' => $validated['province'] ?? null,
             'city' => $validated['city'] ?? null,
+            'pic_secondary_name' => $validated['pic_secondary_name'] ?? null,
+            'pic_secondary_phone' => $validated['pic_secondary_phone'] ?? null,
+            'pic_secondary_relation' => $validated['pic_secondary_relation'] ?? null,
+            'registration_date' => $validated['registration_date'] ?? now()->toDateString(),
             'notes' => $validated['notes'] ?? null,
             'created_by' => Auth::id(),
         ]);
@@ -76,7 +121,10 @@ class CustomerController extends Controller
      */
     public function edit(Customer $customer): View
     {
-        return view('customers.edit', compact('customer'));
+        $provinces = self::PROVINCES;
+        $categories = self::CATEGORIES;
+
+        return view('customers.edit', compact('customer', 'provinces', 'categories'));
     }
 
     /**
@@ -86,10 +134,19 @@ class CustomerController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
+            'full_name' => ['nullable', 'string', 'max:255'],
+            'birth_date' => ['nullable', 'date'],
             'phone' => ['required', 'string', 'max:50'],
+            'email' => ['nullable', 'email', 'max:255'],
             'organization' => ['nullable', 'string', 'max:255'],
+            'category' => ['nullable', 'string', 'max:100'],
             'address' => ['nullable', 'string'],
+            'province' => ['nullable', 'string', 'max:100'],
             'city' => ['nullable', 'string', 'max:100'],
+            'pic_secondary_name' => ['nullable', 'string', 'max:255'],
+            'pic_secondary_phone' => ['nullable', 'string', 'max:50'],
+            'pic_secondary_relation' => ['nullable', 'string', 'max:100'],
+            'registration_date' => ['nullable', 'date'],
             'notes' => ['nullable', 'string'],
         ]);
 
