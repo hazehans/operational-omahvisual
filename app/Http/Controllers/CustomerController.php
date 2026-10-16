@@ -90,7 +90,11 @@ class CustomerController extends Controller
             'notes' => ['nullable', 'string'],
         ]);
 
-        $code = 'CUST-'.str_pad((string) (Customer::count() + 1), 4, '0', STR_PAD_LEFT);
+        $nextNum = Customer::count() + 1;
+        do {
+            $code = 'CUST-'.str_pad((string) $nextNum, 4, '0', STR_PAD_LEFT);
+            $nextNum++;
+        } while (Customer::where('customer_code', $code)->exists());
 
         Customer::create([
             'customer_code' => $code,

@@ -192,11 +192,17 @@
         }, 'image/jpeg', 0.92);
     };
 
-    window.setupImageCropper = function(inputId, previewImgId, placeholderId, defaultRatio, reCropBtnId) {
+    window.setupImageCropper = function(inputId, previewImgId, placeholderId, defaultRatio, reCropBtnId, fieldPrefix) {
         const input = document.getElementById(inputId);
         const preview = document.getElementById(previewImgId);
         const placeholder = document.getElementById(placeholderId);
         const reCropBtn = reCropBtnId ? document.getElementById(reCropBtnId) : null;
+        const prefix = fieldPrefix || inputId.replace('_input', '');
+        const clearBtn = document.getElementById(`clear_${prefix}_btn`);
+        const removeBtn = document.getElementById(`remove_${prefix}_btn`);
+        const undoBtn = document.getElementById(`undo_${prefix}_btn`);
+        const removeInput = document.getElementById(`remove_${prefix}_input`);
+
         if (!input) return;
 
         let originalFile = null;
@@ -212,6 +218,10 @@
                     aspectRatio: defaultRatio,
                     onSuccess: function() {
                         if (reCropBtn) reCropBtn.classList.remove('hidden');
+                        if (clearBtn) clearBtn.classList.remove('hidden');
+                        if (removeBtn) removeBtn.classList.remove('hidden');
+                        if (undoBtn) undoBtn.classList.add('hidden');
+                        if (removeInput) removeInput.value = '0';
                     }
                 });
             }
@@ -230,10 +240,76 @@
                         aspectRatio: defaultRatio,
                         onSuccess: function() {
                             if (reCropBtn) reCropBtn.classList.remove('hidden');
+                            if (clearBtn) clearBtn.classList.remove('hidden');
+                            if (removeBtn) removeBtn.classList.remove('hidden');
+                            if (undoBtn) undoBtn.classList.add('hidden');
+                            if (removeInput) removeInput.value = '0';
                         }
                     });
                 }
             });
         }
+    };
+
+    window.removeImage = function(fieldPrefix) {
+        const input = document.getElementById(`${fieldPrefix}_input`);
+        const preview = document.getElementById(`${fieldPrefix}_preview`);
+        const placeholder = document.getElementById(`${fieldPrefix}_placeholder`);
+        const removeInput = document.getElementById(`remove_${fieldPrefix}_input`);
+        const removeBtn = document.getElementById(`remove_${fieldPrefix}_btn`);
+        const undoBtn = document.getElementById(`undo_${fieldPrefix}_btn`);
+        const cropBtn = document.getElementById(`crop_${fieldPrefix}_btn`);
+        const clearBtn = document.getElementById(`clear_${fieldPrefix}_btn`);
+
+        if (input) input.value = '';
+        if (preview) {
+            preview.dataset.prevSrc = preview.src;
+            preview.classList.add('hidden');
+        }
+        if (placeholder) placeholder.classList.remove('hidden');
+        if (removeInput) removeInput.value = '1';
+        if (removeBtn) removeBtn.classList.add('hidden');
+        if (undoBtn) undoBtn.classList.remove('hidden');
+        if (cropBtn) cropBtn.classList.add('hidden');
+        if (clearBtn) clearBtn.classList.add('hidden');
+    };
+
+    window.undoRemoveImage = function(fieldPrefix, originalSrc) {
+        const preview = document.getElementById(`${fieldPrefix}_preview`);
+        const placeholder = document.getElementById(`${fieldPrefix}_placeholder`);
+        const removeInput = document.getElementById(`remove_${fieldPrefix}_input`);
+        const removeBtn = document.getElementById(`remove_${fieldPrefix}_btn`);
+        const undoBtn = document.getElementById(`undo_${fieldPrefix}_btn`);
+        const cropBtn = document.getElementById(`crop_${fieldPrefix}_btn`);
+
+        if (removeInput) removeInput.value = '0';
+        const srcToRestore = originalSrc || (preview ? preview.dataset.prevSrc : null);
+        if (preview && srcToRestore) {
+            preview.src = srcToRestore;
+            preview.classList.remove('hidden');
+        }
+        if (placeholder && srcToRestore) {
+            placeholder.classList.add('hidden');
+        }
+        if (removeBtn) removeBtn.classList.remove('hidden');
+        if (undoBtn) undoBtn.classList.add('hidden');
+        if (cropBtn) cropBtn.classList.remove('hidden');
+    };
+
+    window.clearNewImage = function(fieldPrefix) {
+        const input = document.getElementById(`${fieldPrefix}_input`);
+        const preview = document.getElementById(`${fieldPrefix}_preview`);
+        const placeholder = document.getElementById(`${fieldPrefix}_placeholder`);
+        const cropBtn = document.getElementById(`crop_${fieldPrefix}_btn`);
+        const clearBtn = document.getElementById(`clear_${fieldPrefix}_btn`);
+
+        if (input) input.value = '';
+        if (preview) {
+            preview.src = '';
+            preview.classList.add('hidden');
+        }
+        if (placeholder) placeholder.classList.remove('hidden');
+        if (cropBtn) cropBtn.classList.add('hidden');
+        if (clearBtn) clearBtn.classList.add('hidden');
     };
 </script>

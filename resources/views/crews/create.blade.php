@@ -176,9 +176,12 @@
                     </div>
                     <input type="file" name="photo" id="crew_photo_input" accept="image/*"
                         class="w-full text-xs text-slate-500 file:mr-2 file:py-1.5 file:px-2.5 file:rounded-lg file:border-0 file:text-[11px] file:font-semibold file:bg-indigo-50 dark:file:bg-indigo-950/60 file:text-indigo-600 dark:file:text-indigo-400 hover:file:bg-indigo-100">
-                    <div class="flex items-center justify-between">
+                    <div class="flex items-center justify-between pt-1">
                         <p class="text-[10px] text-slate-400">Crop Otomatis 1:1</p>
-                        <button type="button" id="crop_crew_photo_btn" class="hidden text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline">✂️ Crop Ulang</button>
+                        <div class="flex items-center gap-2">
+                            <button type="button" id="crop_crew_photo_btn" class="hidden text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline">✂️ Crop</button>
+                            <button type="button" id="clear_crew_photo_btn" onclick="clearNewImage('crew_photo')" class="hidden text-[11px] font-bold text-rose-500 hover:text-rose-600 hover:underline">🗑️ Batal</button>
+                        </div>
                     </div>
                     @error('photo') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
                 </div>
@@ -196,9 +199,12 @@
                     </div>
                     <input type="file" name="ktp_photo" id="crew_ktp_input" accept="image/*"
                         class="w-full text-xs text-slate-500 file:mr-2 file:py-1.5 file:px-2.5 file:rounded-lg file:border-0 file:text-[11px] file:font-semibold file:bg-indigo-50 dark:file:bg-indigo-950/60 file:text-indigo-600 dark:file:text-indigo-400 hover:file:bg-indigo-100">
-                    <div class="flex items-center justify-between">
+                    <div class="flex items-center justify-between pt-1">
                         <p class="text-[10px] text-slate-400">Crop Otomatis 3:2</p>
-                        <button type="button" id="crop_crew_ktp_btn" class="hidden text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline">✂️ Crop Ulang</button>
+                        <div class="flex items-center gap-2">
+                            <button type="button" id="crop_crew_ktp_btn" class="hidden text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline">✂️ Crop</button>
+                            <button type="button" id="clear_crew_ktp_btn" onclick="clearNewImage('crew_ktp')" class="hidden text-[11px] font-bold text-rose-500 hover:text-rose-600 hover:underline">🗑️ Batal</button>
+                        </div>
                     </div>
                     @error('ktp_photo') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
                 </div>
@@ -216,9 +222,12 @@
                     </div>
                     <input type="file" name="rate_card_photo" id="crew_rate_card_input" accept="image/*"
                         class="w-full text-xs text-slate-500 file:mr-2 file:py-1.5 file:px-2.5 file:rounded-lg file:border-0 file:text-[11px] file:font-semibold file:bg-indigo-50 dark:file:bg-indigo-950/60 file:text-indigo-600 dark:file:text-indigo-400 hover:file:bg-indigo-100">
-                    <div class="flex items-center justify-between">
+                    <div class="flex items-center justify-between pt-1">
                         <p class="text-[10px] text-slate-400">Crop Bebas / Sesuai Foto</p>
-                        <button type="button" id="crop_crew_rate_card_btn" class="hidden text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline">✂️ Crop Ulang</button>
+                        <div class="flex items-center gap-2">
+                            <button type="button" id="crop_crew_rate_card_btn" class="hidden text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline">✂️ Crop</button>
+                            <button type="button" id="clear_crew_rate_card_btn" onclick="clearNewImage('crew_rate_card')" class="hidden text-[11px] font-bold text-rose-500 hover:text-rose-600 hover:underline">🗑️ Batal</button>
+                        </div>
                     </div>
                     @error('rate_card_photo') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
                 </div>

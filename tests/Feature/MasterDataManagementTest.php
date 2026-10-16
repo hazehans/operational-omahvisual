@@ -6,12 +6,15 @@ use App\Models\Crew;
 use App\Models\Customer;
 use App\Models\User;
 use App\Models\Vehicle;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class MasterDataManagementTest extends TestCase
 {
+    use DatabaseTransactions;
+
     private User $user;
 
     protected function setUp(): void
@@ -133,5 +136,86 @@ class MasterDataManagementTest extends TestCase
         $this->assertNotNull($vehicle->etoll_photo_path);
         $this->assertNotNull($vehicle->barcode_bbm_photo_path);
         $this->assertStringStartsWith('VH-', $vehicle->vehicle_code);
+    }
+
+    public function test_user_can_delete_existing_crew_photos_via_remove_flags(): void
+    {
+        Storage::fake('public');
+
+        $crew = Crew::create([
+            'crew_code' => 'CRW-9999',
+            'nickname' => 'DeleteTester',
+            'full_name' => 'Delete Test User',
+            'phone' => '08123456789',
+            'employment_type' => 'karyawan_tetap',
+            'photo_path' => 'crews/photos/sample.jpg',
+            'ktp_photo_path' => 'crews/ktp/sample_ktp.jpg',
+            'rate_card_photo_path' => 'crews/rates/sample_rate.jpg',
+            'is_active' => true,
+        ]);
+
+        Storage::disk('public')->put('crews/photos/sample.jpg', 'content');
+        Storage::disk('public')->put('crews/ktp/sample_ktp.jpg', 'content');
+        Storage::disk('public')->put('crews/rates/sample_rate.jpg', 'content');
+
+        $response = $this->actingAs($this->user)->put(route('crews.update', $crew), [
+            'nickname' => 'DeleteTester',
+            'full_name' => 'Delete Test User',
+            'phone' => '08123456789',
+            'employment_type' => 'karyawan_tetap',
+            'is_active' => '1',
+            'remove_photo' => '1',
+            'remove_ktp_photo' => '1',
+            'remove_rate_card_photo' => '1',
+        ]);
+
+        $response->assertRedirect(route('crews.index'));
+
+        $crew->refresh();
+        $this->assertNull($crew->photo_path);
+        $this->assertNull($crew->ktp_photo_path);
+        $this->assertNull($crew->rate_card_photo_path);
+
+        Storage::disk('public')->assertMissing('crews/photos/sample.jpg');
+        Storage::disk('public')->assertMissing('crews/ktp/sample_ktp.jpg');
+        Storage::disk('public')->assertMissing('crews/rates/sample_rate.jpg');
+    }
+
+    public function test_user_can_delete_existing_vehicle_photos_via_remove_flags(): void
+    {
+        Storage::fake('public');
+
+        $vehicle = Vehicle::create([
+            'vehicle_code' => 'VH-999',
+            'name' => 'Grand Max Delete Test',
+            'plate_number' => 'N 1234 ZZ',
+            'type' => 'Blind Van',
+            'status' => 'tersedia',
+            'photo_path' => 'vehicles/photos/veh.jpg',
+            'stnk_photo_path' => 'vehicles/stnk/stnk.jpg',
+            'is_active' => true,
+        ]);
+
+        Storage::disk('public')->put('vehicles/photos/veh.jpg', 'content');
+        Storage::disk('public')->put('vehicles/stnk/stnk.jpg', 'content');
+
+        $response = $this->actingAs($this->user)->put(route('vehicles.update', $vehicle), [
+            'name' => 'Grand Max Delete Test',
+            'plate_number' => 'N 1234 ZZ',
+            'type' => 'Blind Van',
+            'status' => 'tersedia',
+            'is_active' => '1',
+            'remove_photo' => '1',
+            'remove_stnk_photo' => '1',
+        ]);
+
+        $response->assertRedirect(route('vehicles.index'));
+
+        $vehicle->refresh();
+        $this->assertNull($vehicle->photo_path);
+        $this->assertNull($vehicle->stnk_photo_path);
+
+        Storage::disk('public')->assertMissing('vehicles/photos/veh.jpg');
+        Storage::disk('public')->assertMissing('vehicles/stnk/stnk.jpg');
     }
 }

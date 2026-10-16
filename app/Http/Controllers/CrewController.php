@@ -93,7 +93,11 @@ class CrewController extends Controller
             'rate_card_photo' => ['nullable', 'image', 'max:5120'],
         ]);
 
-        $code = 'CRW-'.str_pad((string) (Crew::count() + 1), 4, '0', STR_PAD_LEFT);
+        $nextNum = Crew::count() + 1;
+        do {
+            $code = 'CRW-'.str_pad((string) $nextNum, 4, '0', STR_PAD_LEFT);
+            $nextNum++;
+        } while (Crew::where('crew_code', $code)->exists());
 
         // Upload photos
         $photoPath = $request->hasFile('photo') ? $request->file('photo')->store('crews/photos', 'public') : null;
@@ -191,21 +195,39 @@ class CrewController extends Controller
             $updateData['position'] = implode(', ', $positions);
         }
 
-        if ($request->hasFile('photo')) {
+        // Handle Foto Profil
+        if ($request->boolean('remove_photo')) {
+            if ($crew->photo_path) {
+                Storage::disk('public')->delete($crew->photo_path);
+            }
+            $updateData['photo_path'] = null;
+        } elseif ($request->hasFile('photo')) {
             if ($crew->photo_path) {
                 Storage::disk('public')->delete($crew->photo_path);
             }
             $updateData['photo_path'] = $request->file('photo')->store('crews/photos', 'public');
         }
 
-        if ($request->hasFile('ktp_photo')) {
+        // Handle Foto KTP
+        if ($request->boolean('remove_ktp_photo')) {
+            if ($crew->ktp_photo_path) {
+                Storage::disk('public')->delete($crew->ktp_photo_path);
+            }
+            $updateData['ktp_photo_path'] = null;
+        } elseif ($request->hasFile('ktp_photo')) {
             if ($crew->ktp_photo_path) {
                 Storage::disk('public')->delete($crew->ktp_photo_path);
             }
             $updateData['ktp_photo_path'] = $request->file('ktp_photo')->store('crews/ktp', 'public');
         }
 
-        if ($request->hasFile('rate_card_photo')) {
+        // Handle Foto Rate Card
+        if ($request->boolean('remove_rate_card_photo')) {
+            if ($crew->rate_card_photo_path) {
+                Storage::disk('public')->delete($crew->rate_card_photo_path);
+            }
+            $updateData['rate_card_photo_path'] = null;
+        } elseif ($request->hasFile('rate_card_photo')) {
             if ($crew->rate_card_photo_path) {
                 Storage::disk('public')->delete($crew->rate_card_photo_path);
             }

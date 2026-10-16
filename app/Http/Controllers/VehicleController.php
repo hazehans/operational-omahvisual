@@ -77,7 +77,11 @@ class VehicleController extends Controller
             'barcode_bbm_photo' => ['nullable', 'image', 'max:5120'],
         ]);
 
-        $code = 'VH-'.str_pad((string) (Vehicle::count() + 1), 3, '0', STR_PAD_LEFT);
+        $nextNum = Vehicle::count() + 1;
+        do {
+            $code = 'VH-'.str_pad((string) $nextNum, 3, '0', STR_PAD_LEFT);
+            $nextNum++;
+        } while (Vehicle::where('vehicle_code', $code)->exists());
 
         $photoPath = $request->hasFile('photo') ? $request->file('photo')->store('vehicles/photos', 'public') : null;
         $stnkPath = $request->hasFile('stnk_photo') ? $request->file('stnk_photo')->store('vehicles/stnk', 'public') : null;
@@ -161,28 +165,52 @@ class VehicleController extends Controller
             $updateData['vehicle_code'] = 'VH-'.str_pad((string) $vehicle->id, 3, '0', STR_PAD_LEFT);
         }
 
-        if ($request->hasFile('photo')) {
+        // Handle Foto Fisik Kendaraan
+        if ($request->boolean('remove_photo')) {
+            if ($vehicle->photo_path) {
+                Storage::disk('public')->delete($vehicle->photo_path);
+            }
+            $updateData['photo_path'] = null;
+        } elseif ($request->hasFile('photo')) {
             if ($vehicle->photo_path) {
                 Storage::disk('public')->delete($vehicle->photo_path);
             }
             $updateData['photo_path'] = $request->file('photo')->store('vehicles/photos', 'public');
         }
 
-        if ($request->hasFile('stnk_photo')) {
+        // Handle Foto STNK
+        if ($request->boolean('remove_stnk_photo')) {
+            if ($vehicle->stnk_photo_path) {
+                Storage::disk('public')->delete($vehicle->stnk_photo_path);
+            }
+            $updateData['stnk_photo_path'] = null;
+        } elseif ($request->hasFile('stnk_photo')) {
             if ($vehicle->stnk_photo_path) {
                 Storage::disk('public')->delete($vehicle->stnk_photo_path);
             }
             $updateData['stnk_photo_path'] = $request->file('stnk_photo')->store('vehicles/stnk', 'public');
         }
 
-        if ($request->hasFile('etoll_photo')) {
+        // Handle Foto E-Toll
+        if ($request->boolean('remove_etoll_photo')) {
+            if ($vehicle->etoll_photo_path) {
+                Storage::disk('public')->delete($vehicle->etoll_photo_path);
+            }
+            $updateData['etoll_photo_path'] = null;
+        } elseif ($request->hasFile('etoll_photo')) {
             if ($vehicle->etoll_photo_path) {
                 Storage::disk('public')->delete($vehicle->etoll_photo_path);
             }
             $updateData['etoll_photo_path'] = $request->file('etoll_photo')->store('vehicles/etoll', 'public');
         }
 
-        if ($request->hasFile('barcode_bbm_photo')) {
+        // Handle Foto Barcode BBM
+        if ($request->boolean('remove_barcode_bbm_photo')) {
+            if ($vehicle->barcode_bbm_photo_path) {
+                Storage::disk('public')->delete($vehicle->barcode_bbm_photo_path);
+            }
+            $updateData['barcode_bbm_photo_path'] = null;
+        } elseif ($request->hasFile('barcode_bbm_photo')) {
             if ($vehicle->barcode_bbm_photo_path) {
                 Storage::disk('public')->delete($vehicle->barcode_bbm_photo_path);
             }

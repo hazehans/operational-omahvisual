@@ -11,6 +11,7 @@ use App\Models\Vehicle;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class SpkController extends Controller
@@ -239,7 +240,15 @@ class SpkController extends Controller
         ]);
 
         $photoPath = $assignment->qc_photo_path;
-        if ($request->hasFile('qc_photo')) {
+        if ($request->boolean('remove_qc_photo')) {
+            if ($assignment->qc_photo_path) {
+                Storage::disk('public')->delete($assignment->qc_photo_path);
+            }
+            $photoPath = null;
+        } elseif ($request->hasFile('qc_photo')) {
+            if ($assignment->qc_photo_path) {
+                Storage::disk('public')->delete($assignment->qc_photo_path);
+            }
             $photoPath = $request->file('qc_photo')->store('venue-qc', 'public');
         }
 

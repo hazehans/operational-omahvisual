@@ -127,6 +127,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div class="space-y-2 bg-slate-50 dark:bg-slate-950 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800">
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">Foto Fisik Kendaraan</label>
+                    <input type="hidden" name="remove_photo" id="remove_veh_photo_input" value="0">
                     <div class="relative w-full h-32 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-center overflow-hidden">
                         <img id="veh_photo_preview" src="{{ $vehicle->photo_path ? asset('storage/' . $vehicle->photo_path) : '' }}" alt="{{ $vehicle->name }}" class="w-full h-full object-cover {{ $vehicle->photo_path ? '' : 'hidden' }}">
                         <div id="veh_photo_placeholder" class="text-center p-2 text-slate-400 {{ $vehicle->photo_path ? 'hidden' : '' }}">
@@ -134,20 +135,25 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
                             </svg>
-                            <span class="text-[9px]">16:9 Landscape Armada</span>
+                            <span class="text-[9px]">16:9 Landscape Armada Default</span>
                         </div>
                     </div>
                     <input type="file" name="photo" id="veh_photo_input" accept="image/*"
                         class="w-full text-xs text-slate-500 file:mr-2 file:py-1.5 file:px-2.5 file:rounded-lg file:border-0 file:text-[11px] file:font-semibold file:bg-indigo-50 dark:file:bg-indigo-950/60 file:text-indigo-600 dark:file:text-indigo-400 hover:file:bg-indigo-100">
-                    <div class="flex items-center justify-between">
+                    <div class="flex items-center justify-between pt-1">
                         <p class="text-[10px] text-slate-400">Pilih file baru untuk crop 16:9</p>
-                        <button type="button" id="crop_veh_photo_btn" class="hidden text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline">✂️ Crop Ulang</button>
+                        <div class="flex items-center gap-2">
+                            <button type="button" id="crop_veh_photo_btn" class="hidden text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline">✂️ Crop</button>
+                            <button type="button" id="remove_veh_photo_btn" onclick="removeImage('veh_photo')" class="{{ $vehicle->photo_path ? '' : 'hidden' }} text-[11px] font-bold text-rose-500 hover:text-rose-600 hover:underline">🗑️ Hapus</button>
+                            <button type="button" id="undo_veh_photo_btn" onclick="undoRemoveImage('veh_photo', '{{ $vehicle->photo_path ? asset('storage/' . $vehicle->photo_path) : '' }}')" class="hidden text-[11px] font-bold text-amber-500 hover:underline">↩️ Batal</button>
+                        </div>
                     </div>
                     @error('photo') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
                 </div>
 
                 <div class="space-y-2 bg-slate-50 dark:bg-slate-950 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800">
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">Foto STNK Kendaraan</label>
+                    <input type="hidden" name="remove_stnk_photo" id="remove_veh_stnk_input" value="0">
                     <div class="relative w-full h-32 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-center overflow-hidden">
                         <img id="veh_stnk_preview" src="{{ $vehicle->stnk_photo_path ? asset('storage/' . $vehicle->stnk_photo_path) : '' }}" alt="STNK {{ $vehicle->name }}" class="w-full h-full object-cover {{ $vehicle->stnk_photo_path ? '' : 'hidden' }}">
                         <div id="veh_stnk_placeholder" class="text-center p-2 text-slate-400 {{ $vehicle->stnk_photo_path ? 'hidden' : '' }}">
@@ -159,15 +165,20 @@
                     </div>
                     <input type="file" name="stnk_photo" id="veh_stnk_input" accept="image/*"
                         class="w-full text-xs text-slate-500 file:mr-2 file:py-1.5 file:px-2.5 file:rounded-lg file:border-0 file:text-[11px] file:font-semibold file:bg-indigo-50 dark:file:bg-indigo-950/60 file:text-indigo-600 dark:file:text-indigo-400 hover:file:bg-indigo-100">
-                    <div class="flex items-center justify-between">
+                    <div class="flex items-center justify-between pt-1">
                         <p class="text-[10px] text-slate-400">Pilih file baru untuk crop 3:2</p>
-                        <button type="button" id="crop_veh_stnk_btn" class="hidden text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline">✂️ Crop Ulang</button>
+                        <div class="flex items-center gap-2">
+                            <button type="button" id="crop_veh_stnk_btn" class="hidden text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline">✂️ Crop</button>
+                            <button type="button" id="remove_veh_stnk_btn" onclick="removeImage('veh_stnk')" class="{{ $vehicle->stnk_photo_path ? '' : 'hidden' }} text-[11px] font-bold text-rose-500 hover:text-rose-600 hover:underline">🗑️ Hapus</button>
+                            <button type="button" id="undo_veh_stnk_btn" onclick="undoRemoveImage('veh_stnk', '{{ $vehicle->stnk_photo_path ? asset('storage/' . $vehicle->stnk_photo_path) : '' }}')" class="hidden text-[11px] font-bold text-amber-500 hover:underline">↩️ Batal</button>
+                        </div>
                     </div>
                     @error('stnk_photo') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
                 </div>
 
                 <div class="space-y-2 bg-slate-50 dark:bg-slate-950 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800">
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">Foto Kartu E-Toll</label>
+                    <input type="hidden" name="remove_etoll_photo" id="remove_veh_etoll_input" value="0">
                     <div class="relative w-full h-32 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-center overflow-hidden">
                         <img id="veh_etoll_preview" src="{{ $vehicle->etoll_photo_path ? asset('storage/' . $vehicle->etoll_photo_path) : '' }}" alt="E-Toll {{ $vehicle->name }}" class="w-full h-full object-cover {{ $vehicle->etoll_photo_path ? '' : 'hidden' }}">
                         <div id="veh_etoll_placeholder" class="text-center p-2 text-slate-400 {{ $vehicle->etoll_photo_path ? 'hidden' : '' }}">
@@ -179,15 +190,20 @@
                     </div>
                     <input type="file" name="etoll_photo" id="veh_etoll_input" accept="image/*"
                         class="w-full text-xs text-slate-500 file:mr-2 file:py-1.5 file:px-2.5 file:rounded-lg file:border-0 file:text-[11px] file:font-semibold file:bg-indigo-50 dark:file:bg-indigo-950/60 file:text-indigo-600 dark:file:text-indigo-400 hover:file:bg-indigo-100">
-                    <div class="flex items-center justify-between">
+                    <div class="flex items-center justify-between pt-1">
                         <p class="text-[10px] text-slate-400">Pilih file baru untuk crop 3:2</p>
-                        <button type="button" id="crop_veh_etoll_btn" class="hidden text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline">✂️ Crop Ulang</button>
+                        <div class="flex items-center gap-2">
+                            <button type="button" id="crop_veh_etoll_btn" class="hidden text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline">✂️ Crop</button>
+                            <button type="button" id="remove_veh_etoll_btn" onclick="removeImage('veh_etoll')" class="{{ $vehicle->etoll_photo_path ? '' : 'hidden' }} text-[11px] font-bold text-rose-500 hover:text-rose-600 hover:underline">🗑️ Hapus</button>
+                            <button type="button" id="undo_veh_etoll_btn" onclick="undoRemoveImage('veh_etoll', '{{ $vehicle->etoll_photo_path ? asset('storage/' . $vehicle->etoll_photo_path) : '' }}')" class="hidden text-[11px] font-bold text-amber-500 hover:underline">↩️ Batal</button>
+                        </div>
                     </div>
                     @error('etoll_photo') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
                 </div>
 
                 <div class="space-y-2 bg-slate-50 dark:bg-slate-950 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800">
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">Foto Barcode BBM (MyPertamina)</label>
+                    <input type="hidden" name="remove_barcode_bbm_photo" id="remove_veh_bbm_input" value="0">
                     <div class="relative w-full h-32 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-center overflow-hidden">
                         <img id="veh_bbm_preview" src="{{ $vehicle->barcode_bbm_photo_path ? asset('storage/' . $vehicle->barcode_bbm_photo_path) : '' }}" alt="BBM {{ $vehicle->name }}" class="w-full h-full object-cover {{ $vehicle->barcode_bbm_photo_path ? '' : 'hidden' }}">
                         <div id="veh_bbm_placeholder" class="text-center p-2 text-slate-400 {{ $vehicle->barcode_bbm_photo_path ? 'hidden' : '' }}">
@@ -199,9 +215,13 @@
                     </div>
                     <input type="file" name="barcode_bbm_photo" id="veh_bbm_input" accept="image/*"
                         class="w-full text-xs text-slate-500 file:mr-2 file:py-1.5 file:px-2.5 file:rounded-lg file:border-0 file:text-[11px] file:font-semibold file:bg-indigo-50 dark:file:bg-indigo-950/60 file:text-indigo-600 dark:file:text-indigo-400 hover:file:bg-indigo-100">
-                    <div class="flex items-center justify-between">
+                    <div class="flex items-center justify-between pt-1">
                         <p class="text-[10px] text-slate-400">Pilih file baru untuk crop 1:1</p>
-                        <button type="button" id="crop_veh_bbm_btn" class="hidden text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline">✂️ Crop Ulang</button>
+                        <div class="flex items-center gap-2">
+                            <button type="button" id="crop_veh_bbm_btn" class="hidden text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline">✂️ Crop</button>
+                            <button type="button" id="remove_veh_bbm_btn" onclick="removeImage('veh_bbm')" class="{{ $vehicle->barcode_bbm_photo_path ? '' : 'hidden' }} text-[11px] font-bold text-rose-500 hover:text-rose-600 hover:underline">🗑️ Hapus</button>
+                            <button type="button" id="undo_veh_bbm_btn" onclick="undoRemoveImage('veh_bbm', '{{ $vehicle->barcode_bbm_photo_path ? asset('storage/' . $vehicle->barcode_bbm_photo_path) : '' }}')" class="hidden text-[11px] font-bold text-amber-500 hover:underline">↩️ Batal</button>
+                        </div>
                     </div>
                     @error('barcode_bbm_photo') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
                 </div>

@@ -104,6 +104,13 @@
   - Rasio Bebas (Freeform) untuk Rate Card Kru dan Dokumen Kustom
 - [x] Mekanisme injeksi berkas hasil crop via HTML5 `DataTransfer` sehingga controller backend tetap menerima objek `UploadedFile` standar tanpa modifikasi controller
 - [x] **Perbaikan Bug Modal Crop Muncul Tiba-tiba**: Menambahkan `style="display: none;"` eksplisit pada root `#cropper-modal`, penanganan escape key, dan penutupan saat klik backdrop luar sehingga modal 100% tersembunyi saat login dan pergantian halaman menu.
+- [x] **Fitur Hapus Gambar (Deletable Images & Default Fallback)**:
+  - Tombol **"🗑️ Hapus"** interaktif pada form edit Kru (`photo`, `ktp_photo`, `rate_card_photo`), Armada Kendaraan (`photo`, `stnk_photo`, `etoll_photo`, `barcode_bbm_photo`), dan SPK QC Venue (`qc_photo`).
+  - Fitur **"↩️ Batal Hapus (Undo)"** sebelum form disimpan jika pengguna berubah pikiran.
+  - Tampilan otomatis fallback ke ilustrasi grafis / avatar default sistem saat gambar dikosongkan/dihapus.
+  - Backend controller secara aman menghapus file fisik dari storage disk publik saat flag `remove_*` dikirim dan memperbarui kolom database menjadi `null`.
+  - Tombol **"🗑️ Batal"** pada formulir pembuatan baru untuk mereset pilihan berkas kembali ke placeholder awal.
+  - Suite pengujian otomatis komprehensif di `MasterDataManagementTest.php` (76 tests passed).
 
 ### 17. Modul Profil Pengguna & Keamanan Kata Sandi (`/profile`) — ✅ Selesai
 - [x] Migrasi database: Penambahan kolom `phone` dan `avatar_path` pada tabel `users`
