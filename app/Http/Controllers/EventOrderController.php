@@ -133,11 +133,11 @@ class EventOrderController extends Controller
                 'status_wilayah' => $validated['status_wilayah'] ?? 'dalam_kota',
                 'google_maps_url' => $validated['google_maps_url'] ?? null,
                 'loading_date' => $validated['loading_date'],
-                'loading_time' => $validated['loading_time'],
-                'ready_time' => $validated['ready_time'] ?? null,
-                'jam_menyala' => $validated['jam_menyala'] ?? null,
-                'waktu_gladi' => $validated['waktu_gladi'] ?? null,
-                'jam_acara' => $validated['jam_acara'] ?? ($validated['ready_time'] ?? null),
+                'loading_time' => $this->formatTimeInput($validated['loading_time'] ?? null),
+                'ready_time' => $this->formatTimeInput($validated['ready_time'] ?? null) ?? $this->formatTimeInput($validated['jam_acara'] ?? null),
+                'jam_menyala' => $this->formatTimeInput($validated['jam_menyala'] ?? null),
+                'waktu_gladi' => $this->formatTimeInput($validated['waktu_gladi'] ?? null),
+                'jam_acara' => $this->formatTimeInput($validated['jam_acara'] ?? null) ?? $this->formatTimeInput($validated['ready_time'] ?? null),
                 'event_start_date' => $validated['event_start_date'],
                 'event_end_date' => $validated['event_end_date'] ?? $validated['event_start_date'],
                 'event_time' => $validated['event_time'] ?? ($validated['jam_acara'] ?? null),
@@ -352,11 +352,11 @@ class EventOrderController extends Controller
             'status_wilayah' => $validated['status_wilayah'] ?? 'dalam_kota',
             'google_maps_url' => $validated['google_maps_url'] ?? null,
             'loading_date' => $validated['loading_date'],
-            'loading_time' => $validated['loading_time'],
-            'ready_time' => $validated['ready_time'] ?? null,
-            'jam_menyala' => $validated['jam_menyala'] ?? null,
-            'waktu_gladi' => $validated['waktu_gladi'] ?? null,
-            'jam_acara' => $validated['jam_acara'] ?? ($validated['ready_time'] ?? null),
+            'loading_time' => $this->formatTimeInput($validated['loading_time'] ?? null),
+            'ready_time' => $this->formatTimeInput($validated['ready_time'] ?? null) ?? $this->formatTimeInput($validated['jam_acara'] ?? null),
+            'jam_menyala' => $this->formatTimeInput($validated['jam_menyala'] ?? null),
+            'waktu_gladi' => $this->formatTimeInput($validated['waktu_gladi'] ?? null),
+            'jam_acara' => $this->formatTimeInput($validated['jam_acara'] ?? null) ?? $this->formatTimeInput($validated['ready_time'] ?? null),
             'event_start_date' => $validated['event_start_date'],
             'event_end_date' => $validated['event_end_date'] ?? $validated['event_start_date'],
             'event_time' => $validated['event_time'] ?? ($validated['jam_acara'] ?? null),
@@ -452,6 +452,25 @@ class EventOrderController extends Controller
 
         return redirect()->route('orders.show', $order)
             ->with('status', "Pesanan {$order->order_number} berhasil diperbarui.");
+    }
+
+    /**
+     * Normalize time input to HH:MM format for PostgreSQL time column.
+     */
+    private function formatTimeInput(?string $time): ?string
+    {
+        if (empty($time)) {
+            return null;
+        }
+
+        if (preg_match('/(\d{1,2}:\d{2}(?::\d{2})?)/', $time, $matches)) {
+            $parts = explode(':', $matches[1]);
+            $parts[0] = str_pad($parts[0], 2, '0', STR_PAD_LEFT);
+
+            return implode(':', array_slice($parts, 0, 2));
+        }
+
+        return null;
     }
 
     /**

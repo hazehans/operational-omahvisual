@@ -62,11 +62,14 @@ class EventOrderAndSpkManagementTest extends TestCase
 
     public function test_user_can_store_order_and_system_auto_generates_spk_and_checklists(): void
     {
+        $eventName = 'Konser Musik Kampus '.uniqid();
+        $customerName = 'Mas Dani Bless '.uniqid();
+
         $orderData = [
-            'customer_name' => 'Mas Dani Bless',
+            'customer_name' => $customerName,
             'customer_phone' => '081234567890',
             'customer_organization' => 'Bless Visual Production',
-            'event_name' => 'Konser Musik Kampus',
+            'event_name' => $eventName,
             'event_type' => 'indoor',
             'venue_name' => 'Graha Cakrawala Malang',
             'loading_date' => now()->addDays(2)->format('Y-m-d'),
@@ -93,14 +96,15 @@ class EventOrderAndSpkManagementTest extends TestCase
         ];
 
         $response = $this->actingAs($this->user)->post(route('orders.store'), $orderData);
+        $response->assertSessionHasNoErrors();
 
-        $order = EventOrder::where('event_name', 'Konser Musik Kampus')->first();
+        $order = EventOrder::where('event_name', $eventName)->first();
         $this->assertNotNull($order);
-        $this->assertEquals('Konser Musik Kampus', $order->event_name);
+        $this->assertEquals($eventName, $order->event_name);
         $this->assertStringStartsWith('ORD-2026-', $order->order_number);
 
         // Verify customer created
-        $customer = Customer::where('name', 'Mas Dani Bless')->first();
+        $customer = Customer::where('name', $customerName)->first();
         $this->assertNotNull($customer);
         $this->assertEquals($customer->id, $order->customer_id);
 
