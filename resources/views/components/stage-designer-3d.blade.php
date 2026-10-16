@@ -116,20 +116,41 @@
             <span>Tahan <kbd class="px-1 py-0.5 rounded bg-slate-800 text-[10px] font-mono text-amber-400 border border-slate-700">Shift</kbd> untuk drag bebas</span>
         </div>
 
-        <!-- Selected Screen Inspector Floating Widget -->
-        <div id="screenInspectorBox" class="absolute top-3 right-3 bg-slate-950/90 backdrop-blur-md p-4 rounded-xl border border-slate-800 text-xs w-72 space-y-3 shadow-2xl transition-all hidden">
+        <!-- 🧭 3D Compass Rose HUD (Utara & Selatan) -->
+        <div class="absolute top-3 right-3 bg-slate-950/85 backdrop-blur-md px-3 py-2 rounded-xl border border-slate-800 text-[11px] flex items-center gap-2.5 pointer-events-none z-10 shadow-lg">
+            <div class="relative w-8 h-8 rounded-full border border-slate-700 bg-slate-900/90 flex items-center justify-center">
+                <div id="compassNeedle3D" class="absolute w-full h-full flex items-center justify-center transition-transform duration-75">
+                    <div class="w-1 h-3.5 bg-rose-500 rounded-t-sm absolute top-0.5"></div>
+                    <div class="w-1 h-3.5 bg-slate-400 rounded-b-sm absolute bottom-0.5"></div>
+                </div>
+                <span class="absolute top-0 text-[8px] font-bold text-rose-400">U</span>
+                <span class="absolute bottom-0 text-[8px] font-bold text-slate-400">S</span>
+            </div>
+            <div class="leading-tight">
+                <div class="font-bold text-slate-200">Arah Angin</div>
+                <div class="text-[9px] text-slate-400">U (Utara) • S (Selatan)</div>
+            </div>
+        </div>
+
+        <!-- Selected Screen Inspector Floating Widget (Panel CRUD) -->
+        <div id="screenInspectorBox" class="absolute top-16 right-3 bg-slate-950/95 backdrop-blur-md p-4 rounded-xl border border-slate-800 text-xs w-72 space-y-3 shadow-2xl transition-all hidden z-20">
             <div class="flex items-center justify-between border-b border-slate-800 pb-2">
-                <div class="font-bold text-white flex items-center gap-1.5 truncate">
-                    <span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>
-                    <span id="inspectScreenName">Main Screen</span>
+                <div class="font-bold text-white flex items-center gap-1.5 truncate flex-1 mr-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-indigo-500 shrink-0"></span>
+                    <input type="text" id="inspectScreenNameInput" value="Main Screen" class="w-full px-2 py-0.5 rounded bg-slate-900 border border-slate-700 text-xs font-bold text-white focus:ring-1 focus:ring-indigo-500">
                 </div>
                 <button type="button" id="btnCloseInspector" class="text-slate-400 hover:text-white font-bold text-xs p-1">✕</button>
             </div>
 
             <div class="space-y-2 text-[11px]">
-                <div class="flex justify-between text-slate-400">
-                    <span>Ukuran Fisik:</span>
-                    <span class="font-bold text-slate-200" id="inspectScreenSize">6.0m × 3.0m</span>
+                <div class="flex items-center justify-between text-slate-400">
+                    <span>Dimensi Layar:</span>
+                    <div class="flex items-center gap-1 text-slate-200">
+                        <input type="number" step="0.5" min="0.5" max="30" id="inspectScreenWidthInput" value="6.0" class="w-14 px-1.5 py-0.5 rounded bg-slate-900 border border-slate-700 text-xs font-bold text-center text-white" title="Lebar (m)">
+                        <span>×</span>
+                        <input type="number" step="0.5" min="0.5" max="20" id="inspectScreenHeightInput" value="3.0" class="w-14 px-1.5 py-0.5 rounded bg-slate-900 border border-slate-700 text-xs font-bold text-center text-white" title="Tinggi (m)">
+                        <span class="text-[10px] text-slate-400">m</span>
+                    </div>
                 </div>
                 
                 <!-- Pos X Slider -->
@@ -167,24 +188,34 @@
                         <option value="hanging">Hanging (Truss Gantung)</option>
                     </select>
                 </div>
+
+                <!-- Delete Screen Button (Panel CRUD) -->
+                <div class="pt-2 border-t border-slate-800">
+                    <button type="button" id="btnDeleteScreen" class="w-full py-1.5 px-3 rounded-lg bg-rose-600/20 hover:bg-rose-600/40 text-rose-400 border border-rose-500/30 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors">
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                        <span>Hapus Panel Layar Ini</span>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Bottom Stage Configuration & 2D Blueprint Preview Bar -->
     <div class="p-4 bg-slate-950 border-t border-slate-800 grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
-        <!-- Stage Dimensions Inputs -->
+        <!-- Stage Dimensions Inputs (Supports 0 for flat indoor ground/floor) -->
         <div class="space-y-1">
             <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400">Ukuran Panggung Lapangan (Meter)</label>
             <div class="grid grid-cols-3 gap-2">
                 <div>
-                    <div class="text-[9px] text-slate-500 mb-0.5">Lebar Panggung</div>
-                    <input type="number" step="0.5" min="2" max="50" id="inputStageWidth" name="stage_width_m" value="{{ $stageWidth }}"
+                    <div class="text-[9px] text-slate-500 mb-0.5">Lebar (0 = Tanpa)</div>
+                    <input type="number" step="0.5" min="0" max="50" id="inputStageWidth" name="stage_width_m" value="{{ $stageWidth }}"
                         class="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-xs font-bold text-white focus:ring-1 focus:ring-indigo-500">
                 </div>
                 <div>
                     <div class="text-[9px] text-slate-500 mb-0.5">Kedalaman (Maju)</div>
-                    <input type="number" step="0.5" min="2" max="30" id="inputStageDepth" name="stage_depth_m" value="{{ $stageDepth }}"
+                    <input type="number" step="0.5" min="0" max="30" id="inputStageDepth" name="stage_depth_m" value="{{ $stageDepth }}"
                         class="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-xs font-bold text-white focus:ring-1 focus:ring-indigo-500">
                 </div>
                 <div>
@@ -195,22 +226,22 @@
             </div>
         </div>
 
-        <!-- Live 2D Blueprint Snapshot Previews (Tampak Atas & Tampak Depan for SPK Printout) -->
+        <!-- Live 2D Blueprint Snapshot Previews (Tampak Atas with Compass & Tampak Depan for SPK Printout) -->
         <div class="space-y-1">
             <div class="flex items-center justify-between text-[11px]">
                 <span class="font-bold uppercase tracking-wider text-slate-400">Blueprint 2D SPK (Atas & Depan)</span>
                 <span class="text-[10px] text-emerald-400 font-semibold" id="blueprintStatus">✓ 2 Gambar Siap</span>
             </div>
             <div class="grid grid-cols-2 gap-2 h-16">
-                <!-- Tampak Atas (Top Plan) -->
+                <!-- Tampak Atas (Top Plan) with Compass -->
                 <div class="bg-slate-900 rounded-lg border border-slate-800 p-1 flex flex-col items-center justify-center overflow-hidden relative">
-                    <span class="absolute top-1 left-1 text-[8px] bg-slate-950/85 px-1 rounded text-cyan-400 font-bold z-10 border border-slate-800">Tampak Atas</span>
+                    <span class="absolute top-1 left-1 text-[8px] bg-slate-950/85 px-1 rounded text-cyan-400 font-bold z-10 border border-slate-800">Tampak Atas (Kompas)</span>
                     <img id="blueprintThumbnail" src="{{ $savedImage ?: '' }}" alt="Blueprint Tampak Atas" class="max-h-full object-contain rounded {{ $savedImage ? '' : 'hidden' }}">
                     <div id="blueprintPlaceholder" class="text-[9px] text-slate-500 text-center {{ $savedImage ? 'hidden' : '' }}">
                         Denah Atas
                     </div>
                 </div>
-                <!-- Tampak Depan (Front Elevation) -->
+                <!-- Tampak Depan (Front Elevation) without Compass -->
                 <div class="bg-slate-900 rounded-lg border border-slate-800 p-1 flex flex-col items-center justify-center overflow-hidden relative">
                     <span class="absolute top-1 left-1 text-[8px] bg-slate-950/85 px-1 rounded text-amber-400 font-bold z-10 border border-slate-800">Tampak Depan</span>
                     <img id="blueprintFrontThumbnail" src="{{ $savedFrontImage ?: '' }}" alt="Blueprint Tampak Depan" class="max-h-full object-contain rounded {{ $savedFrontImage ? '' : 'hidden' }}">
@@ -221,21 +252,25 @@
             </div>
         </div>
 
-        <!-- Add Wing / Screen Quick Buttons -->
+        <!-- Add Panel & Screen Action Buttons (CRUD) -->
         <div class="flex flex-col justify-end space-y-1.5">
             <div class="text-[11px] text-slate-400 flex items-center justify-between">
                 <span>Total Layar Aktif di Panggung:</span>
                 <span class="font-bold text-indigo-400" id="stageScreenCountBadge">1 Layar</span>
             </div>
-            <div class="flex items-center gap-2">
-                <button type="button" id="btnAddWingScreen" class="w-full py-1.5 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-semibold text-slate-200 transition-all flex items-center justify-center gap-1.5">
-                    <span>+ Tambah Layar Sayap (Wing)</span>
+            <div class="flex items-center gap-1.5">
+                <button type="button" id="btnAddCustomScreen" class="py-1.5 px-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold text-white transition-all flex items-center justify-center gap-1 shadow-xs" title="Tambah Panel Baru">
+                    <span>+ Panel</span>
                 </button>
-                <button type="button" id="btnRefreshBlueprint" class="py-1.5 px-2.5 rounded-lg bg-indigo-600/20 hover:bg-indigo-600/30 border border-indigo-500/30 text-xs font-semibold text-indigo-300" title="Render Ulang Blueprint 2D">
+                <button type="button" id="btnAddWingScreen" class="py-1.5 px-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-semibold text-slate-200 transition-all flex items-center justify-center gap-1" title="Tambah Layar Sayap (Wing)">
+                    <span>+ Sayap</span>
+                </button>
+                <button type="button" id="btnRefreshBlueprint" class="py-1.5 px-2 rounded-lg bg-indigo-600/20 hover:bg-indigo-600/30 border border-indigo-500/30 text-xs font-semibold text-indigo-300" title="Render Ulang Blueprint 2D">
                     🔄 Render
                 </button>
             </div>
         </div>
+    </div>
     </div>
 
     <!-- Hidden Inputs to bind with Laravel Form -->
@@ -428,61 +463,73 @@
         const d = stageConfig.depth;
         const h = stageConfig.height;
 
-        // Stage Platform Box
-        const stageGeo = new THREE.BoxGeometry(w, h, d);
-        const stageMat = new THREE.MeshStandardMaterial({
-            color: 0x1e293b,
-            roughness: 0.4,
-            metalness: 0.2
-        });
-        stageMesh = new THREE.Mesh(stageGeo, stageMat);
-        stageMesh.position.set(0, h / 2, 0);
-        stageMesh.receiveShadow = true;
-        stageMesh.castShadow = true;
-        scene.add(stageMesh);
+        if (w > 0 && d > 0) {
+            // Stage Platform Box (minimum effective height 0.02 to avoid zero-height box geometry)
+            const effH = Math.max(h, 0.02);
+            const stageGeo = new THREE.BoxGeometry(w, effH, d);
+            const stageMat = new THREE.MeshStandardMaterial({
+                color: 0x1e293b,
+                roughness: 0.4,
+                metalness: 0.2
+            });
+            stageMesh = new THREE.Mesh(stageGeo, stageMat);
+            stageMesh.position.set(0, effH / 2, 0);
+            stageMesh.receiveShadow = true;
+            stageMesh.castShadow = true;
+            scene.add(stageMesh);
 
-        // 1m x 1m Stage Floor Grid Lines
-        stageGrid = new THREE.GridHelper(Math.max(w, d), Math.round(Math.max(w, d)), 0x475569, 0x334155);
-        stageGrid.position.set(0, h + 0.005, 0);
-        scene.add(stageGrid);
+            // 1m x 1m Stage Floor Grid Lines
+            stageGrid = new THREE.GridHelper(Math.max(w, d), Math.round(Math.max(w, d)), 0x475569, 0x334155);
+            stageGrid.position.set(0, effH + 0.005, 0);
+            scene.add(stageGrid);
 
-        // Front Edge Border (Bibir Panggung - Audience marker) - Yellow Glow
-        const edgeGeo = new THREE.BoxGeometry(w, 0.05, 0.1);
-        const edgeMat = new THREE.MeshBasicMaterial({ color: 0xfacc15 }); // Amber/Yellow
-        stageEdgeBorder = new THREE.Mesh(edgeGeo, edgeMat);
-        stageEdgeBorder.position.set(0, h + 0.025, d / 2);
-        scene.add(stageEdgeBorder);
+            // Front Edge Border (Bibir Panggung - Audience marker) - Yellow Glow
+            const edgeGeo = new THREE.BoxGeometry(w, 0.05, 0.1);
+            const edgeMat = new THREE.MeshBasicMaterial({ color: 0xfacc15 }); // Amber/Yellow
+            stageEdgeBorder = new THREE.Mesh(edgeGeo, edgeMat);
+            stageEdgeBorder.position.set(0, effH + 0.025, d / 2);
+            scene.add(stageEdgeBorder);
 
-        // Backdrop Truss Structure behind the stage
-        trussGroup = new THREE.Group();
-        const trussMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.8, roughness: 0.2 });
+            // Backdrop Truss Structure behind the stage
+            trussGroup = new THREE.Group();
+            const trussMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.8, roughness: 0.2 });
 
-        // Left & Right upright pillars
-        const pillarGeo = new THREE.CylinderGeometry(0.08, 0.08, 6, 8);
-        const leftPillar = new THREE.Mesh(pillarGeo, trussMat);
-        leftPillar.position.set(-w / 2, 3, -d / 2);
-        trussGroup.add(leftPillar);
+            // Left & Right upright pillars
+            const pillarGeo = new THREE.CylinderGeometry(0.08, 0.08, 6, 8);
+            const leftPillar = new THREE.Mesh(pillarGeo, trussMat);
+            leftPillar.position.set(-w / 2, 3, -d / 2);
+            trussGroup.add(leftPillar);
 
-        const rightPillar = new THREE.Mesh(pillarGeo, trussMat);
-        rightPillar.position.set(w / 2, 3, -d / 2);
-        trussGroup.add(rightPillar);
+            const rightPillar = new THREE.Mesh(pillarGeo, trussMat);
+            rightPillar.position.set(w / 2, 3, -d / 2);
+            trussGroup.add(rightPillar);
 
-        // Top horizontal truss bar
-        const topBarGeo = new THREE.CylinderGeometry(0.08, 0.08, w, 8);
-        const topBar = new THREE.Mesh(topBarGeo, trussMat);
-        topBar.rotation.z = Math.PI / 2;
-        topBar.position.set(0, 5.9, -d / 2);
-        trussGroup.add(topBar);
+            // Top horizontal truss bar
+            const topBarGeo = new THREE.CylinderGeometry(0.08, 0.08, w, 8);
+            const topBar = new THREE.Mesh(topBarGeo, trussMat);
+            topBar.rotation.z = Math.PI / 2;
+            topBar.position.set(0, 5.9, -d / 2);
+            trussGroup.add(topBar);
 
-        scene.add(trussGroup);
+            scene.add(trussGroup);
+        } else {
+            // Tanpa Panggung Khusus (Flat Ground Level / Ballroom Lantai Dasar)
+            stageGrid = new THREE.GridHelper(12, 12, 0x475569, 0x1e293b);
+            stageGrid.position.set(0, 0.005, 0);
+            scene.add(stageGrid);
+        }
 
         // Snap Guide Visuals (Center cyan line & Horizontal emerald line)
         if (snapCenterGuideMesh) scene.remove(snapCenterGuideMesh);
         if (snapHorizGuideMesh) scene.remove(snapHorizGuideMesh);
 
+        const effGuideH = Math.max(h, 0);
+        const guideW = w > 0 ? w : 10;
+        const guideD = d > 0 ? d : 6;
+
         const centerPoints = [
-            new THREE.Vector3(0, h + 0.02, -d / 2),
-            new THREE.Vector3(0, h + 0.02, d / 2)
+            new THREE.Vector3(0, effGuideH + 0.02, -guideD / 2),
+            new THREE.Vector3(0, effGuideH + 0.02, guideD / 2)
         ];
         const centerGeo = new THREE.BufferGeometry().setFromPoints(centerPoints);
         const centerMat = new THREE.LineBasicMaterial({ color: 0x06b6d4, linewidth: 3 });
@@ -491,8 +538,8 @@
         scene.add(snapCenterGuideMesh);
 
         const horizPoints = [
-            new THREE.Vector3(-w / 2, h + 0.02, 0),
-            new THREE.Vector3(w / 2, h + 0.02, 0)
+            new THREE.Vector3(-guideW / 2, effGuideH + 0.02, 0),
+            new THREE.Vector3(guideW / 2, effGuideH + 0.02, 0)
         ];
         const horizGeo = new THREE.BufferGeometry().setFromPoints(horizPoints);
         const horizMat = new THREE.LineBasicMaterial({ color: 0x10b981, linewidth: 3 });
@@ -501,7 +548,7 @@
         scene.add(snapHorizGuideMesh);
 
         // Update drag plane height to top of stage
-        dragPlane.position.y = h;
+        dragPlane.position.y = Math.max(h, 0);
     }
 
     // Helper to generate dynamic canvas texture with LED cabinet grid & screen label
@@ -870,8 +917,12 @@
         const box = document.getElementById('screenInspectorBox');
         if (box && selectedScreen) {
             box.classList.remove('hidden');
-            document.getElementById('inspectScreenName').textContent = selectedScreen.data.name;
-            document.getElementById('inspectScreenSize').textContent = `${selectedScreen.data.width}m × ${selectedScreen.data.height}m`;
+            const nameInp = document.getElementById('inspectScreenNameInput');
+            if (nameInp) nameInp.value = selectedScreen.data.name;
+            const wInp = document.getElementById('inspectScreenWidthInput');
+            if (wInp) wInp.value = selectedScreen.data.width;
+            const hInp = document.getElementById('inspectScreenHeightInput');
+            if (hInp) hInp.value = selectedScreen.data.height;
             syncInspectorValues();
         }
     }
@@ -1252,6 +1303,82 @@
         ctx.fillStyle = '#94a3b8';
         ctx.font = '12px Arial';
         ctx.fillText(`Skala Grid: 1 Kotak = 1 Meter Persegi (${scale.toFixed(1)} px/m)`, 32, 80);
+
+        // 🧭 Compass Rose (Arah Angin: Utara / U & Selatan / S) - ONLY on Tampak Atas
+        const compX = bpCanvas.width - 65;
+        const compY = 65;
+        const compR = 32;
+
+        ctx.save();
+        ctx.translate(compX, compY);
+
+        // Circular dark background disk
+        ctx.beginPath();
+        ctx.arc(0, 0, compR + 10, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.95)';
+        ctx.fill();
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        // Outer ring
+        ctx.beginPath();
+        ctx.arc(0, 0, compR, 0, Math.PI * 2);
+        ctx.strokeStyle = '#475569';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        // North needle (Utara - Red)
+        ctx.beginPath();
+        ctx.moveTo(0, -compR + 4);
+        ctx.lineTo(6, -2);
+        ctx.lineTo(0, 3);
+        ctx.fillStyle = '#ef4444';
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.moveTo(0, -compR + 4);
+        ctx.lineTo(-6, -2);
+        ctx.lineTo(0, 3);
+        ctx.fillStyle = '#b91c1c';
+        ctx.fill();
+
+        // South needle (Selatan - Slate/White)
+        ctx.beginPath();
+        ctx.moveTo(0, compR - 4);
+        ctx.lineTo(6, 2);
+        ctx.lineTo(0, -3);
+        ctx.fillStyle = '#e2e8f0';
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.moveTo(0, compR - 4);
+        ctx.lineTo(-6, 2);
+        ctx.lineTo(0, -3);
+        ctx.fillStyle = '#94a3b8';
+        ctx.fill();
+
+        // Center hub
+        ctx.beginPath();
+        ctx.arc(0, 0, 3.5, 0, Math.PI * 2);
+        ctx.fillStyle = '#ffffff';
+        ctx.fill();
+
+        // Labels U & S
+        ctx.font = 'bold 12px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#ef4444';
+        ctx.fillText('U', 0, -compR - 2);
+
+        ctx.fillStyle = '#cbd5e1';
+        ctx.fillText('S', 0, compR + 12);
+
+        ctx.font = 'bold 9px Arial';
+        ctx.fillStyle = '#64748b';
+        ctx.fillText('B', -compR - 4, 3);
+        ctx.fillText('T', compR + 4, 3);
+
+        ctx.restore();
 
         // Convert to Base64 PNG Data URL
         const dataUrl = bpCanvas.toDataURL('image/png');
@@ -1655,6 +1782,74 @@
             generate2DBlueprint();
         });
 
+        // Panel CRUD: Edit Name, Width, Height
+        document.getElementById('inspectScreenNameInput')?.addEventListener('input', (e) => {
+            if (!selectedScreen) return;
+            selectedScreen.data.name = e.target.value;
+            generate2DBlueprint();
+        });
+
+        document.getElementById('inspectScreenWidthInput')?.addEventListener('change', (e) => {
+            if (!selectedScreen) return;
+            const val = Math.max(0.5, parseFloat(e.target.value) || 1.0);
+            selectedScreen.data.width = val;
+            buildScreens();
+            const reselected = screenObjects.find(so => so.data.id === selectedScreen.data.id);
+            if (reselected) selectScreen(reselected);
+            generate2DBlueprint();
+        });
+
+        document.getElementById('inspectScreenHeightInput')?.addEventListener('change', (e) => {
+            if (!selectedScreen) return;
+            const val = Math.max(0.5, parseFloat(e.target.value) || 1.0);
+            selectedScreen.data.height = val;
+            buildScreens();
+            const reselected = screenObjects.find(so => so.data.id === selectedScreen.data.id);
+            if (reselected) selectScreen(reselected);
+            generate2DBlueprint();
+        });
+
+        // Panel CRUD: Delete Screen
+        document.getElementById('btnDeleteScreen')?.addEventListener('click', () => {
+            if (!selectedScreen) return;
+            if (currentScreens.length <= 1) {
+                alert('Panggung harus memiliki minimal 1 panel layar LED.');
+                return;
+            }
+            const sId = selectedScreen.data.id;
+            const idx = currentScreens.findIndex(sc => sc.id === sId);
+            if (idx !== -1) {
+                currentScreens.splice(idx, 1);
+                selectedScreen = null;
+                document.getElementById('screenInspectorBox').classList.add('hidden');
+                buildScreens();
+                generate2DBlueprint();
+            }
+        });
+
+        // Panel CRUD: Add Custom Panel
+        document.getElementById('btnAddCustomScreen')?.addEventListener('click', () => {
+            const nextId = currentScreens.length > 0 ? (Math.max(...currentScreens.map(s => s.id)) + 1) : 1;
+            const count = currentScreens.length + 1;
+            const newPanel = {
+                id: nextId,
+                name: `Panel ${count}`,
+                width: 3.0,
+                height: 2.0,
+                x: (count % 2 === 0 ? -1 : 1) * 1.5,
+                z: -1.0,
+                rotY: 0,
+                rigging: "ground_stake"
+            };
+            currentScreens.push(newPanel);
+            buildScreens();
+            generate2DBlueprint();
+            setTimeout(() => {
+                const reselected = screenObjects.find(so => so.data.id === nextId);
+                if (reselected) selectScreen(reselected);
+            }, 50);
+        });
+
         // Add Wing Button
         document.getElementById('btnAddWingScreen')?.addEventListener('click', () => {
             const count = currentScreens.length + 1;
@@ -1748,7 +1943,14 @@
 
     function animate() {
         requestAnimationFrame(animate);
-        if (controls) controls.update();
+        if (controls) {
+            controls.update();
+            const needle = document.getElementById('compassNeedle3D');
+            if (needle) {
+                const angle = controls.getAzimuthalAngle();
+                needle.style.transform = `rotate(${-angle * (180 / Math.PI)}deg)`;
+            }
+        }
         if (renderer && scene && camera) {
             renderer.render(scene, camera);
         }

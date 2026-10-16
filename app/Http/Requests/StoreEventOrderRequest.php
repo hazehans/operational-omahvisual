@@ -16,6 +16,16 @@ class StoreEventOrderRequest extends FormRequest
     }
 
     /**
+     * Prepare the data for validation.
+     */
+    protected function prepareForValidation(): void
+    {
+        if (! $this->has('status_wilayah') || empty($this->status_wilayah)) {
+            $this->merge(['status_wilayah' => 'dalam_kota']);
+        }
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, ValidationRule|array<mixed>|string>
@@ -34,19 +44,27 @@ class StoreEventOrderRequest extends FormRequest
             'event_type' => ['required', 'string', 'in:indoor,outdoor,semi-outdoor'],
             'venue_name' => ['required', 'string', 'max:255'],
             'venue_address' => ['nullable', 'string'],
+            'provinsi' => ['nullable', 'string', 'max:100'],
+            'kabupaten' => ['nullable', 'string', 'max:100'],
+            'status_wilayah' => ['nullable', 'string', 'in:dalam_kota,luar_kota'],
             'google_maps_url' => ['nullable', 'string', 'max:500'],
             'loading_date' => ['required', 'date'],
             'loading_time' => ['required', 'string', 'max:50'],
             'ready_time' => ['nullable', 'string', 'max:50'],
+            'jam_menyala' => ['nullable', 'string', 'max:50'],
+            'waktu_gladi' => ['nullable', 'string', 'max:50'],
+            'jam_acara' => ['nullable', 'string', 'max:50'],
             'event_start_date' => ['required', 'date'],
             'event_end_date' => ['nullable', 'date'],
             'event_time' => ['nullable', 'string', 'max:50'],
             'electricity_source' => ['nullable', 'string', 'max:100'],
+            'kelistrikan' => ['nullable', 'string', 'max:100'],
+            'kelistrikan_keterangan' => ['nullable', 'string'],
             'dress_code' => ['nullable', 'string', 'max:100'],
-            'stage_width_m' => ['nullable', 'numeric', 'min:1', 'max:100'],
-            'stage_depth_m' => ['nullable', 'numeric', 'min:1', 'max:50'],
+            'stage_width_m' => ['nullable', 'numeric', 'min:0', 'max:100'],
+            'stage_depth_m' => ['nullable', 'numeric', 'min:0', 'max:50'],
             'stage_height_m' => ['nullable', 'numeric', 'min:0', 'max:10'],
-            'stage_layout_json' => ['nullable', 'string'],
+            'stage_layout_json' => ['nullable'],
             'stage_layout_image' => ['nullable', 'string'],
             'stage_layout_front_image' => ['nullable', 'string'],
             'notes' => ['nullable', 'string'],
@@ -60,6 +78,16 @@ class StoreEventOrderRequest extends FormRequest
             'screens.*.height_m' => ['required', 'numeric', 'min:0.5', 'max:50'],
             'screens.*.rigging_method' => ['required', 'string', 'in:ground_stake,hanging,stage_frame'],
             'screens.*.stage_specification' => ['nullable', 'string', 'max:255'],
+            'screens.*.cabinets_1m' => ['nullable', 'integer', 'min:0'],
+            'screens.*.cabinets_50cm' => ['nullable', 'integer', 'min:0'],
+            'screens.*.total_cabinets' => ['nullable', 'integer', 'min:0'],
+            'screens.*.total_hardcases' => ['nullable', 'integer', 'min:0'],
+            'screens.*.processor_model' => ['nullable', 'string', 'max:100'],
+            'screens.*.power_jumpers_qty' => ['nullable', 'integer', 'min:0'],
+            'screens.*.lan_jumpers_qty' => ['nullable', 'integer', 'min:0'],
+            'screens.*.spare_modules_qty' => ['nullable', 'integer', 'min:0'],
+            'screens.*.spare_receiving_cards_qty' => ['nullable', 'integer', 'min:0'],
+            'screens.*.spare_psu_qty' => ['nullable', 'integer', 'min:0'],
 
             // Crew & Logistics
             'crew_pic_event_name' => ['nullable', 'string', 'max:255'],

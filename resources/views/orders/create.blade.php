@@ -4,19 +4,30 @@
 
 @section('content')
 <div class="max-w-5xl mx-auto space-y-6">
-    <!-- Breadcrumb & Title -->
-    <div>
-        <div class="flex items-center gap-2 text-xs text-slate-500 mb-1">
-            <a href="{{ route('orders.index') }}" class="hover:text-indigo-600 transition-colors">Pesanan Event</a>
-            <span>/</span>
-            <span class="text-slate-800 dark:text-slate-200">Input Order Baru</span>
+    <!-- Breadcrumb & Header Action -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div>
+            <div class="flex items-center gap-2 text-xs text-slate-500 mb-1">
+                <a href="{{ route('orders.index') }}" class="hover:text-indigo-600 transition-colors">Pesanan Event</a>
+                <span>/</span>
+                <span class="text-slate-800 dark:text-slate-200">Input Order Baru</span>
+            </div>
+            <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
+                <span>✨ Input Pesanan & Kalkulator Otomatis SPK</span>
+            </h1>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                Input pesanan event LED, kalkulasi peralatan otomatis (dapat diedit fleksibel), dan terbitkan SPK 3-halaman.
+            </p>
         </div>
-        <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
-            <span>✨ Input Pesanan & Kalkulator Otomatis SPK</span>
-        </h1>
-        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
-            Input cepat pesanan dari WhatsApp, kalkulasi kabinet, kabel jumper, prosesor, serta terbitkan SPK 3-halaman otomatis.
-        </p>
+
+        <div>
+            <a href="{{ route('orders.index') }}" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-xs">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                <span>Kembali ke Daftar Pesanan</span>
+            </a>
+        </div>
     </div>
 
     @if ($errors->any())
@@ -45,15 +56,22 @@
                     <span class="w-6 h-6 rounded-lg bg-indigo-600/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-xs">1</span>
                     <span>Informasi Klien & Acara</span>
                 </h2>
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-3">
                     <label class="text-xs text-slate-500 flex items-center gap-1.5 cursor-pointer">
                         <input type="checkbox" id="isNewCustomerToggle" class="rounded text-indigo-600 focus:ring-indigo-500">
-                        <span>Customer Baru</span>
+                        <span class="font-medium text-indigo-600 dark:text-indigo-400">+ Buat Customer Baru</span>
                     </label>
+                    <span class="text-slate-300 dark:text-slate-700">|</span>
+                    <a href="{{ route('customers.index') }}" target="_blank" class="text-xs text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 inline-flex items-center gap-1">
+                        <span>Database Client</span>
+                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        </svg>
+                    </a>
                 </div>
             </div>
 
-            <!-- Existing vs New Customer Selector -->
+            <!-- Existing Customer Selector -->
             <div id="existingCustomerWrapper" class="space-y-1">
                 <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300">Pilih Client Terdaftar</label>
                 <select name="customer_id" id="customerSelect" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
@@ -66,18 +84,19 @@
                 </select>
             </div>
 
-            <div id="newCustomerWrapper" class="grid-cols-1 sm:grid-cols-3 gap-4 hidden">
+            <!-- New Customer Form Fields -->
+            <div id="newCustomerWrapper" class="grid-cols-1 sm:grid-cols-3 gap-4 hidden p-4 rounded-xl bg-indigo-50/50 dark:bg-indigo-950/20 border border-indigo-100 dark:border-indigo-900/40">
                 <div>
                     <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Nama Client *</label>
-                    <input type="text" name="customer_name" id="newCustomerName" value="{{ old('customer_name') }}" placeholder="Misal: Mas Dani Bless" class="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
+                    <input type="text" name="customer_name" id="newCustomerName" value="{{ old('customer_name') }}" placeholder="Misal: Hans Testing" class="w-full px-3.5 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Nomor WhatsApp *</label>
-                    <input type="text" name="customer_phone" id="newCustomerPhone" value="{{ old('customer_phone') }}" placeholder="Misal: 081234567890" class="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
+                    <input type="text" name="customer_phone" id="newCustomerPhone" value="{{ old('customer_phone') }}" placeholder="Misal: 081234567890" class="w-full px-3.5 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Vendor / EO / Instansi</label>
-                    <input type="text" name="customer_organization" value="{{ old('customer_organization') }}" placeholder="Misal: Bless Production" class="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
+                    <input type="text" name="customer_organization" value="{{ old('customer_organization') }}" placeholder="Misal: Bless Production" class="w-full px-3.5 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
                 </div>
             </div>
 
@@ -100,48 +119,96 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <!-- Regional & Location Fields -->
+            <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Status Wilayah *</label>
+                    <select name="status_wilayah" id="statusWilayahSelect" class="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-sm font-semibold text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
+                        <option value="dalam_kota" {{ old('status_wilayah', 'dalam_kota') === 'dalam_kota' ? 'selected' : '' }}>Dalam Kota (Area Utama)</option>
+                        <option value="luar_kota" {{ old('status_wilayah') === 'luar_kota' ? 'selected' : '' }}>Luar Kota (Perlu Biaya Tambahan)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Kabupaten / Kota</label>
+                    <input type="text" name="kabupaten" value="{{ old('kabupaten', 'Kota Malang') }}" placeholder="Misal: Malang / Batu / Pasuruan" class="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Provinsi Acara</label>
+                    <input type="text" name="provinsi" value="{{ old('provinsi', 'Jawa Timur') }}" placeholder="Misal: Jawa Timur" class="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
+                </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Link Sharelok Google Maps</label>
                     <input type="text" name="google_maps_url" value="{{ old('google_maps_url') }}" placeholder="https://maps.google.com/..." class="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
                 </div>
+            </div>
+
+            <!-- Out of Town Warning Alert -->
+            <div id="luarKotaWarning" class="{{ old('status_wilayah') === 'luar_kota' ? '' : 'hidden' }} p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-700 dark:text-amber-400 text-xs flex items-start gap-2.5">
+                <span class="text-base leading-none">⚠️</span>
                 <div>
-                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Sumber Kelistrikan</label>
-                    <input type="text" name="electricity_source" value="{{ old('electricity_source', 'Genset 40KVA') }}" placeholder="Misal: Genset 40KVA / PLN 16A" class="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
+                    <span class="font-bold">Peringatan Matriks Biaya Wilayah Luar Kota:</span>
+                    <span>Pastikan biaya bahan bakar armada, tol, uang saku/makan kru harian, dan penginapan telah dihitung ke Total Harga Sewa di Bagian 5.</span>
                 </div>
             </div>
 
-            <!-- Schedule -->
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 p-4 rounded-xl bg-slate-50/70 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Tgl Loading *</label>
-                    <input type="date" name="loading_date" value="{{ old('loading_date', date('Y-m-d')) }}" required class="w-full px-3 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs font-medium">
+            <!-- Schedule & Timing -->
+            <div class="grid grid-cols-2 sm:grid-cols-6 gap-3 p-4 rounded-xl bg-slate-50/70 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800">
+                <div class="col-span-2 sm:col-span-1">
+                    <label class="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1">Tgl Loading *</label>
+                    <input type="date" name="loading_date" value="{{ old('loading_date', date('Y-m-d')) }}" required class="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs font-medium">
                 </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Jam Loading *</label>
-                    <input type="text" name="loading_time" value="{{ old('loading_time', '22:00') }}" required placeholder="22:00" class="w-full px-3 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs font-medium">
+                <div class="col-span-2 sm:col-span-1">
+                    <label class="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1">Jam Loading *</label>
+                    <input type="time" name="loading_time" value="{{ old('loading_time', '22:00') }}" required class="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs font-medium">
                 </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Tgl Acara *</label>
-                    <input type="date" name="event_start_date" value="{{ old('event_start_date', date('Y-m-d', strtotime('+1 day'))) }}" required class="w-full px-3 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs font-medium">
+                <div class="col-span-2 sm:col-span-1">
+                    <label class="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1">Tgl Acara *</label>
+                    <input type="date" name="event_start_date" value="{{ old('event_start_date', date('Y-m-d', strtotime('+1 day'))) }}" required class="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs font-medium">
                 </div>
+                <div class="col-span-2 sm:col-span-1">
+                    <label class="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1">Jam Acara</label>
+                    <input type="time" name="jam_acara" value="{{ old('jam_acara', '08:00') }}" class="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs font-medium">
+                </div>
+                <div class="col-span-2 sm:col-span-1">
+                    <label class="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1">Jam Menyala</label>
+                    <input type="time" name="jam_menyala" value="{{ old('jam_menyala', '07:00') }}" class="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs font-medium">
+                </div>
+                <div class="col-span-2 sm:col-span-1">
+                    <label class="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1">Waktu Gladi</label>
+                    <input type="time" name="waktu_gladi" value="{{ old('waktu_gladi', '06:30') }}" class="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs font-medium">
+                </div>
+            </div>
+
+            <!-- Kelistrikan -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Jam Acara / Ready</label>
-                    <input type="text" name="ready_time" value="{{ old('ready_time', 'Ready Jam 07:00') }}" placeholder="Ready 07:00" class="w-full px-3 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs font-medium">
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Kelistrikan *</label>
+                    <select name="kelistrikan" id="kelistrikanSelect" class="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
+                        <option value="Genset" {{ old('kelistrikan', 'Genset') === 'Genset' ? 'selected' : '' }}>Genset</option>
+                        <option value="Disediakan Client" {{ old('kelistrikan') === 'Disediakan Client' ? 'selected' : '' }}>Disediakan Client</option>
+                        <option value="PLN Lokasi" {{ old('kelistrikan') === 'PLN Lokasi' ? 'selected' : '' }}>PLN Gedung / Lokasi</option>
+                        <option value="Lainnya" {{ old('kelistrikan') === 'Lainnya' ? 'selected' : '' }}>Lainnya</option>
+                    </select>
+                </div>
+                <div class="sm:col-span-2">
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Keterangan Kelistrikan</label>
+                    <input type="text" name="kelistrikan_keterangan" value="{{ old('kelistrikan_keterangan', 'Genset 40KVA Silent, Panel 3 Phase 63A') }}" placeholder="Misal: Genset 40KVA Silent / Jarak colokan 50 meter" class="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
                 </div>
             </div>
         </div>
 
-        <!-- SECTION 2: SMART LED SCREEN CALCULATOR -->
+        <!-- SECTION 2: SMART LED SCREEN CALCULATOR & EDITABLE EQUIPMENT -->
         <div class="bg-white dark:bg-slate-900/60 p-6 rounded-2xl border border-slate-200 dark:border-slate-800/80 shadow-xs space-y-5">
             <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
                 <h2 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
                     <span class="w-6 h-6 rounded-lg bg-emerald-600/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xs">2</span>
-                    <span>Spesifikasi Layar LED & Kalkulator Otomatis</span>
+                    <span>Spesifikasi Layar LED & Kalkulator Otomatis Peralatan</span>
                 </h2>
-                <span class="text-xs px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-medium">
-                    ⚡ Auto-Calc Live
-                </span>
+                <div class="flex items-center gap-2">
+                    <button type="button" id="btnRecalculate" class="text-xs px-2.5 py-1 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-medium flex items-center gap-1 transition-colors" title="Hitung ulang rekomendasi sistem">
+                        <span>⚡ Hitung Ulang Otomatis</span>
+                    </button>
+                </div>
             </div>
 
             <!-- Screen 1 Form -->
@@ -204,43 +271,66 @@
                     </div>
                 </div>
 
-                <!-- REALTIME CALCULATION RESULT PANEL -->
-                <div class="p-4 rounded-xl bg-linear-to-r from-indigo-900/10 via-purple-900/10 to-indigo-900/10 dark:from-indigo-950/40 dark:to-purple-950/40 border border-indigo-200 dark:border-indigo-800/60">
-                    <div class="text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 mb-3 flex items-center justify-between">
-                        <span>Hasil Kalkulasi Otomatis Peralatan</span>
-                        <span class="text-[11px] font-normal lowercase text-slate-500">dihitung otomatis per ukuran layar</span>
+                <!-- DYNAMIC EDITABLE EQUIPMENT INPUTS (Calculated live, freely editable) -->
+                <div class="p-4 rounded-xl bg-linear-to-r from-indigo-900/10 via-purple-900/10 to-indigo-900/10 dark:from-indigo-950/40 dark:to-purple-950/40 border border-indigo-200 dark:border-indigo-800/60 space-y-4">
+                    <div class="flex items-center justify-between border-b border-indigo-100 dark:border-indigo-900/40 pb-2">
+                        <div class="text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 flex items-center gap-2">
+                            <span>📦 Kebutuhan Alat & Perlengkapan (Dinamis / Dapat Diedit)</span>
+                            <span class="px-2 py-0.5 rounded text-[10px] bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 font-semibold" id="resSqm">18.00 m²</span>
+                        </div>
+                        <span class="text-[11px] text-slate-500">Nilai terhitung otomatis per dimensi, silakan ubah jika ada kebutuhan khusus</span>
                     </div>
 
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
-                        <div class="bg-white/80 dark:bg-slate-900/80 p-2.5 rounded-xl border border-indigo-100 dark:border-slate-800">
-                            <div class="text-[11px] text-slate-500 dark:text-slate-400">Total Luas Layar</div>
-                            <div class="text-xl font-extrabold text-indigo-600 dark:text-indigo-400" id="resSqm">18.00 m²</div>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <div class="bg-white/90 dark:bg-slate-900/90 p-2.5 rounded-xl border border-indigo-100 dark:border-slate-800">
+                            <label class="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">Total Kabinet (Unit)</label>
+                            <input type="number" min="1" name="screens[0][total_cabinets]" id="inputTotalCabinets" value="36" class="w-full px-2.5 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-bold text-slate-900 dark:text-white">
+                            <div class="flex items-center gap-2 mt-1 text-[10px] text-slate-500">
+                                <span>1m: <input type="number" min="0" name="screens[0][cabinets_1m]" id="inputCabinets1m" value="36" class="w-12 px-1 py-0.5 rounded border text-center"></span>
+                                <span>50cm: <input type="number" min="0" name="screens[0][cabinets_50cm]" id="inputCabinets50cm" value="0" class="w-12 px-1 py-0.5 rounded border text-center"></span>
+                            </div>
                         </div>
 
-                        <div class="bg-white/80 dark:bg-slate-900/80 p-2.5 rounded-xl border border-indigo-100 dark:border-slate-800">
-                            <div class="text-[11px] text-slate-500 dark:text-slate-400">Kebutuhan Kabinet</div>
-                            <div class="text-xl font-extrabold text-slate-900 dark:text-white" id="resCabinets">36 Unit</div>
-                            <div class="text-[10px] text-slate-500" id="resKabinetDetail">36x 1m | 0x 50cm</div>
+                        <div class="bg-white/90 dark:bg-slate-900/90 p-2.5 rounded-xl border border-indigo-100 dark:border-slate-800">
+                            <label class="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">Box Hardcase (Flightcase)</label>
+                            <input type="number" min="1" name="screens[0][total_hardcases]" id="inputTotalHardcases" value="6" class="w-full px-2.5 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-bold text-amber-600 dark:text-amber-400">
+                            <div class="text-[10px] text-slate-500 mt-1">Estimasi 6 kabinet / box</div>
                         </div>
 
-                        <div class="bg-white/80 dark:bg-slate-900/80 p-2.5 rounded-xl border border-indigo-100 dark:border-slate-800">
-                            <div class="text-[11px] text-slate-500 dark:text-slate-400">Estimasi Box Flight Case</div>
-                            <div class="text-xl font-extrabold text-amber-600 dark:text-amber-400" id="resHardcases">6 Hardcase</div>
-                            <div class="text-[10px] text-slate-500">Kapasitas 6 kabinet/box</div>
+                        <div class="bg-white/90 dark:bg-slate-900/90 p-2.5 rounded-xl border border-indigo-100 dark:border-slate-800">
+                            <label class="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">Prosesor Video LED</label>
+                            <input type="text" name="screens[0][processor_model]" id="inputProcessorModel" value="Novastar VX400 / VX4S" class="w-full px-2.5 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                            <div class="text-[10px] text-slate-500 mt-1" id="resPixels">± 1.18M Piksel</div>
                         </div>
 
-                        <div class="bg-white/80 dark:bg-slate-900/80 p-2.5 rounded-xl border border-indigo-100 dark:border-slate-800">
-                            <div class="text-[11px] text-slate-500 dark:text-slate-400">Rekomendasi Prosesor</div>
-                            <div class="text-sm font-extrabold text-emerald-600 dark:text-emerald-400 mt-1" id="resProcessor">Novastar VX400 / VX4S</div>
-                            <div class="text-[10px] text-slate-500" id="resPixels">± 1.18M Piksel</div>
+                        <div class="bg-white/90 dark:bg-slate-900/90 p-2.5 rounded-xl border border-indigo-100 dark:border-slate-800">
+                            <label class="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">Kabel Power & LAN Jumper</label>
+                            <div class="grid grid-cols-2 gap-1.5">
+                                <div>
+                                    <span class="text-[9px] text-slate-400">Power (pcs)</span>
+                                    <input type="number" min="0" name="screens[0][power_jumpers_qty]" id="inputPowerJumpers" value="36" class="w-full px-2 py-1 rounded bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold">
+                                </div>
+                                <div>
+                                    <span class="text-[9px] text-slate-400">LAN (pcs)</span>
+                                    <input type="number" min="0" name="screens[0][lan_jumpers_qty]" id="inputLanJumpers" value="36" class="w-full px-2 py-1 rounded bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold">
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="mt-3 pt-3 border-t border-indigo-100 dark:border-indigo-900/40 grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs text-slate-600 dark:text-slate-300">
-                        <div>🔌 Power Jumper: <span class="font-bold text-slate-900 dark:text-white" id="resPowerJumpers">36 pcs</span></div>
-                        <div>🌐 LAN Jumper: <span class="font-bold text-slate-900 dark:text-white" id="resLanJumpers">36 pcs</span></div>
-                        <div>🛡️ Modul Spare: <span class="font-bold text-slate-900 dark:text-white" id="resSpareModules">3 pcs</span></div>
-                        <div>⚡ Spare PSU & RC: <span class="font-bold text-slate-900 dark:text-white" id="resSpareParts">1 PSU / 1 RC</span></div>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">🛡️ Modul Spare (pcs)</label>
+                            <input type="number" min="0" name="screens[0][spare_modules_qty]" id="inputSpareModules" value="3" class="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs font-semibold">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">⚡ Spare Power Supply (PSU)</label>
+                            <input type="number" min="0" name="screens[0][spare_psu_qty]" id="inputSparePsu" value="1" class="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs font-semibold">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">🎴 Spare Receiving Card (RC)</label>
+                            <input type="number" min="0" name="screens[0][spare_receiving_cards_qty]" id="inputSpareRc" value="1" class="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs font-semibold">
+                        </div>
                     </div>
                 </div>
             </div>
@@ -274,10 +364,16 @@
                 <div>
                     <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Armada Kendaraan *</label>
                     <select name="vehicle_name" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-sm font-medium">
-                        <option value="TRAGA 1">TRAGA 1 (N 8142 BB)</option>
-                        <option value="TRAGA 2">TRAGA 2 (N 8299 BC)</option>
-                        <option value="TRAGA 3">TRAGA 3 (N 9102 BF)</option>
-                        <option value="GRANDMAX">Daihatsu Grandmax Pickup</option>
+                        @if(isset($vehicles) && $vehicles->count() > 0)
+                            @foreach($vehicles as $veh)
+                                <option value="{{ $veh->name }}">{{ $veh->name }} ({{ $veh->license_plate ?? 'Armada' }}) - {{ $veh->type }}</option>
+                            @endforeach
+                        @else
+                            <option value="TRAGA 1">TRAGA 1 (N 8142 BB)</option>
+                            <option value="TRAGA 2">TRAGA 2 (N 8299 BC)</option>
+                            <option value="TRAGA 3">TRAGA 3 (N 9102 BF)</option>
+                            <option value="GRANMAX BLINDVAN">GRANMAX BLINDVAN</option>
+                        @endif
                     </select>
                 </div>
                 <div>
@@ -381,16 +477,24 @@
         </div>
 
         <!-- SUBMIT ACTION -->
-        <div class="flex items-center justify-end gap-3 pt-3">
-            <a href="{{ route('orders.index') }}" class="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
-                Batal
-            </a>
-            <button type="submit" class="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-bold shadow-lg shadow-indigo-600/30 transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center gap-2">
+        <div class="flex items-center justify-between pt-3">
+            <a href="{{ route('orders.index') }}" class="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors flex items-center gap-2">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>
-                <span>Simpan Pesanan & Terbitkan SPK 3 Lembar</span>
-            </button>
+                <span>Kembali</span>
+            </a>
+            <div class="flex items-center gap-3">
+                <a href="{{ route('orders.index') }}" class="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                    Batal
+                </a>
+                <button type="submit" class="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-bold shadow-lg shadow-indigo-600/30 transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span>Simpan Pesanan & Terbitkan SPK 3 Lembar</span>
+                </button>
+            </div>
         </div>
     </form>
 </div>
@@ -414,13 +518,38 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Realtime Screen Calculation
+    // Wilayah Luar Kota Warning Handler
+    const statusWilayahSelect = document.getElementById('statusWilayahSelect');
+    const luarKotaWarning = document.getElementById('luarKotaWarning');
+    if (statusWilayahSelect && luarKotaWarning) {
+        statusWilayahSelect.addEventListener('change', function () {
+            if (this.value === 'luar_kota') {
+                luarKotaWarning.classList.remove('hidden');
+            } else {
+                luarKotaWarning.classList.add('hidden');
+            }
+        });
+    }
+
+    // Realtime Screen Calculation & Dynamic Input Binding
     const widthInput = document.getElementById('calcWidth');
     const heightInput = document.getElementById('calcHeight');
     const brandInput = document.getElementById('calcBrand');
     const pitchInput = document.getElementById('calcPitch');
 
-    function updateCalculations() {
+    // Dynamic Equipment Form Inputs
+    const inputTotalCabinets = document.getElementById('inputTotalCabinets');
+    const inputCabinets1m = document.getElementById('inputCabinets1m');
+    const inputCabinets50cm = document.getElementById('inputCabinets50cm');
+    const inputTotalHardcases = document.getElementById('inputTotalHardcases');
+    const inputProcessorModel = document.getElementById('inputProcessorModel');
+    const inputPowerJumpers = document.getElementById('inputPowerJumpers');
+    const inputLanJumpers = document.getElementById('inputLanJumpers');
+    const inputSpareModules = document.getElementById('inputSpareModules');
+    const inputSparePsu = document.getElementById('inputSparePsu');
+    const inputSpareRc = document.getElementById('inputSpareRc');
+
+    function updateCalculations(forceRecalc = false) {
         const width = parseFloat(widthInput.value) || 0;
         const height = parseFloat(heightInput.value) || 0;
         const brand = brandInput.value;
@@ -455,26 +584,42 @@ document.addEventListener('DOMContentLoaded', function () {
         const spareParts = Math.max(1, Math.ceil(sqm * 0.05));
 
         document.getElementById('resSqm').textContent = sqm + ' m²';
-        document.getElementById('resCabinets').textContent = totalCabinets + ' Unit';
-        document.getElementById('resKabinetDetail').textContent = `${cabinets1m}x 1m | ${cabinets50cm}x 50cm`;
-        document.getElementById('resHardcases').textContent = hardcases + ' Hardcase';
-        document.getElementById('resProcessor').textContent = processor;
         document.getElementById('resPixels').textContent = '± ' + (totalPixels / 1000000).toFixed(2) + 'M Piksel';
 
-        document.getElementById('resPowerJumpers').textContent = totalCabinets + ' pcs';
-        document.getElementById('resLanJumpers').textContent = totalCabinets + ' pcs';
-        document.getElementById('resSpareModules').textContent = spareModules + ' pcs';
-        document.getElementById('resSpareParts').textContent = `${spareParts} PSU / ${spareParts} RC`;
+        // Auto-fill editable form inputs
+        if (forceRecalc || !inputTotalCabinets.dataset.userEdited) {
+            inputTotalCabinets.value = totalCabinets;
+            inputCabinets1m.value = cabinets1m;
+            inputCabinets50cm.value = cabinets50cm;
+            inputTotalHardcases.value = hardcases;
+            inputProcessorModel.value = processor;
+            inputPowerJumpers.value = totalCabinets;
+            inputLanJumpers.value = totalCabinets;
+            inputSpareModules.value = spareModules;
+            inputSparePsu.value = spareParts;
+            inputSpareRc.value = spareParts;
+        }
     }
 
-    widthInput.addEventListener('input', updateCalculations);
-    heightInput.addEventListener('input', updateCalculations);
-    brandInput.addEventListener('change', updateCalculations);
-    pitchInput.addEventListener('change', updateCalculations);
+    // Flag user edits so auto-calc doesn't overwrite intentional user overrides unless clicked Recalc
+    [inputTotalCabinets, inputCabinets1m, inputCabinets50cm, inputTotalHardcases, inputProcessorModel, inputPowerJumpers, inputLanJumpers, inputSpareModules, inputSparePsu, inputSpareRc].forEach(inp => {
+        inp?.addEventListener('input', () => {
+            inputTotalCabinets.dataset.userEdited = 'true';
+        });
+    });
+
+    document.getElementById('btnRecalculate')?.addEventListener('click', () => {
+        delete inputTotalCabinets.dataset.userEdited;
+        updateCalculations(true);
+    });
+
+    widthInput.addEventListener('input', () => updateCalculations(false));
+    heightInput.addEventListener('input', () => updateCalculations(false));
+    brandInput.addEventListener('change', () => updateCalculations(false));
+    pitchInput.addEventListener('change', () => updateCalculations(false));
 
     // Initial run
-    updateCalculations();
+    updateCalculations(true);
 });
 </script>
 @endsection
-

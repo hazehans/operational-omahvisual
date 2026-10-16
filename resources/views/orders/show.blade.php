@@ -17,16 +17,42 @@
                 <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold
                     {{ $order->status === 'completed' ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20' : '' }}
                     {{ $order->status === 'loading' ? 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20' : '' }}
-                    {{ $order->status === 'confirmed' ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20' : '' }}">
+                    {{ $order->status === 'confirmed' ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20' : '' }}
+                    {{ $order->status === 'draft' ? 'bg-slate-500/10 text-slate-600 dark:text-slate-400 border border-slate-500/20' : '' }}
+                    {{ $order->status === 'cancelled' ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20' : '' }}">
                     {{ ucfirst($order->status) }}
                 </span>
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold
+                    {{ ($order->status_wilayah ?? 'dalam_kota') === 'luar_kota' ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/30' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300' }}">
+                    {{ ($order->status_wilayah ?? 'dalam_kota') === 'luar_kota' ? '⚠️ Luar Kota' : '📍 Dalam Kota' }}
+                </span>
             </h1>
-            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                {{ $order->venue_name }} • Tanggal Loading: {{ $order->loading_date->format('d F Y') }} ({{ $order->loading_time }})
+            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1 flex flex-wrap items-center gap-x-3 gap-y-1">
+                <span>📍 {{ $order->venue_name }} {{ $order->kabupaten ? "({$order->kabupaten}, {$order->provinsi})" : '' }}</span>
+                <span>•</span>
+                <span>🚚 Loading: {{ $order->loading_date->format('d M Y') }} ({{ $order->loading_time }})</span>
+                <span>•</span>
+                <span>🎭 Acara: {{ $order->event_start_date->format('d M Y') }} ({{ $order->jam_acara ?? $order->ready_time ?? '-' }})</span>
+                @if($order->jam_menyala)
+                    <span>•</span>
+                    <span>💡 Menyala: {{ $order->jam_menyala }}</span>
+                @endif
+                @if($order->waktu_gladi)
+                    <span>•</span>
+                    <span>⏱️ Gladi: {{ $order->waktu_gladi }}</span>
+                @endif
             </p>
         </div>
 
         <div class="flex flex-wrap items-center gap-2">
+            <!-- Edit Order -->
+            <a href="{{ route('orders.edit', $order) }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-sm font-semibold transition-all shadow-xs">
+                <svg class="w-4 h-4 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+                <span>Edit Pesanan</span>
+            </a>
+
             @if($order->spkAssignment)
                 <a href="{{ route('spk.show', $order->spkAssignment) }}" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold shadow-md shadow-indigo-600/20 transition-all">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -42,6 +68,17 @@
                     <span>Cetak PDF / A4</span>
                 </a>
             @endif
+
+            <!-- Delete Order -->
+            <form action="{{ route('orders.destroy', $order) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pesanan {{ $order->order_number }} ini? Seluruh data SPK dan formasi layar akan dihapus.');" class="inline">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="p-2 rounded-xl border border-rose-200 dark:border-rose-900/50 bg-rose-50/50 hover:bg-rose-100 dark:bg-rose-950/20 dark:hover:bg-rose-900/40 text-rose-600 dark:text-rose-400 transition-colors shadow-xs" title="Hapus Pesanan Ini">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                </button>
+            </form>
         </div>
     </div>
 
@@ -213,6 +250,19 @@
                         <span class="text-slate-500">Lokasi Venue:</span>
                         <span class="font-semibold text-slate-900 dark:text-white">{{ $order->venue_name }}</span>
                     </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-slate-500">Wilayah:</span>
+                        <span class="font-semibold text-slate-900 dark:text-white">{{ ($order->status_wilayah ?? 'dalam_kota') === 'luar_kota' ? 'Luar Kota' : 'Dalam Kota' }} ({{ $order->kabupaten ?? 'Malang' }})</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-slate-500">Kelistrikan:</span>
+                        <span class="font-semibold text-slate-900 dark:text-white">{{ $order->kelistrikan ?? $order->electricity_source ?? '-' }}</span>
+                    </div>
+                    @if($order->kelistrikan_keterangan)
+                        <div class="text-[11px] text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/60 p-2 rounded-lg">
+                            ⚡ {{ $order->kelistrikan_keterangan }}
+                        </div>
+                    @endif
                 </div>
 
                 @if($order->google_maps_url)

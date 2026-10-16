@@ -18,6 +18,21 @@ class SuperuserDatabaseController extends Controller
      * @var array<string, array{name: string, category: string, description: string}>
      */
     protected array $allowedTables = [
+        'customers' => [
+            'name' => 'Data Customer & EO',
+            'category' => 'Master Data',
+            'description' => 'Master client, event organizer, vendor, dan kontak WhatsApp',
+        ],
+        'crews' => [
+            'name' => 'Kru & Teknisi Lapangan',
+            'category' => 'Master Data',
+            'description' => 'Master profil crew, nomor telepon darurat, dan posisi teknisi',
+        ],
+        'vehicles' => [
+            'name' => 'Armada Logistik',
+            'category' => 'Master Data',
+            'description' => 'Master kendaraan operasional, plat nomor, dokumen KIR, STNK, E-Toll',
+        ],
         'products' => [
             'name' => 'Master Produk',
             'category' => 'Master Data',

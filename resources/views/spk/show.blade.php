@@ -474,7 +474,7 @@
     </div>
 
     <!-- MODAL 1: EDIT TIM & ARMADA LOGISTIK -->
-    <div x-show="showAssignModal" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div x-show="showAssignModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
             <div x-show="showAssignModal" @click="showAssignModal = false" class="fixed inset-0 bg-slate-950/75 backdrop-blur-xs transition-opacity" aria-hidden="true"></div>
             <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
@@ -517,11 +517,13 @@
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">Armada & Kesiapan Dokumen</label>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <div>
-                                    <label class="block text-[11px] text-slate-500 mb-1">Pilihan Kendaraan:</label>
                                     <select name="vehicle_name" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white">
-                                        @foreach(['TRAGA 1', 'TRAGA 2', 'GRANMAX BLINDVAN', 'TRUK ENGKEL', 'MOBIL PRIBADI / LAINNYA'] as $veh)
-                                            <option value="{{ $veh }}" {{ old('vehicle_name', $assignment->vehicle_name) === $veh ? 'selected' : '' }}>{{ $veh }}</option>
+                                        @foreach($vehicles ?? [] as $veh)
+                                            <option value="{{ $veh->name }}" {{ old('vehicle_name', $assignment->vehicle_name) === $veh->name ? 'selected' : '' }}>
+                                                {{ $veh->name }} {{ $veh->plate_number ? '('.$veh->plate_number.')' : '' }}
+                                            </option>
                                         @endforeach
+                                        <option value="MOBIL PRIBADI / LAINNYA" {{ old('vehicle_name', $assignment->vehicle_name) === 'MOBIL PRIBADI / LAINNYA' ? 'selected' : '' }}>MOBIL PRIBADI / LAINNYA</option>
                                     </select>
                                 </div>
                                 <div class="grid grid-cols-2 gap-2 text-xs">
@@ -564,7 +566,7 @@
     </div>
 
     <!-- MODAL 2: VERIFIKASI QC VENUE MANUAL -->
-    <div x-show="showQcModal" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div x-show="showQcModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
             <div x-show="showQcModal" @click="showQcModal = false" class="fixed inset-0 bg-slate-950/75 backdrop-blur-xs transition-opacity" aria-hidden="true"></div>
             <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>

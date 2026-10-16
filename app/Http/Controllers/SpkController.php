@@ -6,6 +6,7 @@ use App\Models\EventOrder;
 use App\Models\SpkAssignment;
 use App\Models\SpkChecklistItem;
 use App\Models\User;
+use App\Models\Vehicle;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -20,8 +21,9 @@ class SpkController extends Controller
     {
         $assignment->load(['eventOrder.customer', 'eventOrder.screens', 'checklistItems']);
         $users = User::orderBy('name')->get();
+        $vehicles = Vehicle::where('is_active', true)->orderBy('name')->get();
 
-        return view('spk.show', compact('assignment', 'users'));
+        return view('spk.show', compact('assignment', 'users', 'vehicles'));
     }
 
     /**

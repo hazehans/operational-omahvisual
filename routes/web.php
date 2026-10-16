@@ -3,6 +3,8 @@
 use App\Http\Controllers\AssetController;
 use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CrewController;
+use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EventOrderController;
 use App\Http\Controllers\InitialCountController;
@@ -15,6 +17,7 @@ use App\Http\Controllers\StockAdjustmentController;
 use App\Http\Controllers\StockMovementController;
 use App\Http\Controllers\SuperuserDatabaseController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\VehicleController;
 use Illuminate\Support\Facades\Route;
 
 // Public Live Token Route for Crew Lapangan (No login required)
@@ -82,6 +85,11 @@ Route::middleware('auth')->group(function () {
 
     // Audit Trail
     Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
+
+    // Master Data Operasional (Customer, Kru, Armada)
+    Route::resource('customers', CustomerController::class);
+    Route::resource('crews', CrewController::class);
+    Route::resource('vehicles', VehicleController::class);
 
     // Event Orders & LED Screen Calculator (Phase 4)
     Route::post('/orders/calculate', [EventOrderController::class, 'calculate'])->name('orders.calculate');
