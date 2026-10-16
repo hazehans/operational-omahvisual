@@ -159,31 +159,67 @@
             <!-- Section 4: Foto Dokumen & Rate Card -->
             <div class="border-b border-slate-200 dark:border-slate-800 pb-2 pt-2">
                 <h2 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">4. Lampiran Foto, KTP, dan Rate Card</h2>
-                <p class="text-xs text-slate-500">Upload foto profil kru, kartu identitas KTP, dan foto tabel rate card bayaran kru.</p>
+                <p class="text-xs text-slate-500">Upload foto profil kru, kartu identitas KTP, dan foto tabel rate card bayaran kru dengan fitur crop otomatis.</p>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Foto Profil Kru</label>
-                    <input type="file" name="photo" accept="image/*"
-                        class="w-full text-xs text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 dark:file:bg-indigo-950/60 file:text-indigo-600 dark:file:text-indigo-400 hover:file:bg-indigo-100">
-                    <p class="text-[10px] text-slate-400 mt-1">Format: JPG, PNG (Max 5MB)</p>
+                <div class="space-y-2 bg-slate-50 dark:bg-slate-950 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">Foto Profil Kru</label>
+                    <div class="relative w-24 h-24 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-center overflow-hidden">
+                        <img id="crew_photo_preview" src="" alt="Pratinjau Foto" class="w-full h-full object-cover hidden">
+                        <div id="crew_photo_placeholder" class="text-center p-2 text-slate-400">
+                            <svg class="w-8 h-8 mx-auto mb-1 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                            <span class="text-[9px]">1:1 Kotak</span>
+                        </div>
+                    </div>
+                    <input type="file" name="photo" id="crew_photo_input" accept="image/*"
+                        class="w-full text-xs text-slate-500 file:mr-2 file:py-1.5 file:px-2.5 file:rounded-lg file:border-0 file:text-[11px] file:font-semibold file:bg-indigo-50 dark:file:bg-indigo-950/60 file:text-indigo-600 dark:file:text-indigo-400 hover:file:bg-indigo-100">
+                    <div class="flex items-center justify-between">
+                        <p class="text-[10px] text-slate-400">Crop Otomatis 1:1</p>
+                        <button type="button" id="crop_crew_photo_btn" class="hidden text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline">✂️ Crop Ulang</button>
+                    </div>
                     @error('photo') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
                 </div>
 
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Foto KTP Resmi</label>
-                    <input type="file" name="ktp_photo" accept="image/*"
-                        class="w-full text-xs text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 dark:file:bg-indigo-950/60 file:text-indigo-600 dark:file:text-indigo-400 hover:file:bg-indigo-100">
-                    <p class="text-[10px] text-slate-400 mt-1">Untuk arsip verifikasi keamanan gudang</p>
+                <div class="space-y-2 bg-slate-50 dark:bg-slate-950 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">Foto KTP Resmi</label>
+                    <div class="relative w-32 h-20 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-center overflow-hidden">
+                        <img id="crew_ktp_preview" src="" alt="Pratinjau KTP" class="w-full h-full object-cover hidden">
+                        <div id="crew_ktp_placeholder" class="text-center p-2 text-slate-400">
+                            <svg class="w-8 h-8 mx-auto mb-1 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
+                            </svg>
+                            <span class="text-[9px]">3:2 Rasio KTP</span>
+                        </div>
+                    </div>
+                    <input type="file" name="ktp_photo" id="crew_ktp_input" accept="image/*"
+                        class="w-full text-xs text-slate-500 file:mr-2 file:py-1.5 file:px-2.5 file:rounded-lg file:border-0 file:text-[11px] file:font-semibold file:bg-indigo-50 dark:file:bg-indigo-950/60 file:text-indigo-600 dark:file:text-indigo-400 hover:file:bg-indigo-100">
+                    <div class="flex items-center justify-between">
+                        <p class="text-[10px] text-slate-400">Crop Otomatis 3:2</p>
+                        <button type="button" id="crop_crew_ktp_btn" class="hidden text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline">✂️ Crop Ulang</button>
+                    </div>
                     @error('ktp_photo') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
                 </div>
 
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Foto Rate Card Bayaran</label>
-                    <input type="file" name="rate_card_photo" accept="image/*"
-                        class="w-full text-xs text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 dark:file:bg-indigo-950/60 file:text-indigo-600 dark:file:text-indigo-400 hover:file:bg-indigo-100">
-                    <p class="text-[10px] text-slate-400 mt-1">Daftar tarif harian / per event kru</p>
+                <div class="space-y-2 bg-slate-50 dark:bg-slate-950 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">Foto Rate Card Bayaran</label>
+                    <div class="relative w-32 h-20 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-center overflow-hidden">
+                        <img id="crew_rate_card_preview" src="" alt="Pratinjau Rate Card" class="w-full h-full object-cover hidden">
+                        <div id="crew_rate_card_placeholder" class="text-center p-2 text-slate-400">
+                            <svg class="w-8 h-8 mx-auto mb-1 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            <span class="text-[9px]">Bebas / Freeform</span>
+                        </div>
+                    </div>
+                    <input type="file" name="rate_card_photo" id="crew_rate_card_input" accept="image/*"
+                        class="w-full text-xs text-slate-500 file:mr-2 file:py-1.5 file:px-2.5 file:rounded-lg file:border-0 file:text-[11px] file:font-semibold file:bg-indigo-50 dark:file:bg-indigo-950/60 file:text-indigo-600 dark:file:text-indigo-400 hover:file:bg-indigo-100">
+                    <div class="flex items-center justify-between">
+                        <p class="text-[10px] text-slate-400">Crop Bebas / Sesuai Foto</p>
+                        <button type="button" id="crop_crew_rate_card_btn" class="hidden text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline">✂️ Crop Ulang</button>
+                    </div>
                     @error('rate_card_photo') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
                 </div>
             </div>
@@ -223,4 +259,14 @@
         </form>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (typeof window.setupImageCropper === 'function') {
+            window.setupImageCropper('crew_photo_input', 'crew_photo_preview', 'crew_photo_placeholder', 1, 'crop_crew_photo_btn');
+            window.setupImageCropper('crew_ktp_input', 'crew_ktp_preview', 'crew_ktp_placeholder', 3/2, 'crop_crew_ktp_btn');
+            window.setupImageCropper('crew_rate_card_input', 'crew_rate_card_preview', 'crew_rate_card_placeholder', NaN, 'crop_crew_rate_card_btn');
+        }
+    });
+</script>
 @endsection

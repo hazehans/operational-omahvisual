@@ -135,4 +135,3 @@ class MasterDataManagementTest extends TestCase
         $this->assertStringStartsWith('VH-', $vehicle->vehicle_code);
     }
 }
-

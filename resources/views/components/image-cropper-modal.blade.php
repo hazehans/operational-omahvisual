@@ -1,6 +1,6 @@
 <!-- Global Image Cropper Modal -->
-<div id="cropper-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-2xl w-full p-5 sm:p-6 shadow-2xl space-y-4">
+<div id="cropper-modal" class="fixed inset-0 z-100 bg-slate-950/80 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-2xl w-full p-5 sm:p-6 shadow-2xl space-y-4">
         <div class="flex items-center justify-between pb-3 border-b border-slate-800">
             <div>
                 <h3 class="text-base font-bold text-white flex items-center gap-2">
@@ -9,7 +9,7 @@
                     </svg>
                     <span>Sesuaikan & Potong Foto (Crop Image)</span>
                 </h3>
-                <p class="text-xs text-slate-400 mt-0.5">Geser, perbesar (zoom), atau putar foto agar pas dengan bingkai proporsional.</p>
+                <p class="text-xs text-slate-400 mt-0.5">Geser, perbesar (zoom), putar, atau pilih rasio potongan foto.</p>
             </div>
             <button type="button" onclick="closeCropperModal()" class="text-slate-400 hover:text-white p-1.5 rounded-xl hover:bg-slate-800 transition-colors">
                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -21,6 +21,16 @@
         <!-- Canvas Container -->
         <div class="w-full h-72 sm:h-96 bg-slate-950 rounded-xl overflow-hidden flex items-center justify-center border border-slate-800 relative">
             <img id="cropper-image" src="" alt="To Crop" class="max-w-full max-h-full block">
+        </div>
+
+        <!-- Aspect Ratio Selection Row -->
+        <div class="flex items-center gap-1.5 flex-wrap text-xs pt-1 border-t border-slate-800/80">
+            <span class="text-slate-400 font-semibold mr-1">Rasio Bingkai:</span>
+            <button type="button" onclick="cropperSetRatio(NaN)" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-indigo-600 text-slate-300 hover:text-white text-xs font-semibold transition-colors">Bebas</button>
+            <button type="button" onclick="cropperSetRatio(1)" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-indigo-600 text-slate-300 hover:text-white text-xs font-semibold transition-colors">1:1 (Avatar/Kotak)</button>
+            <button type="button" onclick="cropperSetRatio(3/2)" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-indigo-600 text-slate-300 hover:text-white text-xs font-semibold transition-colors">3:2 (KTP/STNK/Toll)</button>
+            <button type="button" onclick="cropperSetRatio(4/3)" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-indigo-600 text-slate-300 hover:text-white text-xs font-semibold transition-colors">4:3 (Hardware)</button>
+            <button type="button" onclick="cropperSetRatio(16/9)" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-indigo-600 text-slate-300 hover:text-white text-xs font-semibold transition-colors">16:9 (Armada/Panggung)</button>
         </div>
 
         <!-- Controls toolbar -->
@@ -64,6 +74,7 @@
     let activePreviewImg = null;
     let activePlaceholder = null;
     let activeFileName = 'cropped-image.jpg';
+    let activeOnSuccess = null;
 
     window.openCropper = function(options) {
         const file = options.file;
@@ -73,6 +84,7 @@
         activePreviewImg = options.previewImg;
         activePlaceholder = options.placeholder;
         activeFileName = file.name || 'cropped-image.jpg';
+        activeOnSuccess = options.onSuccess || null;
         const aspectRatio = options.aspectRatio !== undefined ? options.aspectRatio : 16 / 9;
 
         const modal = document.getElementById('cropper-modal');
@@ -90,7 +102,7 @@
             // Wait a tiny bit for DOM image load
             setTimeout(() => {
                 currentCropper = new Cropper(imageEl, {
-                    aspectRatio: aspectRatio,
+                    aspectRatio: isNaN(aspectRatio) ? NaN : aspectRatio,
                     viewMode: 1,
                     autoCropArea: 0.9,
                     responsive: true,
@@ -100,9 +112,15 @@
                     rotatable: true,
                     scalable: true,
                 });
-            }, 50);
+            }, 60);
         };
         reader.readAsDataURL(file);
+    };
+
+    window.cropperSetRatio = function(ratio) {
+        if (currentCropper) {
+            currentCropper.setAspectRatio(ratio);
+        }
     };
 
     window.closeCropperModal = function() {
@@ -152,8 +170,56 @@
                 activePlaceholder.classList.add('hidden');
             }
 
+            if (activeOnSuccess && typeof activeOnSuccess === 'function') {
+                activeOnSuccess();
+            }
+
             closeCropperModal();
-        }, 'image/jpeg', 0.9);
+        }, 'image/jpeg', 0.92);
+    };
+
+    window.setupImageCropper = function(inputId, previewImgId, placeholderId, defaultRatio, reCropBtnId) {
+        const input = document.getElementById(inputId);
+        const preview = document.getElementById(previewImgId);
+        const placeholder = document.getElementById(placeholderId);
+        const reCropBtn = reCropBtnId ? document.getElementById(reCropBtnId) : null;
+        if (!input) return;
+
+        let originalFile = null;
+
+        input.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                originalFile = this.files[0];
+                window.openCropper({
+                    file: originalFile,
+                    fileInput: this,
+                    previewImg: preview,
+                    placeholder: placeholder,
+                    aspectRatio: defaultRatio,
+                    onSuccess: function() {
+                        if (reCropBtn) reCropBtn.classList.remove('hidden');
+                    }
+                });
+            }
+        });
+
+        if (reCropBtn) {
+            reCropBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const fileToCrop = originalFile || (input.files && input.files[0]);
+                if (fileToCrop) {
+                    window.openCropper({
+                        file: fileToCrop,
+                        fileInput: input,
+                        previewImg: preview,
+                        placeholder: placeholder,
+                        aspectRatio: defaultRatio,
+                        onSuccess: function() {
+                            if (reCropBtn) reCropBtn.classList.remove('hidden');
+                        }
+                    });
+                }
+            });
+        }
     };
 </script>
-
