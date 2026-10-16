@@ -1,6 +1,6 @@
 <!-- Global Image Cropper Modal -->
-<div id="cropper-modal" class="fixed inset-0 z-100 bg-slate-950/80 backdrop-blur-xs flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-2xl w-full p-5 sm:p-6 shadow-2xl space-y-4">
+<div id="cropper-modal" style="display: none;" class="fixed inset-0 z-100 bg-slate-950/80 backdrop-blur-xs flex items-center justify-center p-4" onclick="if(event.target === this) closeCropperModal()">
+    <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-2xl w-full p-5 sm:p-6 shadow-2xl space-y-4" onclick="event.stopPropagation()">
         <div class="flex items-center justify-between pb-3 border-b border-slate-800">
             <div>
                 <h3 class="text-base font-bold text-white flex items-center gap-2">
@@ -93,6 +93,7 @@
         const reader = new FileReader();
         reader.onload = function(e) {
             imageEl.src = e.target.result;
+            modal.style.display = 'flex';
             modal.classList.remove('hidden');
 
             if (currentCropper) {
@@ -125,12 +126,25 @@
 
     window.closeCropperModal = function() {
         const modal = document.getElementById('cropper-modal');
-        modal.classList.add('hidden');
+        if (modal) {
+            modal.style.display = 'none';
+            modal.classList.add('hidden');
+        }
         if (currentCropper) {
             currentCropper.destroy();
             currentCropper = null;
         }
     };
+
+    // Close on Escape key press
+    window.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const modal = document.getElementById('cropper-modal');
+            if (modal && modal.style.display !== 'none') {
+                closeCropperModal();
+            }
+        }
+    });
 
     window.cropperRotate = function(degree) {
         if (currentCropper) currentCropper.rotate(degree);

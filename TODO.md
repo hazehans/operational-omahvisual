@@ -97,10 +97,13 @@
 ### 16. Integrasi Pemotong Gambar Interaktif (Cropper.js) — ✅ Selesai
 - [x] Integrasi pustaka client-side Cropper.js dengan modal global (`components/image-cropper-modal.blade.php`)
 - [x] Fitur pemotongan foto interaktif dengan kontrol putar (rotate), perbesar (zoom), reset, dan crop rasio spesifik:
-  - Rasio 16:9 untuk Titik Lokasi & Lemari Gudang
+  - Rasio 16:9 untuk Titik Lokasi, Lemari Gudang, Foto Fisik Armada & QC Panggung
   - Rasio 4:3 untuk Master Barang & Modul LED
-  - Rasio 1:1 (persegi) untuk Foto Avatar Pengguna
+  - Rasio 3:2 untuk KTP Resmi Kru, STNK Armada, dan Kartu E-Toll
+  - Rasio 1:1 (persegi) untuk Foto Avatar Kru, Foto Profil, dan Barcode Subsidi BBM
+  - Rasio Bebas (Freeform) untuk Rate Card Kru dan Dokumen Kustom
 - [x] Mekanisme injeksi berkas hasil crop via HTML5 `DataTransfer` sehingga controller backend tetap menerima objek `UploadedFile` standar tanpa modifikasi controller
+- [x] **Perbaikan Bug Modal Crop Muncul Tiba-tiba**: Menambahkan `style="display: none;"` eksplisit pada root `#cropper-modal`, penanganan escape key, dan penutupan saat klik backdrop luar sehingga modal 100% tersembunyi saat login dan pergantian halaman menu.
 
 ### 17. Modul Profil Pengguna & Keamanan Kata Sandi (`/profile`) — ✅ Selesai
 - [x] Migrasi database: Penambahan kolom `phone` dan `avatar_path` pada tabel `users`
