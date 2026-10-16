@@ -41,6 +41,14 @@ class SpkAssignment extends Model
         'return_datetime',
         'return_status',
         'return_notes',
+        'qc_status',
+        'qc_test_rgb',
+        'qc_grounding_safe',
+        'qc_video_signal_ok',
+        'qc_photo_path',
+        'qc_technician_name',
+        'qc_notes',
+        'qc_verified_at',
     ];
 
     protected function casts(): array
@@ -53,6 +61,10 @@ class SpkAssignment extends Model
             'has_barcode_bbm' => 'boolean',
             'departure_datetime' => 'datetime',
             'return_datetime' => 'datetime',
+            'qc_test_rgb' => 'boolean',
+            'qc_grounding_safe' => 'boolean',
+            'qc_video_signal_ok' => 'boolean',
+            'qc_verified_at' => 'datetime',
         ];
     }
 

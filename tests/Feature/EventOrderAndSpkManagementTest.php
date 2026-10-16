@@ -6,8 +6,11 @@ use App\Models\Customer;
 use App\Models\EventOrder;
 use App\Models\OrderLedScreen;
 use App\Models\SpkAssignment;
+use App\Models\SpkChecklistItem;
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class EventOrderAndSpkManagementTest extends TestCase
@@ -333,5 +336,130 @@ class EventOrderAndSpkManagementTest extends TestCase
         $this->assertEquals($newTopImage, $order->stage_layout_image);
         $this->assertEquals($newFrontImage, $order->stage_layout_front_image);
         $this->assertEquals('Main Screen', $order->stage_layout_json[0]['name']);
+    }
+
+    public function test_user_can_update_spk_crew_assignment_and_fleet(): void
+    {
+        $customer = Customer::factory()->create();
+        $order = EventOrder::factory()->create(['customer_id' => $customer->id]);
+        $assignment = SpkAssignment::factory()->create([
+            'event_order_id' => $order->id,
+            'crew_pic_event_name' => 'Boby Lama',
+            'vehicle_name' => 'TRAGA 1',
+            'has_etoll' => false,
+        ]);
+
+        $response = $this->actingAs($this->user)->put(route('spk.update-assignment', $assignment), [
+            'crew_pic_event_name' => 'Boby Baru',
+            'crew_1_name' => 'Yoga Pratama',
+            'crew_2_name' => 'Kemal Fauzi',
+            'vehicle_name' => 'GRANMAX BLINDVAN',
+            'has_etoll' => '1',
+            'has_kunci_ban' => '1',
+            'has_stnk' => '1',
+            'has_kir' => '1',
+            'has_barcode_bbm' => '1',
+        ]);
+
+        $response->assertSessionHas('status');
+        $assignment->refresh();
+        $order->refresh();
+
+        $this->assertEquals('Boby Baru', $assignment->crew_pic_event_name);
+        $this->assertEquals('Yoga Pratama', $assignment->crew_1_name);
+        $this->assertEquals('GRANMAX BLINDVAN', $assignment->vehicle_name);
+        $this->assertTrue($assignment->has_etoll);
+        $this->assertTrue($assignment->has_kunci_ban);
+        $this->assertEquals('GRANMAX BLINDVAN', $order->vehicle_loading_in);
+    }
+
+    public function test_crew_can_submit_venue_qc_report_via_public_live_token(): void
+    {
+        Storage::fake('public');
+
+        $customer = Customer::factory()->create();
+        $order = EventOrder::factory()->create([
+            'customer_id' => $customer->id,
+            'public_token' => 'test-token-qc-12345',
+        ]);
+        $assignment = SpkAssignment::factory()->create([
+            'event_order_id' => $order->id,
+            'qc_status' => 'pending',
+        ]);
+
+        $fakePhoto = UploadedFile::fake()->image('stage-qc.jpg', 800, 600);
+
+        $response = $this->post(route('spk.submit-qc', $order->public_token), [
+            'qc_technician_name' => 'Kurniawan Teknisi',
+            'qc_status' => 'passed',
+            'qc_test_rgb' => '1',
+            'qc_grounding_safe' => '1',
+            'qc_video_signal_ok' => '1',
+            'qc_notes' => 'Grounding panggung terukur 0.8V AC, pola RGB normal tanpa dead pixel.',
+            'qc_photo' => $fakePhoto,
+        ]);
+
+        $response->assertSessionHas('status');
+        $assignment->refresh();
+
+        $this->assertEquals('passed', $assignment->qc_status);
+        $this->assertEquals('Kurniawan Teknisi', $assignment->qc_technician_name);
+        $this->assertTrue($assignment->qc_test_rgb);
+        $this->assertTrue($assignment->qc_grounding_safe);
+        $this->assertTrue($assignment->qc_video_signal_ok);
+        $this->assertNotNull($assignment->qc_photo_path);
+        $this->assertNotNull($assignment->qc_verified_at);
+        Storage::disk('public')->assertExists($assignment->qc_photo_path);
+    }
+
+    public function test_authenticated_user_can_update_venue_qc_from_spk_show(): void
+    {
+        $customer = Customer::factory()->create();
+        $order = EventOrder::factory()->create(['customer_id' => $customer->id]);
+        $assignment = SpkAssignment::factory()->create([
+            'event_order_id' => $order->id,
+            'qc_status' => 'pending',
+        ]);
+
+        $response = $this->actingAs($this->user)->post(route('spk.update-qc', $assignment), [
+            'qc_technician_name' => 'Dimas Admin',
+            'qc_status' => 'issues_found',
+            'qc_test_rgb' => '0',
+            'qc_grounding_safe' => '1',
+            'qc_video_signal_ok' => '1',
+            'qc_notes' => 'Modul 2 baris 3 warna merah redup, telah diganti spare part cadangan.',
+        ]);
+
+        $response->assertSessionHas('status');
+        $assignment->refresh();
+
+        $this->assertEquals('issues_found', $assignment->qc_status);
+        $this->assertEquals('Dimas Admin', $assignment->qc_technician_name);
+        $this->assertFalse($assignment->qc_test_rgb);
+        $this->assertTrue($assignment->qc_grounding_safe);
+        $this->assertNotNull($assignment->qc_verified_at);
+    }
+
+    public function test_user_can_update_checklist_item_condition_notes(): void
+    {
+        $customer = Customer::factory()->create();
+        $order = EventOrder::factory()->create(['customer_id' => $customer->id]);
+        $assignment = SpkAssignment::factory()->create(['event_order_id' => $order->id]);
+        $item = SpkChecklistItem::factory()->create([
+            'spk_assignment_id' => $assignment->id,
+            'item_name' => 'Kabel Power Jumper 1m',
+            'condition_notes' => null,
+        ]);
+
+        $response = $this->actingAs($this->user)->postJson(route('spk.toggle-item', $item), [
+            'field' => 'condition_notes',
+            'value' => 'Soket powercon sedikit kendur pasca-event',
+        ]);
+
+        $response->assertOk();
+        $response->assertJson(['success' => true]);
+
+        $item->refresh();
+        $this->assertEquals('Soket powercon sedikit kendur pasca-event', $item->condition_notes);
     }
 }

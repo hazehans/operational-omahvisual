@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Route;
 
 // Public Live Token Route for Crew Lapangan (No login required)
 Route::get('/spk/live/{token}', [SpkController::class, 'liveTokenView'])->name('spk.live');
+Route::post('/spk/live/{token}/qc', [SpkController::class, 'submitVenueQc'])->name('spk.submit-qc');
 
 // Guest Authentication Routes
 Route::middleware('guest')->group(function () {
@@ -90,6 +91,8 @@ Route::middleware('auth')->group(function () {
     // SPK & Equipment Gate Checklist (Phase 4)
     Route::get('/spk/{assignment}', [SpkController::class, 'show'])->name('spk.show');
     Route::get('/spk/{assignment}/print', [SpkController::class, 'print'])->name('spk.print');
+    Route::put('/spk/{assignment}/assignment', [SpkController::class, 'updateAssignment'])->name('spk.update-assignment');
+    Route::post('/spk/{assignment}/qc', [SpkController::class, 'updateQc'])->name('spk.update-qc');
     Route::post('/spk/{assignment}/verify-departure', [SpkController::class, 'verifyDeparture'])->name('spk.verify-departure');
     Route::post('/spk/{assignment}/verify-return', [SpkController::class, 'verifyReturn'])->name('spk.verify-return');
     Route::post('/spk/items/{item}/toggle', [SpkController::class, 'toggleItem'])->name('spk.toggle-item');

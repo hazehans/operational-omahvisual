@@ -200,11 +200,34 @@ Berdasarkan analisis 2 file Excel (`DATA TOOLS BOX .2` dan `DEV_STOCK OPNAME by 
   - Preseleksi otomatis parameter query URL (`product_id`, `type`, `location_id`) pada form mutasi dan adjustment.
   - Koreksi kalkulasi status stok fisik (Siap Sewa, Rusak, Servis) pada perangkat serial di `ProductController::show()`.
 - [x] **Pengujian Otomatis Menyeluruh:**
-  - Total test suite saat ini mencapai **67 Tests, 398 Assertions, 100% Lulus (Green)** tanpa kegagalan.
+  - Total test suite saat ini mencapai **71 Tests, 423 Assertions, 100% Lulus (Green)** tanpa kegagalan.
+
+### Tahap 7: Rantai Operasional Terintegrasi — Penugasan Kru, QC Venue & BAST, serta Return Gate Otomatis (SELESAI ✅)
+- [x] **Penugasan Kru & Kesiapan Armada Kendaraan Dinamis (`/spk/{id}`):**
+  - Pembaruan modal interaktif untuk mengedit roster kru panggung (Crew 1 s/d 7 dan PIC Event) dengan auto-suggest daftar staf aktif.
+  - Pemeriksaan kelengkapan kendaraan (E-Toll, Kunci Roda/Dongkrak, STNK Asli, Kartu KIR, Barcode Subsidi MyPertamina) dengan indikator status visual (Siap vs Belum).
+  - Sinkronisasi armada kendaraan loading-in/out otomatis ke data pesanan acara.
+- [x] **Uji Kelayakan Venue & BAST Instalasi Panggung (`spk/live/{token}` & `/spk/{id}`):**
+  - Penambahan form pelaporan uji kelayakan lapangan di mobile live view kru panggung:
+    - Checklist proteksi Grounding listrik aman (< 2V AC pencegah induksi panggung).
+    - Uji pola warna RGB (Red, Green, Blue, White bersih bebas dead pixel).
+    - Uji sinyal video & kestabilan refresh rate 3840Hz bebas flicker kamera.
+    - Status kelayakan *Lolos Siap Show* atau *Ditemukan Kendala Teknis*.
+    - Upload foto dokumentasi hasil instalasi panggung menyala (BAST visual) langsung via kamera smartphone kru.
+  - Kartu pemantauan QC panggung di SPK kantor lengkap dengan pratinjau foto dan opsi verifikasi manual dari desktop.
+  - Penyertaan blok ringkasan uji kelayakan QC venue pada lembar cetak fisik SPK A4 (`spk/print.blade.php`).
+- [x] **Integrasi Pintu Kepulangan (Return Gate) $\rightarrow$ Servis & Penyesuaian Stok Cepat:**
+  - Deteksi otomatis barang yang keluar namun belum dicentang kembali saat verifikasi kepulangan gudang, lengkap dengan banner peringatan.
+  - Tombol aksi cepat pasca-event pada setiap baris item checklist (Halaman 2 & Halaman 3):
+    - `🛠️ Servis`: Membuka tiket servis karantina di workshop dengan prefill otomatis nama barang, kuantitas, dan riwayat event.
+    - `⚠️ Hilang`: Membuka formulir pengajuan penyesuaian stok (*Stock Adjustment*) ke Owner untuk barang tertinggal atau selisih fisik.
+    - `📝 Note`: Pengisian catatan kondisi temuan lapangan secara instan berbasis AJAX.
+- [x] **Pembaruan Pengujian Fitur:**
+  - Penambahan 4 pengujian fitur baru di `EventOrderAndSpkManagementTest.php` untuk penugasan kru, submit QC token publik, verifikasi QC desktop, dan update catatan kondisi checklist.
 
 ---
 
-## 🔮 7. Roadmap Jangka Panjang (Operasional Lanjutan Sesuai PRD Global)
+## 🔮 8. Roadmap Jangka Panjang (Operasional Lanjutan Sesuai PRD Global)
 - [ ] Integrasi Barcode / QR Code Fisik Scanner (Ditunda sementara sesuai arahan user agar fokus pematangan operasional)
 - [ ] Modul Invoicing & Verifikasi Pembayaran (Finance)
 - [ ] Fitur Ekspor Laporan Bulanan (Excel/PDF) untuk Rekapitulasi Barang Hilang & Biaya Servis

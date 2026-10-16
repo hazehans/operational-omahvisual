@@ -41,7 +41,7 @@
                     <select name="product_id" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-xs text-white focus:outline-none focus:border-indigo-500">
                         <option value="">Pilih Barang...</option>
                         @foreach($products as $prod)
-                            <option value="{{ $prod->id }}" {{ old('product_id', request('product_id')) == $prod->id ? 'selected' : '' }}>
+                            <option value="{{ $prod->id }}" {{ (old('product_id', request('product_id')) == $prod->id || (request('item_name') && stripos($prod->name, request('item_name')) !== false)) ? 'selected' : '' }}>
                                 {{ $prod->code }} — {{ $prod->name }}
                             </option>
                         @endforeach
@@ -54,9 +54,9 @@
                 <div>
                     <label class="block text-xs font-semibold text-slate-300 mb-1.5 uppercase">Kondisi Fisik *</label>
                     <select name="condition" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-xs text-white focus:outline-none focus:border-indigo-500">
-                        <option value="available" {{ old('condition') == 'available' ? 'selected' : '' }}>Bagus (Siap)</option>
-                        <option value="damaged" {{ old('condition') == 'damaged' ? 'selected' : '' }}>Rusak</option>
-                        <option value="in_service" {{ old('condition') == 'in_service' ? 'selected' : '' }}>Dalam Servis</option>
+                        <option value="available" {{ old('condition', request('condition', 'available')) == 'available' ? 'selected' : '' }}>Bagus (Siap)</option>
+                        <option value="damaged" {{ old('condition', request('condition')) == 'damaged' ? 'selected' : '' }}>Rusak</option>
+                        <option value="in_service" {{ old('condition', request('condition')) == 'in_service' ? 'selected' : '' }}>Dalam Servis</option>
                     </select>
                 </div>
 
@@ -70,7 +70,7 @@
 
                 <div>
                     <label class="block text-xs font-semibold text-slate-300 mb-1.5 uppercase">Jumlah Fisik Sebenarnya *</label>
-                    <input type="number" step="0.01" name="adjusted_quantity" value="{{ old('adjusted_quantity') }}" required min="0" placeholder="0.00"
+                    <input type="number" step="0.01" name="adjusted_quantity" value="{{ old('adjusted_quantity', request('adjusted_quantity', request('quantity'))) }}" required min="0" placeholder="0.00"
                         class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-xs text-white focus:outline-none focus:border-indigo-500 font-mono">
                 </div>
             </div>
@@ -79,7 +79,7 @@
             <div>
                 <label class="block text-xs font-semibold text-slate-300 mb-1.5 uppercase">Alasan Penyesuaian (Wajib) *</label>
                 <textarea name="reason" rows="3" required placeholder="Contoh: Ditemukan 1 kabel power jumper terbakar soketnya saat demobilisasi event di Tentrem, perlu dialihkan ke kondisi rusak..."
-                    class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-xs text-white focus:outline-none focus:border-indigo-500">{{ old('reason') }}</textarea>
+                    class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-xs text-white focus:outline-none focus:border-indigo-500">{{ old('reason', request('reason', request('notes'))) }}</textarea>
             </div>
 
             <!-- Bukti Foto -->

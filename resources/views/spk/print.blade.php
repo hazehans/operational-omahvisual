@@ -357,6 +357,21 @@
                     </tr>
                 </table>
 
+                <div style="background-color: #d1fae5; color: #065f46; font-weight: bold; font-size: 10px; text-align: center; padding: 2.5px 6px; margin-top: 5px; border: 1px solid #6ee7b7;">
+                    UJI KELAYAKAN INSTALASI VENUE & BAST (QC LAPANGAN)
+                </div>
+                <table style="width: 100%; border-collapse: collapse; font-size: 9px; border: 1px solid #6ee7b7; margin-bottom: 2px; background: #f0fdf4;">
+                    <tr>
+                        <td style="padding: 2.5px 6px; width: 33%;">Grounding: <strong>{{ $assignment->qc_grounding_safe ? '[✓] Aman (<2V)' : '[ ] Aman' }}</strong></td>
+                        <td style="padding: 2.5px 6px; width: 34%;">RGB Test: <strong>{{ $assignment->qc_test_rgb ? '[✓] Bersih' : '[ ] Bersih' }}</strong></td>
+                        <td style="padding: 2.5px 6px; width: 33%;">Sinyal: <strong>{{ $assignment->qc_video_signal_ok ? '[✓] 3840Hz Stabil' : '[ ] 3840Hz' }}</strong></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="padding: 2.5px 6px;">Teknisi QC: <strong>{{ $assignment->qc_technician_name ?? '..................................' }}</strong> ({{ $assignment->qc_verified_at?->format('d/m/Y H:i') ?? 'Tgl/Jam' }})</td>
+                        <td style="padding: 2.5px 6px; text-align: right;">Status: <strong>{{ $assignment->qc_status === 'passed' ? 'LOLOS SIAP SHOW' : ($assignment->qc_status === 'issues_found' ? 'ADA KENDALA' : 'MENUNGGU TES') }}</strong></td>
+                    </tr>
+                </table>
+
                 <div style="text-align: center; font-size: 10px; font-weight: bold; margin: 4px 0; color: #b91c1c;">
                     PC Kepulangan Barang Wajib Orang yg berbeda
                 </div>

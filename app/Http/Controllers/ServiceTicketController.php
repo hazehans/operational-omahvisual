@@ -89,6 +89,8 @@ class ServiceTicketController extends Controller
             }
         } elseif ($request->filled('product_id')) {
             $preselectedProduct = Product::find($request->product_id);
+        } elseif ($request->filled('item_name')) {
+            $preselectedProduct = Product::where('name', 'ILIKE', '%'.$request->item_name.'%')->first();
         }
 
         $products = Product::where('is_active', true)->orderBy('name')->get();

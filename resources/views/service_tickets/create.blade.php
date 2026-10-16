@@ -70,7 +70,7 @@
                     Jumlah Barang Rusak / Masuk Servis <span class="text-rose-500">*</span>
                 </label>
                 <div class="flex items-center gap-3">
-                    <input type="number" step="0.01" min="0.01" name="quantity" id="quantity" value="{{ old('quantity', 1) }}" required class="w-40 px-4 py-2.5 rounded-xl text-sm bg-slate-950/60 border border-slate-800 text-white font-mono font-bold focus:outline-none focus:border-indigo-500">
+                    <input type="number" step="0.01" min="0.01" name="quantity" id="quantity" value="{{ old('quantity', request('quantity', 1)) }}" required class="w-40 px-4 py-2.5 rounded-xl text-sm bg-slate-950/60 border border-slate-800 text-white font-mono font-bold focus:outline-none focus:border-indigo-500">
                     <span class="text-sm text-slate-400">Unit / Pcs</span>
                 </div>
                 @error('quantity')
@@ -150,7 +150,7 @@
                 <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
                     Deskripsi Masalah / Gejala Kerusakan <span class="text-rose-500">*</span>
                 </label>
-                <textarea name="issue_description" rows="3" required placeholder="Contoh: Modul mati 5 titik lampu merah di baris 4. IC driver ICN2053 tampak panas berlebih saat tes pola warna putih..." class="w-full px-4 py-2.5 rounded-xl text-sm bg-slate-950/60 border border-slate-800 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 leading-relaxed">{{ old('issue_description') }}</textarea>
+                <textarea name="issue_description" rows="3" required placeholder="Contoh: Modul mati 5 titik lampu merah di baris 4. IC driver ICN2053 tampak panas berlebih saat tes pola warna putih..." class="w-full px-4 py-2.5 rounded-xl text-sm bg-slate-950/60 border border-slate-800 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 leading-relaxed">{{ old('issue_description', request('issue_description', request('notes'))) }}</textarea>
                 @error('issue_description')
                     <p class="text-xs text-rose-500 mt-1">{{ $message }}</p>
                 @enderror

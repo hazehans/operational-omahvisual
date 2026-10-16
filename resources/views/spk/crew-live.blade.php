@@ -25,6 +25,21 @@
         </span>
     </div>
 
+    @if(session('status'))
+        <div class="p-3.5 rounded-xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-xs font-semibold flex items-center gap-2">
+            <span>✓</span>
+            <span>{{ session('status') }}</span>
+        </div>
+    @endif
+
+    @if($errors->any())
+        <div class="p-3.5 rounded-xl bg-rose-500/20 border border-rose-500/30 text-rose-300 text-xs space-y-1">
+            @foreach($errors->all() as $error)
+                <div>• {{ $error }}</div>
+            @endforeach
+        </div>
+    @endif
+
     <!-- Event Hero Card -->
     <div class="bg-gradient-to-br from-indigo-950 via-slate-900 to-slate-900 p-5 rounded-2xl border border-indigo-800/50 shadow-xl space-y-3">
         <div class="text-xs font-mono text-indigo-400 font-bold uppercase tracking-wider">
@@ -195,6 +210,122 @@
                     </div>
                 @endforeach
             </div>
+        </div>
+
+        <!-- Venue QC & BAST Card -->
+        <div class="p-4 rounded-xl bg-slate-800/80 border border-slate-700/80 space-y-3">
+            <div class="flex items-center justify-between">
+                <div class="text-xs font-bold uppercase tracking-wider text-slate-200 flex items-center gap-1.5">
+                    <span>⚡ Uji Kelayakan Venue & BAST</span>
+                </div>
+                @if($order->spkAssignment->qc_status === 'passed')
+                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                        ✓ Lolos QC Siap Show
+                    </span>
+                @elseif($order->spkAssignment->qc_status === 'issues_found')
+                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                        ⚠️ Ada Kendala Teknis
+                    </span>
+                @else
+                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-700 text-slate-300">
+                        ○ Belum Diverifikasi
+                    </span>
+                @endif
+            </div>
+
+            @if($order->spkAssignment->qc_verified_at)
+                <!-- QC Result Summary -->
+                <div class="p-3 rounded-lg bg-slate-900/90 border border-slate-800 space-y-2 text-xs">
+                    <div class="flex justify-between items-center text-[11px] text-slate-400">
+                        <span>Diverifikasi oleh: <strong class="text-white">{{ $order->spkAssignment->qc_technician_name }}</strong></span>
+                        <span>{{ $order->spkAssignment->qc_verified_at->format('d/m/Y H:i') }}</span>
+                    </div>
+                    <div class="grid grid-cols-3 gap-1.5 text-[10px] text-center pt-1 font-semibold">
+                        <div class="p-1.5 rounded {{ $order->spkAssignment->qc_grounding_safe ? 'bg-emerald-950/40 text-emerald-400 border border-emerald-800/50' : 'bg-slate-800 text-slate-500' }}">
+                            ⚡ Grounding {{ $order->spkAssignment->qc_grounding_safe ? 'OK' : '-' }}
+                        </div>
+                        <div class="p-1.5 rounded {{ $order->spkAssignment->qc_test_rgb ? 'bg-emerald-950/40 text-emerald-400 border border-emerald-800/50' : 'bg-slate-800 text-slate-500' }}">
+                            🎨 RGB Test {{ $order->spkAssignment->qc_test_rgb ? 'OK' : '-' }}
+                        </div>
+                        <div class="p-1.5 rounded {{ $order->spkAssignment->qc_video_signal_ok ? 'bg-emerald-950/40 text-emerald-400 border border-emerald-800/50' : 'bg-slate-800 text-slate-500' }}">
+                            📺 Sinyal {{ $order->spkAssignment->qc_video_signal_ok ? 'OK' : '-' }}
+                        </div>
+                    </div>
+                    @if($order->spkAssignment->qc_notes)
+                        <div class="text-[11px] text-slate-300 italic pt-1 border-t border-slate-800">
+                            "{{ $order->spkAssignment->qc_notes }}"
+                        </div>
+                    @endif
+                    @if($order->spkAssignment->qc_photo_path)
+                        <div class="pt-1">
+                            <a href="{{ asset('storage/' . $order->spkAssignment->qc_photo_path) }}" target="_blank" class="block rounded-lg overflow-hidden border border-slate-700 bg-slate-950">
+                                <img src="{{ asset('storage/' . $order->spkAssignment->qc_photo_path) }}" alt="Bukti Panggung LED" class="w-full h-40 object-cover">
+                            </a>
+                        </div>
+                    @endif
+                </div>
+            @endif
+
+            <!-- Collapsible Form for Crew to Submit / Update -->
+            <details class="group" {{ $order->spkAssignment->qc_status === 'pending' ? 'open' : '' }}>
+                <summary class="cursor-pointer text-xs font-bold text-indigo-400 hover:text-indigo-300 flex items-center justify-between py-1">
+                    <span>📝 {{ $order->spkAssignment->qc_verified_at ? 'Perbarui Laporan QC / BAST' : 'Isi Laporan Uji Kelayakan & BAST' }}</span>
+                    <span class="group-open:rotate-180 transition-transform">▼</span>
+                </summary>
+
+                <form action="{{ route('spk.submit-qc', $order->public_token) }}" method="POST" enctype="multipart/form-data" class="pt-3 space-y-3">
+                    @csrf
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-300 mb-1">Nama Teknisi / PIC Pemeriksa *</label>
+                        <input type="text" name="qc_technician_name" value="{{ old('qc_technician_name', $order->spkAssignment->qc_technician_name ?? $order->spkAssignment->crew_pic_event_name) }}" required placeholder="Nama lengkap teknisi..." class="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-xs text-white">
+                    </div>
+
+                    <div class="space-y-2 text-xs">
+                        <label class="flex items-center gap-2 p-2 rounded-lg bg-slate-900/60 border border-slate-800 cursor-pointer">
+                            <input type="checkbox" name="qc_grounding_safe" value="1" {{ old('qc_grounding_safe', $order->spkAssignment->qc_grounding_safe) ? 'checked' : '' }} class="rounded text-indigo-600 focus:ring-0">
+                            <span class="text-slate-200">⚡ Grounding Aman (< 2V AC, terhubung panggung)</span>
+                        </label>
+
+                        <label class="flex items-center gap-2 p-2 rounded-lg bg-slate-900/60 border border-slate-800 cursor-pointer">
+                            <input type="checkbox" name="qc_test_rgb" value="1" {{ old('qc_test_rgb', $order->spkAssignment->qc_test_rgb) ? 'checked' : '' }} class="rounded text-indigo-600 focus:ring-0">
+                            <span class="text-slate-200">🎨 Pola Warna RGB (Red, Green, Blue, White bersih)</span>
+                        </label>
+
+                        <label class="flex items-center gap-2 p-2 rounded-lg bg-slate-900/60 border border-slate-800 cursor-pointer">
+                            <input type="checkbox" name="qc_video_signal_ok" value="1" {{ old('qc_video_signal_ok', $order->spkAssignment->qc_video_signal_ok) ? 'checked' : '' }} class="rounded text-indigo-600 focus:ring-0">
+                            <span class="text-slate-200">📺 Sinyal Video & Refresh 3840Hz Stabil (No flicker)</span>
+                        </label>
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-300 mb-1">Status Kelayakan Layar *</label>
+                        <div class="grid grid-cols-2 gap-2 text-xs">
+                            <label class="flex items-center gap-2 p-2 rounded-lg bg-slate-900/60 border border-slate-800 cursor-pointer">
+                                <input type="radio" name="qc_status" value="passed" {{ old('qc_status', $order->spkAssignment->qc_status) !== 'issues_found' ? 'checked' : '' }} class="text-emerald-500">
+                                <span class="text-emerald-400 font-bold">✅ Siap Show</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-2 rounded-lg bg-slate-900/60 border border-slate-800 cursor-pointer">
+                                <input type="radio" name="qc_status" value="issues_found" {{ old('qc_status', $order->spkAssignment->qc_status) === 'issues_found' ? 'checked' : '' }} class="text-amber-500">
+                                <span class="text-amber-400 font-bold">⚠️ Ada Kendala</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-300 mb-1">Foto Bukti Layar Panggung (BAST Visual)</label>
+                        <input type="file" name="qc_photo" accept="image/*" capture="environment" class="w-full text-xs text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-700 file:text-slate-200">
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-300 mb-1">Catatan Teknis Lapangan (Opsional)</label>
+                        <textarea name="qc_notes" rows="2" placeholder="Contoh: Modul cadangan terpasang 1 pcs di layar kiri..." class="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-xs text-white placeholder-slate-500">{{ old('qc_notes', $order->spkAssignment->qc_notes) }}</textarea>
+                    </div>
+
+                    <button type="submit" class="w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/30 transition-all">
+                        <span>Kirim Laporan QC & BAST ke Kantor</span>
+                    </button>
+                </form>
+            </details>
         </div>
     @endif
 
