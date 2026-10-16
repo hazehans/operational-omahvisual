@@ -221,6 +221,26 @@
       - Peningkatan kolom tabel [Master Barang](file:///d:/Job/ID_CV%20Han%20Media%20Tekindo/operational-omahvisual/resources/views/products/index.blade.php) yang kini secara tegas menampilkan **"X unit siap sewa"** dan badge **"[Y dalam servis]"** secara real-time.
     - [x] **Pengujian Otomatis Komprehensif**: `tests/Feature/ServiceTicketAndWorkshopTest.php` (7 tests baru lulus 100%, total suite **50 tests, 319 assertions**).
 
+### 21. Master Data Lengkap (Pelanggan, Kru, Armada), Pemotong Gambar Interaktif & Peningkatan Operasional Lapangan — ✅ Selesai
+- [x] **Penyempurnaan Formulir Pesanan Event & Formasi Layar 3D (`/orders/create`):**
+  - Bidang data acara disesuaikan dengan kebutuhan riil lapangan: *Provinsi Acara*, *Kabupaten/Kota Acara*, *Status Wilayah* (Dalam Kota / Luar Kota untuk matriks biaya operasional), *Jam Menyala* (time), *Waktu Gladi* (datetime), *Kelistrikan* (Genset / Disediakan Client / Lainnya) dengan input keterangan opsional, serta standarisasi tipe data time pada Jam Loading dan Jam Acara.
+  - Modul Stage Designer 3D kini fleksibel untuk kebutuhan outdoor maupun indoor (dimensi panggung lapangan tidak lagi wajib/bisa diatur sesuai kondisi venue).
+  - Penambahan visual kompas arah mata angin (Utara & Selatan) pada denah 2D Tampak Atas (kanvas interaktif & lembar cetak ke-4 SPK).
+  - Perbaikan panel detail kanvas panggung sehingga tombol hapus panel LED dan kontrol dimensi mudah dijangkau dan tidak tertutup elemen visual lain.
+- [x] **Modul Master Data Khusus (Customer, Crew, Kendaraan) di Luar Database Manager RAW:**
+  - **Master Pelanggan (`/customers`):** Pengelolaan 15 atribut lengkap (Kode CUST unik, Nama, Nama Lengkap, Tanggal Lahir, Email, Telepon, Kategori, Organisasi/Vendor, Alamat, Dropdown Provinsi & Kab/Kota Indonesia, Kontak PIC Cadangan, Hubungan, Tanggal Registrasi).
+  - **Master Kru Lapangan (`/crews`):** Dukungan multi-jabatan (PIC, Crew, Supir, Operator), status kepegawaian (Karyawan Tetap, Freelance, Magang), Nomor Darurat, serta upload Foto Profil, Foto KTP, dan Foto Dokumen Rate Card.
+  - **Master Armada Kendaraan (`/vehicles`):** Status ketersediaan dinamis (Tersedia, Dipakai, Maintenance, Standby), kondisi khusus fisik armada, checklist kelengkapan surat, dan upload Foto Mobil, STNK, E-Toll, serta Barcode Subsidi MyPertamina.
+- [x] **Integrasi Pemotong Foto (Cropper.js) & Penghapusan Gambar Dinamis:**
+  - Modal pemotong gambar global dengan 5 pilihan rasio (1:1, 3:2, 4:3, 16:9, dan Bebas).
+  - Tombol 1-klik `🗑️ Hapus` gambar pada form Kru, Armada, dan SPK yang otomatis beralih ke ilustrasi default sistem disertai tombol `↩️ Batal (Undo)`.
+  - Penghapusan berkas fisik otomatis dari storage lokal publik saat data diupdate atau dihapus.
+  - Perbaikan bug pop-up modal crop yang sempat muncul otomatis saat navigasi menu.
+- [x] **Keandalan Aset Vendor Lokal & Anti-Kolisi Kode:**
+  - Pustaka Alpine.js dan Cropper.js di-bundle ke direktori lokal `public/vendor/` agar aplikasi 100% offline-ready tanpa bergantung pada koneksi internet CDN.
+  - Generator kode otomatis pada Pelanggan, Kru, dan Armada dilengkapi loop verifikasi anti-duplikasi.
+  - Seluruh pengujian otomatis mencapai **76 Tests, 465 Assertions, 100% Lulus (Green)**.
+
 ---
 
 ## 🔮 Roadmap Jangka Panjang (Operasional Lanjutan Sesuai PRD Global)

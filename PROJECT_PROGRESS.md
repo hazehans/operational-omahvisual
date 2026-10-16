@@ -225,6 +225,26 @@ Berdasarkan analisis 2 file Excel (`DATA TOOLS BOX .2` dan `DEV_STOCK OPNAME by 
 - [x] **Pembaruan Pengujian Fitur:**
   - Penambahan 4 pengujian fitur baru di `EventOrderAndSpkManagementTest.php` untuk penugasan kru, submit QC token publik, verifikasi QC desktop, dan update catatan kondisi checklist.
 
+### Tahap 8: Master Data Management Terdedikasi, Crop & Deletable Images, Integrasi Kompas & Perbaikan Operasional (SELESAI ✅)
+- [x] **Pembaruan Input Pesanan Event & Formasi Layar 3D (`/orders/create`):**
+  - Bidang input acara diperkaya: *Provinsi Acara*, *Kabupaten/Kota Acara*, *Status Wilayah* (Dalam Kota vs Luar Kota sebagai matriks tarif & operasional), *Jam Menyala* (time), *Waktu Gladi* (datetime), *Kelistrikan* (Genset / Disediakan Client / Lainnya) bersyarat keterangan, serta tipe data *time* presisi pada Jam Loading dan Jam Acara.
+  - Dukungan fleksibilitas panggung non-lapangan (outdoor maupun indoor/tanpa panggung fisik) pada modul Stage Designer 3D.
+  - Penambahan kompas arah mata angin (Utara & Selatan) pada visual denah 2D Tampak Atas kanvas dan cetak lembar ke-4 SPK.
+  - Perbaikan panel detail modular LED di mana tombol hapus panel dan kontrol dimensi tidak lagi terpotong/tenggelam.
+- [x] **Master Data Terdedikasi di Luar Database Manager RAW:**
+  - **Master Pelanggan (`/customers`):** Pengelolaan 15 atribut lengkap (ID readable `CUST-XXXX`, Nama, Nama Lengkap, Tanggal Lahir, Email, Telepon, Kategori dinamis, Vendor/Instansi, Alamat, Dropdown Provinsi & Kab/Kota Indonesia, Kontak PIC Cadangan, Hubungan, Tanggal Registrasi).
+  - **Master Kru Lapangan (`/crews`):** Mendukung multi-posisi sekaligus (PIC, Crew, Supir, Operator), klasifikasi status kerja (*Karyawan Tetap*, *Freelance Outsourcing*, *Magang*), Nomor Darurat, serta upload Foto Profil, Foto KTP, dan Foto Rate Card.
+  - **Master Armada Kendaraan (`/vehicles`):** Monitoring status ketersediaan dinamis (*Tersedia, Dipakai, Maintenance, Standby*), kondisi khusus fisik armada, riwayat kelengkapan dokumen, dan upload Foto Mobil, STNK, E-Toll, serta Barcode BBM Subsidi MyPertamina.
+- [x] **Integrasi Pemotong Gambar Interaktif (Cropper.js) & Penghapusan Gambar Dinamis:**
+  - Modal crop interaktif global dengan 5 mode rasio (1:1 Avatar/Barcode BBM, 3:2 KTP/STNK/E-Toll, 4:3 Hardware, 16:9 Mobil/Panggung, Freeform Rate Card).
+  - Fitur 1-klik `🗑️ Hapus` gambar dengan tampilan seketika beralih ke ilustrasi placeholder grafis default dan tombol `↩️ Batal (Undo)` sebelum form disimpan.
+  - Backend controller otomatis menghapus berkas fisik lama dari disk storage dan mengatur kolom menjadi `NULL`.
+  - Penanganan bug modal crop yang sempat muncul otomatis, diselesaikan tuntas dengan `style="display: none;"`, penutupan dengan Escape key, dan klik backdrop luar.
+- [x] **Optimasi Aset Vendor Lokal & Uji Menyeluruh:**
+  - Pustaka `Alpine.js` dan `Cropper.js` kini diunduh dan tersimpan lokal di `public/vendor/` untuk operasi yang 100% offline-ready dan stabil.
+  - Pencegahan duplikasi nomor kode otomatis (*auto-code generation*) pada model Pelanggan, Kru, dan Armada menggunakan mekanisme loop anti-kolisi.
+  - Total pengujian otomatis saat ini mencapai **76 Tests, 465 Assertions, 100% Lulus (Green)** tanpa kegagalan.
+
 ---
 
 ## 🔮 8. Roadmap Jangka Panjang (Operasional Lanjutan Sesuai PRD Global)

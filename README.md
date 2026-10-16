@@ -73,7 +73,7 @@ Aplikasi ini mengintegrasikan data fisik riil dari spreadsheet inventori lapanga
 * **Frontend:** Laravel Blade, Tailwind CSS v4, Vite
 * **Autentikasi & RBAC:** Session Guard + `spatie/laravel-permission` v8.3
 * **Code Formatter:** Laravel Pint
-* **Automated Testing:** PHPUnit (67 feature tests, 398 assertions, 100% Green)
+* **Automated Testing:** PHPUnit (76 feature tests, 465 assertions, 100% Green)
 
 ---
 
