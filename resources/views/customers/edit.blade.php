@@ -100,8 +100,14 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">No Telp / WhatsApp *</label>
-                    <input type="text" name="phone" value="{{ old('phone', $customer->phone) }}" required
-                        class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-sm text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
+                    <div class="flex rounded-xl overflow-hidden border border-slate-300 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:border-transparent transition-all">
+                        <span class="inline-flex items-center px-3.5 bg-slate-100 dark:bg-slate-900 border-r border-slate-300 dark:border-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300 select-none">
+                            🇮🇩 +62
+                        </span>
+                        <input type="text" name="phone" value="{{ old('phone', $customer->national_phone ?: $customer->phone) }}" required placeholder="812-3456-7890"
+                            class="w-full px-3.5 py-2.5 bg-transparent text-sm text-slate-900 dark:text-white border-0 focus:outline-hidden focus:ring-0">
+                    </div>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">Format WhatsApp Indonesia (+62). Boleh ketik langsung <code>812...</code>, <code>0812...</code>, atau <code>+62812...</code>.</p>
                     @error('phone') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
                 </div>
 

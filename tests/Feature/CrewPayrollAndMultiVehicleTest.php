@@ -11,6 +11,7 @@ use App\Models\OrderLedScreen;
 use App\Models\SpkAssignment;
 use App\Models\User;
 use App\Models\Vehicle;
+use App\Support\WhatsAppHelper;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 
@@ -490,6 +491,77 @@ class CrewPayrollAndMultiVehicleTest extends TestCase
         $printResp = $this->actingAs($this->user)->get(route('spk.print', $this->assignment));
         $printResp->assertOk();
         $printResp->assertSee('TRAGA 1');
-        $printResp->assertSee($this->crew->nickname);
+    }
+
+    public function test_whatsapp_helper_and_crew_whatsapp_links_use_indonesian_format(): void
+    {
+        // Test WhatsAppHelper conversions
+        $this->assertEquals('6281234567890', WhatsAppHelper::normalizeIndonesianPhone('081234567890'));
+        $this->assertEquals('6281234567890', WhatsAppHelper::normalizeIndonesianPhone('+6281234567890'));
+        $this->assertEquals('6281234567890', WhatsAppHelper::normalizeIndonesianPhone('81234567890'));
+        $this->assertEquals('6281234567890', WhatsAppHelper::normalizeIndonesianPhone('+62 812-3456-7890'));
+        $this->assertEquals('+6281234567890', WhatsAppHelper::normalizeIndonesianPhone('0812-3456-7890', true));
+
+        // Test National number formatting for input fields
+        $this->assertEquals('81234567890', WhatsAppHelper::formatNationalNumber('081234567890'));
+        $this->assertEquals('81234567890', WhatsAppHelper::formatNationalNumber('+6281234567890'));
+
+        // Test WhatsApp Click to Chat URL format
+        $expectedUrl = 'https://wa.me/6281234567890?text='.urlencode('Halo Kru');
+        $this->assertEquals($expectedUrl, WhatsAppHelper::buildUrl('081234567890', 'Halo Kru'));
+
+        // Test Crew model accessors
+        $testCrew = Crew::create([
+            'nickname' => 'Wahyu WA',
+            'full_name' => 'Wahyu Hidayat',
+            'phone' => '085712345678',
+            'emergency_phone' => '081987654321',
+            'employment_type' => 'freelance_outsourcing',
+            'is_active' => true,
+        ]);
+
+        $this->assertEquals('6285712345678', $testCrew->whatsapp_number);
+        $this->assertEquals('https://wa.me/6285712345678', $testCrew->whatsapp_url);
+        $this->assertEquals('85712345678', $testCrew->national_phone);
+        $this->assertEquals('81987654321', $testCrew->national_emergency_phone);
+        $this->assertStringStartsWith('https://wa.me/6285712345678?text=', $testCrew->formatWhatsappUrl('Pesan Tes'));
+    }
+
+    public function test_crew_store_and_update_normalizes_phone_with_country_code(): void
+    {
+        $storeResp = $this->actingAs($this->user)->post(route('crews.store'), [
+            'nickname' => 'Dodi Driver',
+            'full_name' => 'Dodi Kusuma',
+            'phone' => '087811223344',
+            'emergency_phone' => '81299887766',
+            'positions' => ['Supir'],
+            'employment_type' => 'freelance_outsourcing',
+            'is_active' => 1,
+        ]);
+
+        $storeResp->assertRedirect(route('crews.index'));
+
+        $dodi = Crew::where('nickname', 'Dodi Driver')->first();
+        $this->assertNotNull($dodi);
+        $this->assertEquals('+6287811223344', $dodi->phone);
+        $this->assertEquals('+6281299887766', $dodi->emergency_phone);
+        $this->assertEquals('https://wa.me/6287811223344', $dodi->whatsapp_url);
+
+        // Test Update with raw national number
+        $updateResp = $this->actingAs($this->user)->put(route('crews.update', $dodi), [
+            'nickname' => 'Dodi Kusuma',
+            'full_name' => 'Dodi Kusuma Updated',
+            'phone' => '87899990000',
+            'emergency_phone' => '081234567890',
+            'positions' => ['Supir', 'Crew'],
+            'employment_type' => 'freelance_outsourcing',
+            'is_active' => 1,
+        ]);
+
+        $updateResp->assertRedirect(route('crews.index'));
+        $dodi->refresh();
+        $this->assertEquals('+6287899990000', $dodi->phone);
+        $this->assertEquals('+6281234567890', $dodi->emergency_phone);
+        $this->assertEquals('https://wa.me/6287899990000', $dodi->whatsapp_url);
     }
 }

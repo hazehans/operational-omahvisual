@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Crew;
 use App\Models\User;
+use App\Support\WhatsAppHelper;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -116,14 +117,19 @@ class CrewController extends Controller
             $positions = ['Crew'];
         }
 
+        $normalizedPhone = WhatsAppHelper::normalizeIndonesianPhone($validated['phone'], true) ?? $validated['phone'];
+        $normalizedEmergencyPhone = ! empty($validated['emergency_phone'])
+            ? (WhatsAppHelper::normalizeIndonesianPhone($validated['emergency_phone'], true) ?? $validated['emergency_phone'])
+            : null;
+
         Crew::create([
             'crew_code' => $code,
             'nickname' => $validated['nickname'],
             'full_name' => $validated['full_name'],
             'birth_date' => $validated['birth_date'] ?? null,
             'email' => $validated['email'] ?? null,
-            'phone' => $validated['phone'],
-            'emergency_phone' => $validated['emergency_phone'] ?? null,
+            'phone' => $normalizedPhone,
+            'emergency_phone' => $normalizedEmergencyPhone,
             'position' => implode(', ', $positions),
             'positions' => $positions,
             'employment_type' => $validated['employment_type'],
@@ -194,13 +200,18 @@ class CrewController extends Controller
             'rate_card_photo' => ['nullable', 'image', 'max:5120'],
         ]);
 
+        $normalizedPhone = WhatsAppHelper::normalizeIndonesianPhone($validated['phone'], true) ?? $validated['phone'];
+        $normalizedEmergencyPhone = ! empty($validated['emergency_phone'])
+            ? (WhatsAppHelper::normalizeIndonesianPhone($validated['emergency_phone'], true) ?? $validated['emergency_phone'])
+            : null;
+
         $updateData = [
             'nickname' => $validated['nickname'],
             'full_name' => $validated['full_name'],
             'birth_date' => $validated['birth_date'] ?? null,
             'email' => $validated['email'] ?? null,
-            'phone' => $validated['phone'],
-            'emergency_phone' => $validated['emergency_phone'] ?? null,
+            'phone' => $normalizedPhone,
+            'emergency_phone' => $normalizedEmergencyPhone,
             'employment_type' => $validated['employment_type'],
             'hris_employee_id' => $validated['hris_employee_id'] ?? null,
             'join_date' => $validated['join_date'] ?? null,

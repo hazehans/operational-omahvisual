@@ -69,7 +69,7 @@
                 . "Rekening: {$assignment->crew->bank_name} - {$assignment->crew->bank_account_number} (a.n {$assignment->crew->bank_account_holder})\n"
                 . "Status: " . ($assignment->payment_status === 'paid' ? 'LUNAS' : 'MENUNGGU TRANSFER') . "\n\n"
                 . "Terima kasih atas dedikasinya! — Omah Visual LED";
-            $waUrl = "https://wa.me/" . preg_replace('/[^0-9]/', '', $assignment->crew->phone) . "?text=" . urlencode($waMessage);
+            $waUrl = $assignment->crew->formatWhatsappUrl($waMessage);
         @endphp
 
         <div class="flex items-center gap-2">

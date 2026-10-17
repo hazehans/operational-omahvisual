@@ -2,11 +2,22 @@
 
 namespace App\Models;
 
+use App\Support\WhatsAppHelper;
 use Database\Factories\CrewFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property string|null $phone
+ * @property string|null $emergency_phone
+ * @property-read string $whatsapp_number
+ * @property-read string $whatsapp_url
+ * @property-read string $national_phone
+ * @property-read string $national_emergency_phone
+ * @property-read string $formatted_phone
+ */
 class Crew extends Model
 {
     /** @use HasFactory<CrewFactory> */
@@ -69,8 +80,38 @@ class Crew extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function eventCrewAssignments(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function eventCrewAssignments(): HasMany
     {
         return $this->hasMany(EventCrewAssignment::class);
+    }
+
+    public function getWhatsappNumberAttribute(): string
+    {
+        return WhatsAppHelper::normalizeIndonesianPhone($this->phone, false) ?? '';
+    }
+
+    public function getWhatsappUrlAttribute(): string
+    {
+        return WhatsAppHelper::buildUrl($this->phone);
+    }
+
+    public function formatWhatsappUrl(string $message = ''): string
+    {
+        return WhatsAppHelper::buildUrl($this->phone, $message);
+    }
+
+    public function getNationalPhoneAttribute(): string
+    {
+        return WhatsAppHelper::formatNationalNumber($this->phone);
+    }
+
+    public function getNationalEmergencyPhoneAttribute(): string
+    {
+        return WhatsAppHelper::formatNationalNumber($this->emergency_phone);
+    }
+
+    public function getFormattedPhoneAttribute(): string
+    {
+        return WhatsAppHelper::normalizeIndonesianPhone($this->phone, true) ?? ($this->phone ?? '');
     }
 }

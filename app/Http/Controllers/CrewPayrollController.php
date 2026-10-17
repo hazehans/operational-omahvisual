@@ -104,10 +104,10 @@ class CrewPayrollController extends Controller
             action: 'pay_crew_fee',
             entityType: 'EventCrewAssignment',
             entityId: $assignment->id,
-            description: "Honor kru {$assignment->crew->nickname} sebesar Rp " . number_format($assignment->total_fee, 0, ',', '.') . " ditandai LUNAS oleh " . Auth::user()->name . "."
+            description: "Honor kru {$assignment->crew->nickname} sebesar Rp ".number_format((float) $assignment->total_fee, 0, ',', '.').' ditandai LUNAS oleh '.Auth::user()->name.'.'
         );
 
-        return back()->with('success', "Honor untuk {$assignment->crew->nickname} (Rp " . number_format($assignment->total_fee, 0, ',', '.') . ") berhasil ditandai LUNAS.");
+        return back()->with('success', "Honor untuk {$assignment->crew->nickname} (Rp ".number_format((float) $assignment->total_fee, 0, ',', '.').') berhasil ditandai LUNAS.');
     }
 
     /**

@@ -87,7 +87,7 @@
                                 @endif
                             </td>
                             <td class="px-4 py-3">
-                                <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $c->phone) }}" target="_blank" class="text-emerald-600 dark:text-emerald-400 hover:underline font-semibold flex items-center gap-1">
+                                <a href="{{ $c->whatsapp_url }}" target="_blank" class="text-emerald-600 dark:text-emerald-400 hover:underline font-semibold flex items-center gap-1">
                                     <span>💬</span>
                                     <span>{{ $c->phone }}</span>
                                 </a>

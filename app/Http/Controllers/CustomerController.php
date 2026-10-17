@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Customer;
+use App\Support\WhatsAppHelper;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -90,6 +91,11 @@ class CustomerController extends Controller
             'notes' => ['nullable', 'string'],
         ]);
 
+        $validated['phone'] = WhatsAppHelper::normalizeIndonesianPhone($validated['phone'], true) ?? $validated['phone'];
+        if (! empty($validated['pic_secondary_phone'])) {
+            $validated['pic_secondary_phone'] = WhatsAppHelper::normalizeIndonesianPhone($validated['pic_secondary_phone'], true) ?? $validated['pic_secondary_phone'];
+        }
+
         $nextNum = Customer::count() + 1;
         do {
             $code = 'CUST-'.str_pad((string) $nextNum, 4, '0', STR_PAD_LEFT);
@@ -153,6 +159,11 @@ class CustomerController extends Controller
             'registration_date' => ['nullable', 'date'],
             'notes' => ['nullable', 'string'],
         ]);
+
+        $validated['phone'] = WhatsAppHelper::normalizeIndonesianPhone($validated['phone'], true) ?? $validated['phone'];
+        if (! empty($validated['pic_secondary_phone'])) {
+            $validated['pic_secondary_phone'] = WhatsAppHelper::normalizeIndonesianPhone($validated['pic_secondary_phone'], true) ?? $validated['pic_secondary_phone'];
+        }
 
         $customer->update($validated);
 

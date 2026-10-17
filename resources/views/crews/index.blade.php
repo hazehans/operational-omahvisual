@@ -127,9 +127,9 @@
                                 @endif
                             </td>
                             <td class="px-4 py-3">
-                                <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $crew->phone) }}" target="_blank" class="text-emerald-600 dark:text-emerald-400 hover:underline font-semibold flex items-center gap-1">
+                                <a href="{{ $crew->whatsapp_url }}" target="_blank" class="text-emerald-600 dark:text-emerald-400 hover:underline font-semibold flex items-center gap-1">
                                     <span>💬</span>
-                                    <span>{{ $crew->phone }}</span>
+                                    <span>{{ $crew->formatted_phone ?: $crew->phone }}</span>
                                 </a>
                                 @if($crew->emergency_phone)
                                     <div class="text-[10px] text-slate-400">Darurat: {{ $crew->emergency_phone }}</div>

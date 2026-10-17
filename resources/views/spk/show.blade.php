@@ -20,7 +20,14 @@
     editCrew: { id: null, crew_id: null, nickname: '', role_label: '', fee_loading_in: 0, fee_loading_out: 0, fee_meal: 0, fee_standby: 0, fee_transport: 0, fee_bonus: 0, status: 'offered', payment_status: 'unpaid', notes: '' },
     editVehicle: { id: null, vehicle_name: '', plate_number: '', driver_name: '', has_etoll: false, has_kunci_ban: false, has_stnk: false, has_kir: false, has_barcode_bbm: false, notes: '' },
     newCrew: { crew_id: '', role_label: 'Crew Lapangan', fee_loading_in: 100000, fee_loading_out: 100000, fee_meal: 25000, fee_standby: 50000, fee_transport: 0, fee_bonus: 0, status: 'offered', notes: '' },
-    crewProfiles: {{ Js::from($crews->keyBy('id')) }},
+    crewProfiles: {{ Js::from($crews->mapWithKeys(fn($c) => [$c->id => [
+        'id' => $c->id,
+        'nickname' => $c->nickname,
+        'default_fee_loading_in' => (float) ($c->default_fee_loading_in ?? 100000),
+        'default_fee_loading_out' => (float) ($c->default_fee_loading_out ?? 100000),
+        'default_fee_meal' => (float) ($c->default_fee_meal ?? 25000),
+        'default_fee_standby' => (float) ($c->default_fee_standby ?? 50000),
+    ]])) }},
     onSelectCrew(id) {
         const c = this.crewProfiles[id];
         if (c) {
@@ -30,6 +37,7 @@
             this.newCrew.fee_standby = c.default_fee_standby ?? 50000;
         }
     },
+
     openEditModal(item) {
         this.editItem = { ...item };
         this.showEditItemModal = true;
@@ -328,7 +336,7 @@
                                             . ($ca->fee_bonus > 0 ? "• Bonus/Lembur: Rp " . number_format($ca->fee_bonus, 0, ',', '.') . "\n" : "")
                                             . "💰 TOTAL HONOR: Rp " . number_format($ca->total_fee, 0, ',', '.') . "\n\n"
                                             . "Mohon konfirmasi kesediaan (ACC/Bisa). Terima kasih!";
-                                        $caWaUrl = "https://wa.me/" . preg_replace('/[^0-9]/', '', $ca->crew->phone) . "?text=" . urlencode($waText);
+                                        $caWaUrl = $ca->crew->formatWhatsappUrl($waText);
                                     @endphp
                                     <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
                                         <!-- Kru & Rekening -->
@@ -970,593 +978,580 @@
     </div>
 
     <!-- MODAL 1: EDIT TIM & ARMADA LOGISTIK -->
-    <div x-show="showAssignModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div x-show="showAssignModal" @click="showAssignModal = false" class="fixed inset-0 bg-black/60 transition-opacity" aria-hidden="true"></div>
-            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+    <div x-show="showAssignModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs overflow-y-auto" @keydown.escape.window="showAssignModal = false">
+        <div class="fixed inset-0" @click="showAssignModal = false"></div>
 
-            <div class="relative z-10 inline-block align-bottom bg-white dark:bg-slate-900 rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full border border-slate-300 dark:border-slate-700">
-                <form action="{{ route('spk.update-assignment', $assignment) }}" method="POST">
-                    @csrf
-                    @method('PUT')
-                    <div class="p-6 space-y-5">
-                        <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
-                            <div>
-                                <h3 class="text-lg font-bold text-slate-900 dark:text-white">Edit Tim Lapangan & Armada</h3>
-                                <p class="text-xs text-slate-500">Sesuaikan roster 7 crew lapangan dan kelengkapan kendaraan sebelum keberangkatan.</p>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <a href="{{ route('crews.create') }}" target="_blank" class="text-xs px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 font-bold hover:bg-indigo-100 dark:hover:bg-indigo-900/60 transition-colors flex items-center gap-1">
-                                    + Tambah Kru Baru
-                                </a>
-                                <button type="button" @click="showAssignModal = false" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xl font-bold">&times;</button>
-                            </div>
-                        </div>
-
-                        <!-- PIC Event -->
+        <div class="relative z-10 w-full max-w-2xl bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-300 dark:border-slate-700 overflow-hidden my-auto" @click.stop>
+            <form action="{{ route('spk.update-assignment', $assignment) }}" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="p-6 space-y-5">
+                    <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">Nama PIC Event Lapangan</label>
-                            <input type="text" list="staff_list" name="crew_pic_event_name" value="{{ old('crew_pic_event_name', $assignment->crew_pic_event_name) }}" placeholder="Ketik nama atau pilih staf..." class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white">
+                            <h3 class="text-lg font-bold text-slate-900 dark:text-white">Edit Tim Lapangan & Armada</h3>
+                            <p class="text-xs text-slate-500">Sesuaikan roster 7 crew lapangan dan kelengkapan kendaraan sebelum keberangkatan.</p>
                         </div>
-
-                        <!-- Crew 1 to 7 Grid -->
-                        <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">Anggota Crew Lapangan (1 s/d 7)</label>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                @for($i = 1; $i <= 7; $i++)
-                                    @php $field = "crew_{$i}_name"; @endphp
-                                    <div class="flex items-center gap-2">
-                                        <span class="w-16 text-xs text-slate-500 font-semibold">Crew {{ $i }}:</span>
-                                        <input type="text" list="staff_list" name="{{ $field }}" value="{{ old($field, $assignment->$field) }}" placeholder="Nama crew..." class="flex-1 px-3 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white">
-                                    </div>
-                                @endfor
-                            </div>
+                        <div class="flex items-center gap-2">
+                            <a href="{{ route('crews.create') }}" target="_blank" class="text-xs px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 font-bold hover:bg-indigo-100 dark:hover:bg-indigo-900/60 transition-colors flex items-center gap-1">
+                                + Tambah Kru Baru
+                            </a>
+                            <button type="button" @click="showAssignModal = false" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xl font-bold">&times;</button>
                         </div>
+                    </div>
 
-                        <!-- Vehicle & Checkboxes -->
-                        <div class="pt-3 border-t border-slate-200 dark:border-slate-800 space-y-3">
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">Armada & Kesiapan Dokumen</label>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                <div>
-                                    <select name="vehicle_name" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white">
-                                        @foreach($vehicles ?? [] as $veh)
-                                            <option value="{{ $veh->name }}" {{ old('vehicle_name', $assignment->vehicle_name) === $veh->name ? 'selected' : '' }}>
-                                                {{ $veh->name }} {{ $veh->plate_number ? '('.$veh->plate_number.')' : '' }}
-                                            </option>
-                                        @endforeach
-                                        <option value="MOBIL PRIBADI / LAINNYA" {{ old('vehicle_name', $assignment->vehicle_name) === 'MOBIL PRIBADI / LAINNYA' ? 'selected' : '' }}>MOBIL PRIBADI / LAINNYA</option>
-                                    </select>
+                    <!-- PIC Event -->
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">Nama PIC Event Lapangan</label>
+                        <input type="text" list="staff_list" name="crew_pic_event_name" value="{{ old('crew_pic_event_name', $assignment->crew_pic_event_name) }}" placeholder="Ketik nama atau pilih staf..." class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white">
+                    </div>
+
+                    <!-- Crew 1 to 7 Grid -->
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">Anggota Crew Lapangan (1 s/d 7)</label>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            @for($i = 1; $i <= 7; $i++)
+                                @php $field = "crew_{$i}_name"; @endphp
+                                <div class="flex items-center gap-2">
+                                    <span class="w-16 text-xs text-slate-500 font-semibold">Crew {{ $i }}:</span>
+                                    <input type="text" list="staff_list" name="{{ $field }}" value="{{ old($field, $assignment->$field) }}" placeholder="Nama crew..." class="flex-1 px-3 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white">
                                 </div>
-                                <div class="grid grid-cols-2 gap-2 text-xs">
-                                    <label class="flex items-center gap-2 cursor-pointer">
-                                        <input type="checkbox" name="has_etoll" value="1" {{ old('has_etoll', $assignment->has_etoll) ? 'checked' : '' }} class="rounded text-indigo-600">
-                                        <span>E-Toll Saldo Cukup</span>
-                                    </label>
-                                    <label class="flex items-center gap-2 cursor-pointer">
-                                        <input type="checkbox" name="has_kunci_ban" value="1" {{ old('has_kunci_ban', $assignment->has_kunci_ban) ? 'checked' : '' }} class="rounded text-indigo-600">
-                                        <span>Kunci Ban / Dongkrak</span>
-                                    </label>
-                                    <label class="flex items-center gap-2 cursor-pointer">
-                                        <input type="checkbox" name="has_stnk" value="1" {{ old('has_stnk', $assignment->has_stnk) ? 'checked' : '' }} class="rounded text-indigo-600">
-                                        <span>STNK Asli / Aktif</span>
-                                    </label>
-                                    <label class="flex items-center gap-2 cursor-pointer">
-                                        <input type="checkbox" name="has_kir" value="1" {{ old('has_kir', $assignment->has_kir) ? 'checked' : '' }} class="rounded text-indigo-600">
-                                        <span>Kartu / Uji KIR</span>
-                                    </label>
-                                    <label class="flex items-center gap-2 cursor-pointer col-span-2">
-                                        <input type="checkbox" name="has_barcode_bbm" value="1" {{ old('has_barcode_bbm', $assignment->has_barcode_bbm) ? 'checked' : '' }} class="rounded text-indigo-600">
-                                        <span>Barcode Subsidi BBM (MyPertamina)</span>
-                                    </label>
-                                </div>
-                            </div>
+                            @endfor
                         </div>
                     </div>
 
-                    <div class="px-6 py-4 bg-slate-50 dark:bg-slate-950/60 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-3">
-                        <button type="button" @click="showAssignModal = false" class="px-4 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold">
-                            Batal
-                        </button>
-                        <button type="submit" class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md">
-                            Simpan Perubahan Tim & Armada
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL 1B: TAMBAH ARMADA KENDARAAN (MULTI-VEHICLE) -->
-    <div x-show="showAddVehicleModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div x-show="showAddVehicleModal" @click="showAddVehicleModal = false" class="fixed inset-0 bg-black/60 transition-opacity" aria-hidden="true"></div>
-            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-
-            <div class="relative z-10 inline-block align-bottom bg-white dark:bg-slate-900 rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full border border-slate-300 dark:border-slate-700">
-                <form action="{{ route('spk.vehicles.store', $assignment) }}" method="POST">
-                    @csrf
-                    <div class="p-6 space-y-4">
-                        <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
-                            <div>
-                                <h3 class="text-base font-bold text-slate-900 dark:text-white">Tambah Armada Kendaraan</h3>
-                                <p class="text-xs text-slate-500">Tambahkan unit pickup / truk pengangkut logistik event.</p>
-                            </div>
-                            <button type="button" @click="showAddVehicleModal = false" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Pilih Master Armada / Ketik Baru *</label>
-                            <input type="text" list="vehicles_master_list" name="vehicle_name" required placeholder="Misal: TRAGA 1 / GRAN MAX 2 / L300"
-                                class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white font-bold">
-                            <datalist id="vehicles_master_list">
-                                @foreach($vehicles ?? [] as $veh)
-                                    <option value="{{ $veh->name }}">{{ $veh->plate_number ? '('.$veh->plate_number.')' : '' }}</option>
-                                @endforeach
-                            </datalist>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Nomor Polisi (Plat)</label>
-                                <input type="text" name="plate_number" placeholder="N 1234 AB"
-                                    class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs font-mono uppercase text-slate-900 dark:text-white">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Nama Supir (Driver)</label>
-                                <input type="text" list="staff_list" name="driver_name" placeholder="Nama supir..."
-                                    class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white">
-                            </div>
-                        </div>
-
-                        <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/80 space-y-2">
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">Checklist Perlengkapan Fisik Mobil</label>
-                            <div class="grid grid-cols-2 gap-2 text-xs">
-                                <label class="flex items-center gap-2 cursor-pointer">
-                                    <input type="checkbox" name="has_etoll" value="1" checked class="rounded text-indigo-600">
-                                    <span>E-Toll Saldo Cukup</span>
-                                </label>
-                                <label class="flex items-center gap-2 cursor-pointer">
-                                    <input type="checkbox" name="has_kunci_ban" value="1" checked class="rounded text-indigo-600">
-                                    <span>Kunci Ban / Dongkrak</span>
-                                </label>
-                                <label class="flex items-center gap-2 cursor-pointer">
-                                    <input type="checkbox" name="has_stnk" value="1" checked class="rounded text-indigo-600">
-                                    <span>STNK Asli / Aktif</span>
-                                </label>
-                                <label class="flex items-center gap-2 cursor-pointer">
-                                    <input type="checkbox" name="has_kir" value="1" checked class="rounded text-indigo-600">
-                                    <span>Buku / Uji KIR</span>
-                                </label>
-                                <label class="flex items-center gap-2 cursor-pointer col-span-2">
-                                    <input type="checkbox" name="has_barcode_bbm" value="1" checked class="rounded text-indigo-600">
-                                    <span>Barcode MyPertamina (Subsidi Solar)</span>
-                                </label>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Catatan Armada</label>
-                            <input type="text" name="notes" placeholder="Misal: Muat khusus kabinet P3.9 dan panel listrik utama"
-                                class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white">
-                        </div>
-                    </div>
-
-                    <div class="px-6 py-3.5 bg-slate-50 dark:bg-slate-950/60 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-3">
-                        <button type="button" @click="showAddVehicleModal = false" class="px-4 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold">
-                            Batal
-                        </button>
-                        <button type="submit" class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md">
-                            Simpan Armada
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL 1C: EDIT ARMADA KENDARAAN -->
-    <div x-show="showEditVehicleModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div x-show="showEditVehicleModal" @click="showEditVehicleModal = false" class="fixed inset-0 bg-black/60 transition-opacity" aria-hidden="true"></div>
-            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-
-            <div class="relative z-10 inline-block align-bottom bg-white dark:bg-slate-900 rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full border border-slate-300 dark:border-slate-700">
-                <form :action="'{{ url('/spk/vehicles') }}/' + editVehicle.id" method="POST">
-                    @csrf
-                    @method('PUT')
-                    <div class="p-6 space-y-4">
-                        <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
-                            <div>
-                                <h3 class="text-base font-bold text-slate-900 dark:text-white">Edit Kesiapan Armada</h3>
-                                <p class="text-xs text-slate-500">Perbarui driver dan kesiapan dokumen kendaraan.</p>
-                            </div>
-                            <button type="button" @click="showEditVehicleModal = false" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Nama Armada *</label>
-                            <input type="text" name="vehicle_name" x-model="editVehicle.vehicle_name" required
-                                class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white font-bold">
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Nomor Polisi (Plat)</label>
-                                <input type="text" name="plate_number" x-model="editVehicle.plate_number"
-                                    class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs font-mono uppercase text-slate-900 dark:text-white">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Nama Supir (Driver)</label>
-                                <input type="text" list="staff_list" name="driver_name" x-model="editVehicle.driver_name"
-                                    class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white">
-                            </div>
-                        </div>
-
-                        <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/80 space-y-2">
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">Checklist Perlengkapan Fisik Mobil</label>
-                            <div class="grid grid-cols-2 gap-2 text-xs">
-                                <label class="flex items-center gap-2 cursor-pointer">
-                                    <input type="checkbox" name="has_etoll" value="1" x-model="editVehicle.has_etoll" class="rounded text-indigo-600">
-                                    <span>E-Toll Saldo Cukup</span>
-                                </label>
-                                <label class="flex items-center gap-2 cursor-pointer">
-                                    <input type="checkbox" name="has_kunci_ban" value="1" x-model="editVehicle.has_kunci_ban" class="rounded text-indigo-600">
-                                    <span>Kunci Ban / Dongkrak</span>
-                                </label>
-                                <label class="flex items-center gap-2 cursor-pointer">
-                                    <input type="checkbox" name="has_stnk" value="1" x-model="editVehicle.has_stnk" class="rounded text-indigo-600">
-                                    <span>STNK Asli / Aktif</span>
-                                </label>
-                                <label class="flex items-center gap-2 cursor-pointer">
-                                    <input type="checkbox" name="has_kir" value="1" x-model="editVehicle.has_kir" class="rounded text-indigo-600">
-                                    <span>Buku / Uji KIR</span>
-                                </label>
-                                <label class="flex items-center gap-2 cursor-pointer col-span-2">
-                                    <input type="checkbox" name="has_barcode_bbm" value="1" x-model="editVehicle.has_barcode_bbm" class="rounded text-indigo-600">
-                                    <span>Barcode MyPertamina (Subsidi Solar)</span>
-                                </label>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Catatan Armada</label>
-                            <input type="text" name="notes" x-model="editVehicle.notes"
-                                class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white">
-                        </div>
-                    </div>
-
-                    <div class="px-6 py-3.5 bg-slate-50 dark:bg-slate-950/60 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-3">
-                        <button type="button" @click="showEditVehicleModal = false" class="px-4 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold">
-                            Batal
-                        </button>
-                        <button type="submit" class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md">
-                            Simpan Perubahan Armada
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL 1D: TAMBAH PENUGASAN KRU & STRUKTUR HONOR -->
-    <div x-show="showAddCrewModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div x-show="showAddCrewModal" @click="showAddCrewModal = false" class="fixed inset-0 bg-black/60 transition-opacity" aria-hidden="true"></div>
-            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-
-            <div class="relative z-10 inline-block align-bottom bg-white dark:bg-slate-900 rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-xl sm:w-full border border-slate-300 dark:border-slate-700">
-                <form action="{{ route('spk.crews.store', $assignment) }}" method="POST">
-                    @csrf
-                    <div class="p-6 space-y-4">
-                        <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
-                            <div>
-                                <h3 class="text-base font-bold text-slate-900 dark:text-white">Tambah Penugasan Kru Lapangan</h3>
-                                <p class="text-xs text-slate-500">Pilih kru untuk auto-fill rate card standar, lalu sesuaikan penawaran.</p>
-                            </div>
-                            <button type="button" @click="showAddCrewModal = false" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
-                        </div>
-
+                    <!-- Vehicle & Checkboxes -->
+                    <div class="pt-3 border-t border-slate-200 dark:border-slate-800 space-y-3">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">Armada & Kesiapan Dokumen</label>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div>
-                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Pilih Kru *</label>
-                                <select name="crew_id" x-model="newCrew.crew_id" @change="onSelectCrew($event.target.value)" required
-                                    class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white">
-                                    <option value="">-- Pilih Kru Lapangan --</option>
-                                    @foreach($crews as $crw)
-                                        <option value="{{ $crw->id }}">
-                                            {{ $crw->nickname }} ({{ $crw->full_name }})
+                                <select name="vehicle_name" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white">
+                                    @foreach($vehicles ?? [] as $veh)
+                                        <option value="{{ $veh->name }}" {{ old('vehicle_name', $assignment->vehicle_name) === $veh->name ? 'selected' : '' }}>
+                                            {{ $veh->name }} {{ $veh->plate_number ? '('.$veh->plate_number.')' : '' }}
                                         </option>
                                     @endforeach
+                                    <option value="MOBIL PRIBADI / LAINNYA" {{ old('vehicle_name', $assignment->vehicle_name) === 'MOBIL PRIBADI / LAINNYA' ? 'selected' : '' }}>MOBIL PRIBADI / LAINNYA</option>
                                 </select>
                             </div>
-
-                            <div>
-                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Peran Pada Event *</label>
-                                <input type="text" list="roles_preset_list" name="role_label" x-model="newCrew.role_label" required placeholder="PIC / Operator / Teknisi / Crew..."
-                                    class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs font-semibold text-slate-900 dark:text-white">
-                                <datalist id="roles_preset_list">
-                                    <option value="PIC Event">PIC Event</option>
-                                    <option value="Operator LED / Visual">Operator LED / Visual</option>
-                                    <option value="Teknisi Rigging & Listrik">Teknisi Rigging & Listrik</option>
-                                    <option value="Driver / Supir Logistik">Driver / Supir Logistik</option>
-                                    <option value="Crew Lapangan">Crew Lapangan</option>
-                                    <option value="Helper">Helper</option>
-                                </datalist>
-                            </div>
-                        </div>
-
-                        <!-- Modular Rate Inputs -->
-                        <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/80 space-y-3">
-                            <div class="flex items-center justify-between">
-                                <span class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">Komponen Honor Kru (Otomatis / Nego)</span>
-                                <span class="text-[11px] text-indigo-600 dark:text-indigo-400 font-bold"
-                                    x-text="'Total: Rp ' + (Number(newCrew.fee_loading_in || 0) + Number(newCrew.fee_loading_out || 0) + Number(newCrew.fee_meal || 0) + Number(newCrew.fee_standby || 0) + Number(newCrew.fee_transport || 0) + Number(newCrew.fee_bonus || 0)).toLocaleString('id-ID')"></span>
-                            </div>
-
-                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-                                <div>
-                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-0.5">Loading In (Rp)</label>
-                                    <input type="number" name="fee_loading_in" x-model.number="newCrew.fee_loading_in" min="0" step="1000"
-                                        class="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs font-mono font-bold text-slate-900 dark:text-white">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-0.5">Loading Out (Rp)</label>
-                                    <input type="number" name="fee_loading_out" x-model.number="newCrew.fee_loading_out" min="0" step="1000"
-                                        class="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs font-mono font-bold text-slate-900 dark:text-white">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-0.5">Uang Makan (Rp)</label>
-                                    <input type="number" name="fee_meal" x-model.number="newCrew.fee_meal" min="0" step="1000"
-                                        class="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs font-mono font-bold text-slate-900 dark:text-white">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-0.5">Standby/Operator (Rp)</label>
-                                    <input type="number" name="fee_standby" x-model.number="newCrew.fee_standby" min="0" step="1000"
-                                        class="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs font-mono font-bold text-slate-900 dark:text-white">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-0.5">Transport Luar Kota (Rp)</label>
-                                    <input type="number" name="fee_transport" x-model.number="newCrew.fee_transport" min="0" step="1000"
-                                        class="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs font-mono font-bold text-slate-900 dark:text-white">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-0.5">Bonus / Lembur (Rp)</label>
-                                    <input type="number" name="fee_bonus" x-model.number="newCrew.fee_bonus" min="0" step="1000"
-                                        class="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs font-mono font-bold text-slate-900 dark:text-white">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Status Penugasan *</label>
-                                <select name="status" x-model="newCrew.status" required
-                                    class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs font-semibold text-slate-900 dark:text-white">
-                                    <option value="offered">Ditawarkan (Pending ACC Kru)</option>
-                                    <option value="acc">Langsung ACC (Kru Sudah Setuju)</option>
-                                    <option value="completed">Selesai</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Catatan Tugas (Opsional)</label>
-                                <input type="text" name="notes" x-model="newCrew.notes" placeholder="Misal: Standby jam 13.00, pegang video switcher..."
-                                    class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white">
+                            <div class="grid grid-cols-2 gap-2 text-xs">
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" name="has_etoll" value="1" {{ old('has_etoll', $assignment->has_etoll) ? 'checked' : '' }} class="rounded text-indigo-600">
+                                    <span>E-Toll Saldo Cukup</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" name="has_kunci_ban" value="1" {{ old('has_kunci_ban', $assignment->has_kunci_ban) ? 'checked' : '' }} class="rounded text-indigo-600">
+                                    <span>Kunci Ban / Dongkrak</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" name="has_stnk" value="1" {{ old('has_stnk', $assignment->has_stnk) ? 'checked' : '' }} class="rounded text-indigo-600">
+                                    <span>STNK Asli / Aktif</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" name="has_kir" value="1" {{ old('has_kir', $assignment->has_kir) ? 'checked' : '' }} class="rounded text-indigo-600">
+                                    <span>Kartu / Uji KIR</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer col-span-2">
+                                    <input type="checkbox" name="has_barcode_bbm" value="1" {{ old('has_barcode_bbm', $assignment->has_barcode_bbm) ? 'checked' : '' }} class="rounded text-indigo-600">
+                                    <span>Barcode Subsidi BBM (MyPertamina)</span>
+                                </label>
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <div class="px-6 py-3.5 bg-slate-50 dark:bg-slate-950/60 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-3">
-                        <button type="button" @click="showAddCrewModal = false" class="px-4 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold">
-                            Batal
-                        </button>
-                        <button type="submit" class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md">
-                            Tugaskan Kru
-                        </button>
-                    </div>
-                </form>
-            </div>
+                <div class="px-6 py-4 bg-slate-50 dark:bg-slate-950/60 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-3">
+                    <button type="button" @click="showAssignModal = false" class="px-4 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold">
+                        Batal
+                    </button>
+                    <button type="submit" class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md">
+                        Simpan Perubahan Tim & Armada
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
-    <!-- MODAL 1E: EDIT PENUGASAN KRU & STRUKTUR HONOR -->
-    <div x-show="showEditCrewModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div x-show="showEditCrewModal" @click="showEditCrewModal = false" class="fixed inset-0 bg-black/60 transition-opacity" aria-hidden="true"></div>
-            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
 
-            <div class="relative z-10 inline-block align-bottom bg-white dark:bg-slate-900 rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-xl sm:w-full border border-slate-300 dark:border-slate-700">
-                <form :action="'{{ url('/spk/crews') }}/' + editCrew.id" method="POST">
-                    @csrf
-                    @method('PUT')
-                    <div class="p-6 space-y-4">
-                        <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
-                            <div>
-                                <h3 class="text-base font-bold text-slate-900 dark:text-white">Edit Penugasan: <span x-text="editCrew.nickname"></span></h3>
-                                <p class="text-xs text-slate-500">Sesuaikan peran, negosiasi honor, dan status konfirmasi.</p>
-                            </div>
-                            <button type="button" @click="showEditCrewModal = false" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
-                        </div>
+    <!-- MODAL 1B: TAMBAH ARMADA KENDARAAN (MULTI-VEHICLE) -->
+    <div x-show="showAddVehicleModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs overflow-y-auto" @keydown.escape.window="showAddVehicleModal = false">
+        <div class="fixed inset-0" @click="showAddVehicleModal = false"></div>
 
+        <div class="relative z-10 w-full max-w-lg bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-300 dark:border-slate-700 overflow-hidden my-auto" @click.stop>
+            <form action="{{ route('spk.vehicles.store', $assignment) }}" method="POST">
+                @csrf
+                <div class="p-6 space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Peran Pada Event *</label>
-                            <input type="text" list="roles_preset_list" name="role_label" x-model="editCrew.role_label" required
-                                class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs font-semibold text-slate-900 dark:text-white">
+                            <h3 class="text-base font-bold text-slate-900 dark:text-white">Tambah Armada Kendaraan</h3>
+                            <p class="text-xs text-slate-500">Tambahkan unit pickup / truk pengangkut logistik event.</p>
                         </div>
+                        <button type="button" @click="showAddVehicleModal = false" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
+                    </div>
 
-                        <!-- Modular Rate Inputs -->
-                        <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/80 space-y-3">
-                            <div class="flex items-center justify-between">
-                                <span class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">Komponen Honor Kru</span>
-                                <span class="text-[11px] text-indigo-600 dark:text-indigo-400 font-bold"
-                                    x-text="'Total: Rp ' + (Number(editCrew.fee_loading_in || 0) + Number(editCrew.fee_loading_out || 0) + Number(editCrew.fee_meal || 0) + Number(editCrew.fee_standby || 0) + Number(editCrew.fee_transport || 0) + Number(editCrew.fee_bonus || 0)).toLocaleString('id-ID')"></span>
-                            </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Pilih Master Armada / Ketik Baru *</label>
+                        <input type="text" list="vehicles_master_list" name="vehicle_name" required placeholder="Misal: TRAGA 1 / GRAN MAX 2 / L300"
+                            class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white font-bold">
+                        <datalist id="vehicles_master_list">
+                            @foreach($vehicles ?? [] as $veh)
+                                <option value="{{ $veh->name }}">{{ $veh->plate_number ? '('.$veh->plate_number.')' : '' }}</option>
+                            @endforeach
+                        </datalist>
+                    </div>
 
-                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-                                <div>
-                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-0.5">Loading In (Rp)</label>
-                                    <input type="number" name="fee_loading_in" x-model.number="editCrew.fee_loading_in" min="0" step="1000"
-                                        class="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs font-mono font-bold text-slate-900 dark:text-white">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-0.5">Loading Out (Rp)</label>
-                                    <input type="number" name="fee_loading_out" x-model.number="editCrew.fee_loading_out" min="0" step="1000"
-                                        class="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs font-mono font-bold text-slate-900 dark:text-white">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-0.5">Uang Makan (Rp)</label>
-                                    <input type="number" name="fee_meal" x-model.number="editCrew.fee_meal" min="0" step="1000"
-                                        class="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs font-mono font-bold text-slate-900 dark:text-white">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-0.5">Standby/Operator (Rp)</label>
-                                    <input type="number" name="fee_standby" x-model.number="editCrew.fee_standby" min="0" step="1000"
-                                        class="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs font-mono font-bold text-slate-900 dark:text-white">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-0.5">Transport Luar Kota (Rp)</label>
-                                    <input type="number" name="fee_transport" x-model.number="editCrew.fee_transport" min="0" step="1000"
-                                        class="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs font-mono font-bold text-slate-900 dark:text-white">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-0.5">Bonus / Lembur (Rp)</label>
-                                    <input type="number" name="fee_bonus" x-model.number="editCrew.fee_bonus" min="0" step="1000"
-                                        class="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs font-mono font-bold text-slate-900 dark:text-white">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Status Penugasan *</label>
-                                <select name="status" x-model="editCrew.status" required
-                                    class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs font-semibold text-slate-900 dark:text-white">
-                                    <option value="offered">Ditawarkan (Pending)</option>
-                                    <option value="acc">ACC (Dikonfirmasi)</option>
-                                    <option value="completed">Selesai</option>
-                                    <option value="declined">Ditolak / Batal</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Status Pembayaran</label>
-                                <select name="payment_status" x-model="editCrew.payment_status"
-                                    class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs font-semibold text-slate-900 dark:text-white">
-                                    <option value="unpaid">Belum Lunas</option>
-                                    <option value="paid">Lunas</option>
-                                </select>
-                            </div>
-                        </div>
-
+                    <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Catatan Tugas (Opsional)</label>
-                            <input type="text" name="notes" x-model="editCrew.notes"
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Nomor Polisi (Plat)</label>
+                            <input type="text" name="plate_number" placeholder="N 1234 AB"
+                                class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs font-mono uppercase text-slate-900 dark:text-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Nama Supir (Driver)</label>
+                            <input type="text" list="staff_list" name="driver_name" placeholder="Nama supir..."
                                 class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white">
                         </div>
                     </div>
 
-                    <div class="px-6 py-3.5 bg-slate-50 dark:bg-slate-950/60 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-3">
-                        <button type="button" @click="showEditCrewModal = false" class="px-4 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold">
-                            Batal
-                        </button>
-                        <button type="submit" class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md">
-                            Simpan Perubahan
-                        </button>
+                    <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/80 space-y-2">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">Checklist Perlengkapan Fisik Mobil</label>
+                        <div class="grid grid-cols-2 gap-2 text-xs">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" name="has_etoll" value="1" checked class="rounded text-indigo-600">
+                                <span>E-Toll Saldo Cukup</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" name="has_kunci_ban" value="1" checked class="rounded text-indigo-600">
+                                <span>Kunci Ban / Dongkrak</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" name="has_stnk" value="1" checked class="rounded text-indigo-600">
+                                <span>STNK Asli / Aktif</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" name="has_kir" value="1" checked class="rounded text-indigo-600">
+                                <span>Buku / Uji KIR</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer col-span-2">
+                                <input type="checkbox" name="has_barcode_bbm" value="1" checked class="rounded text-indigo-600">
+                                <span>Barcode MyPertamina (Subsidi Solar)</span>
+                            </label>
+                        </div>
                     </div>
-                </form>
-            </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Catatan Armada</label>
+                        <input type="text" name="notes" placeholder="Misal: Muat khusus kabinet P3.9 dan panel listrik utama"
+                            class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white">
+                    </div>
+                </div>
+
+                <div class="px-6 py-3.5 bg-slate-50 dark:bg-slate-950/60 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-3">
+                    <button type="button" @click="showAddVehicleModal = false" class="px-4 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold">
+                        Batal
+                    </button>
+                    <button type="submit" class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md">
+                        Simpan Armada
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
-    <!-- MODAL 2: VERIFIKASI QC VENUE MANUAL -->
-    <div x-show="showQcModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div x-show="showQcModal" @click="showQcModal = false" class="fixed inset-0 bg-black/60 transition-opacity" aria-hidden="true"></div>
-            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
 
-            <div class="relative z-10 inline-block align-bottom bg-white dark:bg-slate-900 rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full border border-slate-300 dark:border-slate-700">
-                <form action="{{ route('spk.update-qc', $assignment) }}" method="POST" enctype="multipart/form-data">
-                    @csrf
-                    <div class="p-6 space-y-4">
-                        <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
-                            <div>
-                                <h3 class="text-lg font-bold text-slate-900 dark:text-white">Verifikasi QC Instalasi Venue</h3>
-                                <p class="text-xs text-slate-500">Pembaruan status kelayakan LED di venue event.</p>
-                            </div>
-                            <button type="button" @click="showQcModal = false" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xl font-bold">&times;</button>
-                        </div>
+    <!-- MODAL 1C: EDIT ARMADA KENDARAAN -->
+    <div x-show="showEditVehicleModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs overflow-y-auto" @keydown.escape.window="showEditVehicleModal = false">
+        <div class="fixed inset-0" @click="showEditVehicleModal = false"></div>
 
+        <div class="relative z-10 w-full max-w-lg bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-300 dark:border-slate-700 overflow-hidden my-auto" @click.stop>
+            <form :action="'{{ url('/spk/vehicles') }}/' + editVehicle.id" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="p-6 space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Status Kelayakan *</label>
-                            <select name="qc_status" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white font-bold">
-                                <option value="passed" {{ old('qc_status', $assignment->qc_status) === 'passed' ? 'selected' : '' }}>✅ Lolos Uji Kelayakan & Siap Show</option>
-                                <option value="issues_found" {{ old('qc_status', $assignment->qc_status) === 'issues_found' ? 'selected' : '' }}>⚠️ Ada Kendala Teknis / Modul Rusak</option>
-                                <option value="pending" {{ old('qc_status', $assignment->qc_status) === 'pending' ? 'selected' : '' }}>○ Pending / Menunggu Pemeriksaan</option>
+                            <h3 class="text-base font-bold text-slate-900 dark:text-white">Edit Kesiapan Armada</h3>
+                            <p class="text-xs text-slate-500">Perbarui driver dan kesiapan dokumen kendaraan.</p>
+                        </div>
+                        <button type="button" @click="showEditVehicleModal = false" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Nama Armada *</label>
+                        <input type="text" name="vehicle_name" x-model="editVehicle.vehicle_name" required
+                            class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white font-bold">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Nomor Polisi (Plat)</label>
+                            <input type="text" name="plate_number" x-model="editVehicle.plate_number"
+                                class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs font-mono uppercase text-slate-900 dark:text-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Nama Supir (Driver)</label>
+                            <input type="text" list="staff_list" name="driver_name" x-model="editVehicle.driver_name"
+                                class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white">
+                        </div>
+                    </div>
+
+                    <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/80 space-y-2">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">Checklist Perlengkapan Fisik Mobil</label>
+                        <div class="grid grid-cols-2 gap-2 text-xs">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" name="has_etoll" value="1" x-model="editVehicle.has_etoll" class="rounded text-indigo-600">
+                                <span>E-Toll Saldo Cukup</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" name="has_kunci_ban" value="1" x-model="editVehicle.has_kunci_ban" class="rounded text-indigo-600">
+                                <span>Kunci Ban / Dongkrak</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" name="has_stnk" value="1" x-model="editVehicle.has_stnk" class="rounded text-indigo-600">
+                                <span>STNK Asli / Aktif</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" name="has_kir" value="1" x-model="editVehicle.has_kir" class="rounded text-indigo-600">
+                                <span>Buku / Uji KIR</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer col-span-2">
+                                <input type="checkbox" name="has_barcode_bbm" value="1" x-model="editVehicle.has_barcode_bbm" class="rounded text-indigo-600">
+                                <span>Barcode MyPertamina (Subsidi Solar)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Catatan Armada</label>
+                        <input type="text" name="notes" x-model="editVehicle.notes"
+                            class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white">
+                    </div>
+                </div>
+
+                <div class="px-6 py-3.5 bg-slate-50 dark:bg-slate-950/60 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-3">
+                    <button type="button" @click="showEditVehicleModal = false" class="px-4 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold">
+                        Batal
+                    </button>
+                    <button type="submit" class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md">
+                        Simpan Perubahan Armada
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- MODAL 1D: TAMBAH PENUGASAN KRU & STRUKTUR HONOR -->
+    <div x-show="showAddCrewModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs overflow-y-auto" @keydown.escape.window="showAddCrewModal = false">
+        <div class="fixed inset-0" @click="showAddCrewModal = false"></div>
+
+        <div class="relative z-10 w-full max-w-xl bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-300 dark:border-slate-700 overflow-hidden my-auto" @click.stop>
+            <form action="{{ route('spk.crews.store', $assignment) }}" method="POST">
+                @csrf
+                <div class="p-6 space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+                        <div>
+                            <h3 class="text-base font-bold text-slate-900 dark:text-white">Tambah Penugasan Kru Lapangan</h3>
+                            <p class="text-xs text-slate-500">Pilih kru untuk auto-fill rate card standar, lalu sesuaikan penawaran.</p>
+                        </div>
+                        <button type="button" @click="showAddCrewModal = false" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Pilih Kru *</label>
+                            <select name="crew_id" x-model="newCrew.crew_id" @change="onSelectCrew($event.target.value)" required
+                                class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white">
+                                <option value="">-- Pilih Kru Lapangan --</option>
+                                @foreach($crews as $crw)
+                                    <option value="{{ $crw->id }}">
+                                        {{ $crw->nickname }} ({{ $crw->full_name }})
+                                    </option>
+                                @endforeach
                             </select>
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Nama Teknisi / PIC Pemeriksa *</label>
-                            <input type="text" name="qc_technician_name" value="{{ old('qc_technician_name', $assignment->qc_technician_name ?? Auth::user()->name) }}" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Peran Pada Event *</label>
+                            <input type="text" list="roles_preset_list" name="role_label" x-model="newCrew.role_label" required placeholder="PIC / Operator / Teknisi / Crew..."
+                                class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs font-semibold text-slate-900 dark:text-white">
+                            <datalist id="roles_preset_list">
+                                <option value="PIC Event">PIC Event</option>
+                                <option value="Operator LED / Visual">Operator LED / Visual</option>
+                                <option value="Teknisi Rigging & Listrik">Teknisi Rigging & Listrik</option>
+                                <option value="Driver / Supir Logistik">Driver / Supir Logistik</option>
+                                <option value="Crew Lapangan">Crew Lapangan</option>
+                                <option value="Helper">Helper</option>
+                            </datalist>
+                        </div>
+                    </div>
+
+                    <!-- Modular Rate Inputs -->
+                    <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/80 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">Komponen Honor Kru (Otomatis / Nego)</span>
+                            <span class="text-[11px] text-indigo-600 dark:text-indigo-400 font-bold"
+                                x-text="'Total: Rp ' + (Number(newCrew.fee_loading_in || 0) + Number(newCrew.fee_loading_out || 0) + Number(newCrew.fee_meal || 0) + Number(newCrew.fee_standby || 0) + Number(newCrew.fee_transport || 0) + Number(newCrew.fee_bonus || 0)).toLocaleString('id-ID')"></span>
                         </div>
 
-                        <div class="space-y-2 pt-2 border-t border-slate-200 dark:border-slate-800 text-xs">
-                            <label class="flex items-center gap-2 cursor-pointer font-medium">
-                                <input type="checkbox" name="qc_grounding_safe" value="1" {{ old('qc_grounding_safe', $assignment->qc_grounding_safe) ? 'checked' : '' }} class="rounded text-emerald-600">
-                                <span>⚡ Grounding Listrik Aman (< 2V AC ke Ground)</span>
-                            </label>
-                            <label class="flex items-center gap-2 cursor-pointer font-medium">
-                                <input type="checkbox" name="qc_test_rgb" value="1" {{ old('qc_test_rgb', $assignment->qc_test_rgb) ? 'checked' : '' }} class="rounded text-emerald-600">
-                                <span>🎨 Uji Pola Warna RGB (Red, Green, Blue, White Bersih)</span>
-                            </label>
-                            <label class="flex items-center gap-2 cursor-pointer font-medium">
-                                <input type="checkbox" name="qc_video_signal_ok" value="1" {{ old('qc_video_signal_ok', $assignment->qc_video_signal_ok) ? 'checked' : '' }} class="rounded text-emerald-600">
-                                <span>📺 Sinyal Video & Refresh Rate 3840Hz Stabil Bebas Flicker</span>
-                            </label>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                            <div>
+                                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-0.5">Loading In (Rp)</label>
+                                <input type="number" name="fee_loading_in" x-model.number="newCrew.fee_loading_in" min="0" step="1000"
+                                    class="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs font-mono font-bold text-slate-900 dark:text-white">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-0.5">Loading Out (Rp)</label>
+                                <input type="number" name="fee_loading_out" x-model.number="newCrew.fee_loading_out" min="0" step="1000"
+                                    class="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs font-mono font-bold text-slate-900 dark:text-white">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-0.5">Uang Makan (Rp)</label>
+                                <input type="number" name="fee_meal" x-model.number="newCrew.fee_meal" min="0" step="1000"
+                                    class="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs font-mono font-bold text-slate-900 dark:text-white">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-0.5">Standby/Operator (Rp)</label>
+                                <input type="number" name="fee_standby" x-model.number="newCrew.fee_standby" min="0" step="1000"
+                                    class="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs font-mono font-bold text-slate-900 dark:text-white">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-0.5">Transport Luar Kota (Rp)</label>
+                                <input type="number" name="fee_transport" x-model.number="newCrew.fee_transport" min="0" step="1000"
+                                    class="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs font-mono font-bold text-slate-900 dark:text-white">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-0.5">Bonus / Lembur (Rp)</label>
+                                <input type="number" name="fee_bonus" x-model.number="newCrew.fee_bonus" min="0" step="1000"
+                                    class="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs font-mono font-bold text-slate-900 dark:text-white">
+                            </div>
                         </div>
+                    </div>
 
-                        <div class="space-y-2 bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-slate-200 dark:border-slate-800">
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">Dokumentasi Foto Layar (Opsional)</label>
-                            <input type="hidden" name="remove_qc_photo" id="remove_qc_photo_input" value="0">
-                            <div class="relative w-full h-32 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-center overflow-hidden">
-                                <img id="qc_photo_preview" src="{{ $assignment->qc_photo_path ? asset('storage/' . $assignment->qc_photo_path) : '' }}" alt="QC Layar" class="w-full h-full object-cover {{ $assignment->qc_photo_path ? '' : 'hidden' }}">
-                                <div id="qc_photo_placeholder" class="text-center p-2 text-slate-400 {{ $assignment->qc_photo_path ? 'hidden' : '' }}">
-                                    <svg class="w-8 h-8 mx-auto mb-1 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    </svg>
-                                    <span class="text-[9px]">16:9 Landscape Foto Panggung Layar Default</span>
-                                </div>
-                            </div>
-                            <input type="file" name="qc_photo" id="qc_photo_input" accept="image/*" class="w-full text-xs text-slate-500 file:mr-2 file:py-1.5 file:px-2.5 file:rounded-lg file:border-0 file:text-[11px] file:font-semibold file:bg-indigo-50 dark:file:bg-indigo-950/60 file:text-indigo-600 dark:file:text-indigo-400 hover:file:bg-indigo-100">
-                            <div class="flex items-center justify-between pt-1">
-                                <p class="text-[10px] text-slate-400">Crop Otomatis 16:9</p>
-                                <div class="flex items-center gap-2">
-                                    <button type="button" id="crop_qc_photo_btn" class="hidden text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline">✂️ Crop</button>
-                                    <button type="button" id="remove_qc_photo_btn" onclick="removeImage('qc_photo')" class="{{ $assignment->qc_photo_path ? '' : 'hidden' }} text-[11px] font-bold text-rose-500 hover:text-rose-600 hover:underline">🗑️ Hapus</button>
-                                    <button type="button" id="undo_qc_photo_btn" onclick="undoRemoveImage('qc_photo', '{{ $assignment->qc_photo_path ? asset('storage/' . $assignment->qc_photo_path) : '' }}')" class="hidden text-[11px] font-bold text-amber-500 hover:underline">↩️ Batal</button>
-                                </div>
-                            </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Status Penugasan *</label>
+                            <select name="status" x-model="newCrew.status" required
+                                class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs font-semibold text-slate-900 dark:text-white">
+                                <option value="offered">Ditawarkan (Pending ACC Kru)</option>
+                                <option value="acc">Langsung ACC (Kru Sudah Setuju)</option>
+                                <option value="completed">Selesai</option>
+                            </select>
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Catatan Teknis Lapangan</label>
-                            <textarea name="qc_notes" rows="2" placeholder="Catatan modul cadangan dipakai, penempatan genset, dll..." class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white">{{ old('qc_notes', $assignment->qc_notes) }}</textarea>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Catatan Tugas (Opsional)</label>
+                            <input type="text" name="notes" x-model="newCrew.notes" placeholder="Misal: Standby jam 13.00, pegang video switcher..."
+                                class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="px-6 py-3.5 bg-slate-50 dark:bg-slate-950/60 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-3">
+                    <button type="button" @click="showAddCrewModal = false" class="px-4 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold">
+                        Batal
+                    </button>
+                    <button type="submit" class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md">
+                        Tugaskan Kru
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- MODAL 1E: EDIT PENUGASAN KRU & STRUKTUR HONOR -->
+    <div x-show="showEditCrewModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs overflow-y-auto" @keydown.escape.window="showEditCrewModal = false">
+        <div class="fixed inset-0" @click="showEditCrewModal = false"></div>
+
+        <div class="relative z-10 w-full max-w-xl bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-300 dark:border-slate-700 overflow-hidden my-auto" @click.stop>
+            <form :action="'{{ url('/spk/crews') }}/' + editCrew.id" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="p-6 space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+                        <div>
+                            <h3 class="text-base font-bold text-slate-900 dark:text-white">Edit Penugasan: <span x-text="editCrew.nickname"></span></h3>
+                            <p class="text-xs text-slate-500">Sesuaikan peran, negosiasi honor, dan status konfirmasi.</p>
+                        </div>
+                        <button type="button" @click="showEditCrewModal = false" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Peran Pada Event *</label>
+                        <input type="text" list="roles_preset_list" name="role_label" x-model="editCrew.role_label" required
+                            class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs font-semibold text-slate-900 dark:text-white">
+                    </div>
+
+                    <!-- Modular Rate Inputs -->
+                    <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/80 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">Komponen Honor Kru</span>
+                            <span class="text-[11px] text-indigo-600 dark:text-indigo-400 font-bold"
+                                x-text="'Total: Rp ' + (Number(editCrew.fee_loading_in || 0) + Number(editCrew.fee_loading_out || 0) + Number(editCrew.fee_meal || 0) + Number(editCrew.fee_standby || 0) + Number(editCrew.fee_transport || 0) + Number(editCrew.fee_bonus || 0)).toLocaleString('id-ID')"></span>
+                        </div>
+
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                            <div>
+                                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-0.5">Loading In (Rp)</label>
+                                <input type="number" name="fee_loading_in" x-model.number="editCrew.fee_loading_in" min="0" step="1000"
+                                    class="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs font-mono font-bold text-slate-900 dark:text-white">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-0.5">Loading Out (Rp)</label>
+                                <input type="number" name="fee_loading_out" x-model.number="editCrew.fee_loading_out" min="0" step="1000"
+                                    class="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs font-mono font-bold text-slate-900 dark:text-white">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-0.5">Uang Makan (Rp)</label>
+                                <input type="number" name="fee_meal" x-model.number="editCrew.fee_meal" min="0" step="1000"
+                                    class="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs font-mono font-bold text-slate-900 dark:text-white">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-0.5">Standby/Operator (Rp)</label>
+                                <input type="number" name="fee_standby" x-model.number="editCrew.fee_standby" min="0" step="1000"
+                                    class="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs font-mono font-bold text-slate-900 dark:text-white">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-0.5">Transport Luar Kota (Rp)</label>
+                                <input type="number" name="fee_transport" x-model.number="editCrew.fee_transport" min="0" step="1000"
+                                    class="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs font-mono font-bold text-slate-900 dark:text-white">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-0.5">Bonus / Lembur (Rp)</label>
+                                <input type="number" name="fee_bonus" x-model.number="editCrew.fee_bonus" min="0" step="1000"
+                                    class="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs font-mono font-bold text-slate-900 dark:text-white">
+                            </div>
                         </div>
                     </div>
 
-                    <div class="px-6 py-4 bg-slate-50 dark:bg-slate-950/60 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-3">
-                        <button type="button" @click="showQcModal = false" class="px-4 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold">
-                            Batal
-                        </button>
-                        <button type="submit" class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-md">
-                            Simpan Verifikasi QC
-                        </button>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Status Penugasan *</label>
+                            <select name="status" x-model="editCrew.status" required
+                                class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs font-semibold text-slate-900 dark:text-white">
+                                <option value="offered">Ditawarkan (Pending)</option>
+                                <option value="acc">ACC (Dikonfirmasi)</option>
+                                <option value="completed">Selesai</option>
+                                <option value="declined">Ditolak / Batal</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Status Pembayaran</label>
+                            <select name="payment_status" x-model="editCrew.payment_status"
+                                class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs font-semibold text-slate-900 dark:text-white">
+                                <option value="unpaid">Belum Lunas</option>
+                                <option value="paid">Lunas</option>
+                            </select>
+                        </div>
                     </div>
-                </form>
-            </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Catatan Tugas (Opsional)</label>
+                        <input type="text" name="notes" x-model="editCrew.notes"
+                            class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white">
+                    </div>
+                </div>
+
+                <div class="px-6 py-3.5 bg-slate-50 dark:bg-slate-950/60 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-3">
+                    <button type="button" @click="showEditCrewModal = false" class="px-4 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold">
+                        Batal
+                    </button>
+                    <button type="submit" class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md">
+                        Simpan Perubahan
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
+
+    <!-- MODAL 2: VERIFIKASI QC VENUE MANUAL -->
+    <div x-show="showQcModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs overflow-y-auto" @keydown.escape.window="showQcModal = false">
+        <div class="fixed inset-0" @click="showQcModal = false"></div>
+
+        <div class="relative z-10 w-full max-w-lg bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-300 dark:border-slate-700 overflow-hidden my-auto" @click.stop>
+            <form action="{{ route('spk.update-qc', $assignment) }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <div class="p-6 space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-900 dark:text-white">Verifikasi QC Instalasi Venue</h3>
+                            <p class="text-xs text-slate-500">Pembaruan status kelayakan LED di venue event.</p>
+                        </div>
+                        <button type="button" @click="showQcModal = false" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xl font-bold">&times;</button>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Status Kelayakan *</label>
+                        <select name="qc_status" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white font-bold">
+                            <option value="passed" {{ old('qc_status', $assignment->qc_status) === 'passed' ? 'selected' : '' }}>✅ Lolos Uji Kelayakan & Siap Show</option>
+                            <option value="issues_found" {{ old('qc_status', $assignment->qc_status) === 'issues_found' ? 'selected' : '' }}>⚠️ Ada Kendala Teknis / Modul Rusak</option>
+                            <option value="pending" {{ old('qc_status', $assignment->qc_status) === 'pending' ? 'selected' : '' }}>○ Pending / Menunggu Pemeriksaan</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Nama Teknisi / PIC Pemeriksa *</label>
+                        <input type="text" name="qc_technician_name" value="{{ old('qc_technician_name', $assignment->qc_technician_name ?? Auth::user()->name) }}" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white">
+                    </div>
+
+                    <div class="space-y-2 pt-2 border-t border-slate-200 dark:border-slate-800 text-xs">
+                        <label class="flex items-center gap-2 cursor-pointer font-medium">
+                            <input type="checkbox" name="qc_grounding_safe" value="1" {{ old('qc_grounding_safe', $assignment->qc_grounding_safe) ? 'checked' : '' }} class="rounded text-emerald-600">
+                            <span>⚡ Grounding Listrik Aman (< 2V AC ke Ground)</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer font-medium">
+                            <input type="checkbox" name="qc_test_rgb" value="1" {{ old('qc_test_rgb', $assignment->qc_test_rgb) ? 'checked' : '' }} class="rounded text-emerald-600">
+                            <span>🎨 Uji Pola Warna RGB (Red, Green, Blue, White Bersih)</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer font-medium">
+                            <input type="checkbox" name="qc_video_signal_ok" value="1" {{ old('qc_video_signal_ok', $assignment->qc_video_signal_ok) ? 'checked' : '' }} class="rounded text-emerald-600">
+                            <span>📺 Sinyal Video & Refresh Rate 3840Hz Stabil Bebas Flicker</span>
+                        </label>
+                    </div>
+
+                    <div class="space-y-2 bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-slate-200 dark:border-slate-800">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">Dokumentasi Foto Layar (Opsional)</label>
+                        <input type="hidden" name="remove_qc_photo" id="remove_qc_photo_input" value="0">
+                        <div class="relative w-full h-32 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-center overflow-hidden">
+                            <img id="qc_photo_preview" src="{{ $assignment->qc_photo_path ? asset('storage/' . $assignment->qc_photo_path) : '' }}" alt="QC Layar" class="w-full h-full object-cover {{ $assignment->qc_photo_path ? '' : 'hidden' }}">
+                            <div id="qc_photo_placeholder" class="text-center p-2 text-slate-400 {{ $assignment->qc_photo_path ? 'hidden' : '' }}">
+                                <svg class="w-8 h-8 mx-auto mb-1 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                <span class="text-[9px]">16:9 Landscape Foto Panggung Layar Default</span>
+                            </div>
+                        </div>
+                        <input type="file" name="qc_photo" id="qc_photo_input" accept="image/*" class="w-full text-xs text-slate-500 file:mr-2 file:py-1.5 file:px-2.5 file:rounded-lg file:border-0 file:text-[11px] file:font-semibold file:bg-indigo-50 dark:file:bg-indigo-950/60 file:text-indigo-600 dark:file:text-indigo-400 hover:file:bg-indigo-100">
+                        <div class="flex items-center justify-between pt-1">
+                            <p class="text-[10px] text-slate-400">Crop Otomatis 16:9</p>
+                            <div class="flex items-center gap-2">
+                                <button type="button" id="crop_qc_photo_btn" class="hidden text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline">✂️ Crop</button>
+                                <button type="button" id="remove_qc_photo_btn" onclick="removeImage('qc_photo')" class="{{ $assignment->qc_photo_path ? '' : 'hidden' }} text-[11px] font-bold text-rose-500 hover:text-rose-600 hover:underline">🗑️ Hapus</button>
+                                <button type="button" id="undo_qc_photo_btn" onclick="undoRemoveImage('qc_photo', '{{ $assignment->qc_photo_path ? asset('storage/' . $assignment->qc_photo_path) : '' }}')" class="hidden text-[11px] font-bold text-amber-500 hover:underline">↩️ Batal</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Catatan Teknis Lapangan</label>
+                        <textarea name="qc_notes" rows="2" placeholder="Catatan modul cadangan dipakai, penempatan genset, dll..." class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white">{{ old('qc_notes', $assignment->qc_notes) }}</textarea>
+                    </div>
+                </div>
+
+                <div class="px-6 py-4 bg-slate-50 dark:bg-slate-950/60 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-3">
+                    <button type="button" @click="showQcModal = false" class="px-4 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold">
+                        Batal
+                    </button>
+                    <button type="submit" class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-md">
+                        Simpan Verifikasi QC
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
 
     <!-- MODAL 3: TAMBAH BARANG MANUAL KE SPK -->
     <div x-show="showAddItemModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs overflow-y-auto" @keydown.escape.window="showAddItemModal = false">

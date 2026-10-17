@@ -211,7 +211,7 @@
                                 . "💰 TOTAL HONOR: Rp " . number_format($assignment->total_fee, 0, ',', '.') . "\n"
                                 . "Status Pembayaran: " . ($assignment->payment_status === 'paid' ? 'LUNAS' : 'BELUM DIBAYAR') . "\n"
                                 . "Terima kasih atas kerja kerasnya! — Omah Visual LED";
-                            $waUrl = "https://wa.me/" . preg_replace('/[^0-9]/', '', $assignment->crew->phone) . "?text=" . urlencode($waMessage);
+                            $waUrl = $assignment->crew->formatWhatsappUrl($waMessage);
                         @endphp
                         <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
                             <!-- Checkbox -->

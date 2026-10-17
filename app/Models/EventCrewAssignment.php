@@ -5,7 +5,31 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
+/**
+ * @property int $id
+ * @property int $event_order_id
+ * @property int|null $spk_assignment_id
+ * @property int $crew_id
+ * @property string $role_label
+ * @property float|string|null $fee_loading_in
+ * @property float|string|null $fee_loading_out
+ * @property float|string|null $fee_meal
+ * @property float|string|null $fee_standby
+ * @property float|string|null $fee_transport
+ * @property float|string|null $fee_bonus
+ * @property float|string|null $total_fee
+ * @property string $status
+ * @property string $payment_status
+ * @property Carbon|null $payment_date
+ * @property string|null $payment_method
+ * @property string|null $payment_reference
+ * @property string|null $notes
+ * @property-read EventOrder $eventOrder
+ * @property-read SpkAssignment|null $spkAssignment
+ * @property-read Crew $crew
+ */
 class EventCrewAssignment extends Model
 {
     use HasFactory;
@@ -47,12 +71,15 @@ class EventCrewAssignment extends Model
     protected static function booted(): void
     {
         static::saving(function (EventCrewAssignment $assignment) {
-            $assignment->total_fee = (float) $assignment->fee_loading_in
+            $assignment->total_fee = (string) round(
+                (float) $assignment->fee_loading_in
                 + (float) $assignment->fee_loading_out
                 + (float) $assignment->fee_meal
                 + (float) $assignment->fee_standby
                 + (float) $assignment->fee_transport
-                + (float) $assignment->fee_bonus;
+                + (float) $assignment->fee_bonus,
+                2
+            );
         });
     }
 
@@ -73,6 +100,6 @@ class EventCrewAssignment extends Model
 
     public function getFormattedTotalFeeAttribute(): string
     {
-        return 'Rp ' . number_format($this->total_fee, 0, ',', '.');
+        return 'Rp '.number_format((float) ($this->total_fee ?? 0), 0, ',', '.');
     }
 }
