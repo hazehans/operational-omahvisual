@@ -65,6 +65,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/initial-counts', [InitialCountController::class, 'index'])->name('initial-counts.index');
     Route::post('/initial-counts/{count}/verify', [InitialCountController::class, 'verify'])->name('initial-counts.verify');
     Route::post('/initial-counts/{count}/reset-simulation', [InitialCountController::class, 'resetSimulation'])->name('initial-counts.reset-simulation');
+    Route::post('/initial-counts/{count}/clear-items', [InitialCountController::class, 'clearItems'])->name('initial-counts.clear-items');
+    Route::post('/initial-counts/{count}/add-item', [InitialCountController::class, 'addItem'])->name('initial-counts.add-item');
+    Route::delete('/initial-counts/{count}/items/{item}', [InitialCountController::class, 'deleteItem'])->name('initial-counts.delete-item');
 
     // Stock Adjustments & Owner Approval
     Route::get('/adjustments', [StockAdjustmentController::class, 'index'])->name('adjustments.index');
@@ -106,6 +109,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/spk/{assignment}/verify-return', [SpkController::class, 'verifyReturn'])->name('spk.verify-return');
     Route::post('/spk/{assignment}/reset-return', [SpkController::class, 'resetReturn'])->name('spk.reset-return');
     Route::post('/spk/{assignment}/items', [SpkController::class, 'addChecklistItem'])->name('spk.items.store');
+    Route::post('/spk/{assignment}/apply-template', [SpkController::class, 'applyTemplate'])->name('spk.apply-template');
     Route::put('/spk/items/{item}', [SpkController::class, 'updateChecklistItem'])->name('spk.items.update');
     Route::delete('/spk/items/{item}', [SpkController::class, 'deleteChecklistItem'])->name('spk.items.destroy');
     Route::post('/spk/items/{item}/toggle', [SpkController::class, 'toggleItem'])->name('spk.toggle-item');

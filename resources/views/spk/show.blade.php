@@ -4,15 +4,25 @@
 
 @section('content')
 <div class="space-y-6" x-data="{
-    activeTab: 1,
+    activeTab: parseInt(new URLSearchParams(window.location.search).get('tab') || sessionStorage.getItem('spk_active_tab_{{ $assignment->id }}') || 1),
     showAssignModal: false,
     showQcModal: false,
     showAddItemModal: false,
     addItemPage: 2,
     filterOnlyQty: false,
     showEditItemModal: false,
-    editItem: { id: null, name: '', detail: '', qty: 1, unit: 'Pcs' }
-}">
+    showTemplateModal: false,
+    editItem: { id: null, name: '', detail: '', qty: 1, unit: 'Pcs' },
+    openEditModal(item) {
+        this.editItem = { ...item };
+        this.showEditItemModal = true;
+    }
+}" x-init="$watch('activeTab', val => {
+    sessionStorage.setItem('spk_active_tab_{{ $assignment->id }}', val);
+    const url = new URL(window.location);
+    url.searchParams.set('tab', val);
+    window.history.replaceState({}, '', url);
+})">
     <!-- Header with Action -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
@@ -355,8 +365,11 @@
                     <p class="text-xs text-slate-500">Kabinet, kabel jumper, panel listrik, ground stake, stage level, dan 13 item toolbox.</p>
                 </div>
                 <div class="flex items-center gap-2">
+                    <button type="button" @click="showTemplateModal = true" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold transition-all flex items-center gap-1.5 border border-slate-300 dark:border-slate-700">
+                        <span>📋 Template Muatan</span>
+                    </button>
                     <button type="button" @click="filterOnlyQty = !filterOnlyQty" :class="filterOnlyQty ? 'bg-indigo-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'" class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 border border-slate-300 dark:border-slate-700">
-                        <span x-text="filterOnlyQty ? '✓ Filter: Hanya QTY > 0' : '🔍 Filter: QTY > 0'"></span>
+                        <span x-text="filterOnlyQty ? '✓ Filter: QTY > 0' : '🔍 Filter: QTY > 0'"></span>
                     </button>
                     <button type="button" @click="addItemPage = 2; showAddItemModal = true" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-xs transition-colors flex items-center gap-1.5">
                         <span>+ Tambah Barang (Lembar 2)</span>
@@ -393,7 +406,13 @@
                                 <td class="px-3 py-2 font-semibold text-slate-900 dark:text-white">{{ $item->item_name }}</td>
                                 <td class="px-3 py-2 text-slate-500">{{ $item->item_detail ?? '-' }}</td>
                                 <td class="px-3 py-2 text-center font-bold">
-                                    <span class="cursor-pointer hover:text-indigo-600" @click="editItem = { id: {{ $item->id }}, name: '{{ addslashes($item->item_name) }}', detail: '{{ addslashes($item->item_detail ?? '') }}', qty: {{ $item->quantity }}, unit: '{{ addslashes($item->unit) }}' }; showEditItemModal = true" title="Klik untuk ubah QTY">
+                                    <span class="cursor-pointer hover:text-indigo-600 transition-colors" @click="openEditModal({{ Js::from([
+                                        'id' => $item->id,
+                                        'name' => $item->item_name,
+                                        'detail' => $item->item_detail ?? '',
+                                        'qty' => $item->quantity,
+                                        'unit' => $item->unit,
+                                    ]) }})" title="Klik untuk ubah QTY / Nama">
                                         {{ $item->quantity }} {{ $item->unit }}
                                     </span>
                                 </td>
@@ -409,23 +428,29 @@
                                             📝 <span class="note-text">{{ $item->condition_notes }}</span>
                                         </div>
                                         <div class="flex items-center justify-center gap-1.5">
-                                            <button type="button" @click="editItem = { id: {{ $item->id }}, name: '{{ addslashes($item->item_name) }}', detail: '{{ addslashes($item->item_detail ?? '') }}', qty: {{ $item->quantity }}, unit: '{{ addslashes($item->unit) }}' }; showEditItemModal = true" class="p-1 rounded hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400" title="Edit QTY & Detail">
+                                            <button type="button" @click="openEditModal({{ Js::from([
+                                                'id' => $item->id,
+                                                'name' => $item->item_name,
+                                                'detail' => $item->item_detail ?? '',
+                                                'qty' => $item->quantity,
+                                                'unit' => $item->unit,
+                                            ]) }})" class="p-1.5 rounded-lg hover:bg-indigo-100 dark:hover:bg-indigo-900/40 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors" title="Edit QTY & Nama Barang">
                                                 <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                                                 </svg>
                                             </button>
                                             <form action="{{ route('spk.items.destroy', $item) }}" method="POST" class="inline" onsubmit="return confirm('Hapus item {{ addslashes($item->item_name) }} dari checklist SPK?');">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="p-1 rounded hover:bg-rose-100 dark:hover:bg-rose-900/40 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400" title="Hapus Item">
+                                                <button type="submit" class="p-1.5 rounded-lg hover:bg-rose-100 dark:hover:bg-rose-900/40 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 transition-colors" title="Hapus Item">
                                                     <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                                     </svg>
                                                 </button>
                                             </form>
-                                            <button type="button" onclick="editItemNote({{ $item->id }})" class="p-1 rounded hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200" title="Tambah / Edit Catatan">
+                                            <button type="button" onclick="editItemNote({{ $item->id }})" class="p-1.5 rounded-lg hover:bg-amber-100 dark:hover:bg-amber-900/40 text-slate-400 hover:text-amber-600 dark:hover:text-amber-400 transition-colors" title="Tambah / Ubah Catatan Lapangan">
                                                 <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
                                                 </svg>
                                             </button>
                                             <a href="{{ route('service-tickets.create', ['item_name' => $item->item_name, 'quantity' => $item->quantity, 'notes' => 'Kerusakan pasca-event ' . $assignment->eventOrder->event_name . ' (' . $assignment->spk_number . ') - ' . $item->item_name . ($item->item_detail ? ' (' . $item->item_detail . ')' : '') . ($item->condition_notes ? '. Catatan: ' . $item->condition_notes : '')]) }}" class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-800 hover:bg-indigo-600 text-slate-200 hover:text-white transition-colors" title="Buka Tiket Servis Workshop">
@@ -454,8 +479,11 @@
                     <p class="text-xs text-slate-500">Kit operator laptop/capture card, Novastar VX series, modul spare part, rigging gantung, peralatan tidur.</p>
                 </div>
                 <div class="flex items-center gap-2">
+                    <button type="button" @click="showTemplateModal = true" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold transition-all flex items-center gap-1.5 border border-slate-300 dark:border-slate-700">
+                        <span>📋 Template Muatan</span>
+                    </button>
                     <button type="button" @click="filterOnlyQty = !filterOnlyQty" :class="filterOnlyQty ? 'bg-indigo-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'" class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 border border-slate-300 dark:border-slate-700">
-                        <span x-text="filterOnlyQty ? '✓ Filter: Hanya QTY > 0' : '🔍 Filter: QTY > 0'"></span>
+                        <span x-text="filterOnlyQty ? '✓ Filter: QTY > 0' : '🔍 Filter: QTY > 0'"></span>
                     </button>
                     <button type="button" @click="addItemPage = 3; showAddItemModal = true" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-xs transition-colors flex items-center gap-1.5">
                         <span>+ Tambah Barang (Lembar 3)</span>
@@ -492,7 +520,13 @@
                                 <td class="px-3 py-2 font-semibold text-slate-900 dark:text-white">{{ $item->item_name }}</td>
                                 <td class="px-3 py-2 text-slate-500">{{ $item->item_detail ?? '-' }}</td>
                                 <td class="px-3 py-2 text-center font-bold">
-                                    <span class="cursor-pointer hover:text-indigo-600" @click="editItem = { id: {{ $item->id }}, name: '{{ addslashes($item->item_name) }}', detail: '{{ addslashes($item->item_detail ?? '') }}', qty: {{ $item->quantity }}, unit: '{{ addslashes($item->unit) }}' }; showEditItemModal = true" title="Klik untuk ubah QTY">
+                                    <span class="cursor-pointer hover:text-indigo-600 transition-colors" @click="openEditModal({{ Js::from([
+                                        'id' => $item->id,
+                                        'name' => $item->item_name,
+                                        'detail' => $item->item_detail ?? '',
+                                        'qty' => $item->quantity,
+                                        'unit' => $item->unit,
+                                    ]) }})" title="Klik untuk ubah QTY / Nama">
                                         {{ $item->quantity }} {{ $item->unit }}
                                     </span>
                                 </td>
@@ -508,23 +542,29 @@
                                             📝 <span class="note-text">{{ $item->condition_notes }}</span>
                                         </div>
                                         <div class="flex items-center justify-center gap-1.5">
-                                            <button type="button" @click="editItem = { id: {{ $item->id }}, name: '{{ addslashes($item->item_name) }}', detail: '{{ addslashes($item->item_detail ?? '') }}', qty: {{ $item->quantity }}, unit: '{{ addslashes($item->unit) }}' }; showEditItemModal = true" class="p-1 rounded hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400" title="Edit QTY & Detail">
+                                            <button type="button" @click="openEditModal({{ Js::from([
+                                                'id' => $item->id,
+                                                'name' => $item->item_name,
+                                                'detail' => $item->item_detail ?? '',
+                                                'qty' => $item->quantity,
+                                                'unit' => $item->unit,
+                                            ]) }})" class="p-1.5 rounded-lg hover:bg-indigo-100 dark:hover:bg-indigo-900/40 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors" title="Edit QTY & Nama Barang">
                                                 <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                                                 </svg>
                                             </button>
                                             <form action="{{ route('spk.items.destroy', $item) }}" method="POST" class="inline" onsubmit="return confirm('Hapus item {{ addslashes($item->item_name) }} dari checklist SPK?');">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="p-1 rounded hover:bg-rose-100 dark:hover:bg-rose-900/40 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400" title="Hapus Item">
+                                                <button type="submit" class="p-1.5 rounded-lg hover:bg-rose-100 dark:hover:bg-rose-900/40 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 transition-colors" title="Hapus Item">
                                                     <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                                     </svg>
                                                 </button>
                                             </form>
-                                            <button type="button" onclick="editItemNote({{ $item->id }})" class="p-1 rounded hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200" title="Tambah / Edit Catatan">
+                                            <button type="button" onclick="editItemNote({{ $item->id }})" class="p-1.5 rounded-lg hover:bg-amber-100 dark:hover:bg-amber-900/40 text-slate-400 hover:text-amber-600 dark:hover:text-amber-400 transition-colors" title="Tambah / Ubah Catatan Lapangan">
                                                 <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
                                                 </svg>
                                             </button>
                                             <a href="{{ route('service-tickets.create', ['item_name' => $item->item_name, 'quantity' => $item->quantity, 'notes' => 'Kerusakan pasca-event ' . $assignment->eventOrder->event_name . ' (' . $assignment->spk_number . ') - ' . $item->item_name . ($item->item_detail ? ' (' . $item->item_detail . ')' : '') . ($item->condition_notes ? '. Catatan: ' . $item->condition_notes : '')]) }}" class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-800 hover:bg-indigo-600 text-slate-200 hover:text-white transition-colors" title="Buka Tiket Servis Workshop">
@@ -732,141 +772,227 @@
     </div>
 
     <!-- MODAL 3: TAMBAH BARANG MANUAL KE SPK -->
-    <div x-show="showAddItemModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div x-show="showAddItemModal" @click="showAddItemModal = false" class="fixed inset-0 bg-black/60 transition-opacity" aria-hidden="true"></div>
-            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+    <div x-show="showAddItemModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs overflow-y-auto" @keydown.escape.window="showAddItemModal = false">
+        <div class="fixed inset-0" @click="showAddItemModal = false"></div>
 
-            <div class="relative z-10 inline-block align-bottom bg-white dark:bg-slate-900 rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full border border-slate-300 dark:border-slate-700">
-                <form action="{{ route('spk.items.store', $assignment) }}" method="POST">
-                    @csrf
-                    <div class="p-6 space-y-4">
-                        <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
-                            <div>
-                                <h3 class="text-lg font-bold text-slate-900 dark:text-white">Tambah Barang ke SPK</h3>
-                                <p class="text-xs text-slate-500">Masukkan barang tambahan sesuai kebutuhan spesifik event.</p>
-                            </div>
-                            <button type="button" @click="showAddItemModal = false" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xl font-bold">&times;</button>
-                        </div>
-
+        <div class="relative z-10 w-full max-w-lg bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-2xl border border-slate-300 dark:border-slate-700 space-y-4 my-auto" @click.stop>
+            <form action="{{ route('spk.items.store', $assignment) }}" method="POST">
+                @csrf
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Target Halaman / Lembar *</label>
-                            <select name="page_number" x-model="addItemPage" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white font-bold">
-                                <option value="2">Halaman 2: Checklist Barang Kerja Team</option>
-                                <option value="3">Halaman 3: Checklist PIC (Kit Operator & Spares)</option>
-                            </select>
+                            <h3 class="text-lg font-bold text-slate-900 dark:text-white">Tambah Barang ke SPK</h3>
+                            <p class="text-xs text-slate-500">Pilih dari Master Barang Gudang atau ketik barang custom.</p>
                         </div>
+                        <button type="button" @click="showAddItemModal = false" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xl font-bold">&times;</button>
+                    </div>
 
+                    <!-- Master Barang Selector -->
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">
+                            Cari dari Master Barang Gudang
+                        </label>
+                        <input type="text" list="master_products_list" id="quick_product_select" placeholder="Ketik nama atau kode barang master..." oninput="selectProductFromMaster(this.value)" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-indigo-300 dark:border-indigo-800 text-xs text-slate-900 dark:text-white font-medium">
+                        <datalist id="master_products_list">
+                            @if(isset($products))
+                                @foreach($products as $prod)
+                                    @php $stockQty = $prod->stockBalances->sum('quantity'); @endphp
+                                    <option value="{{ $prod->name }}" data-category="{{ $prod->category->name ?? 'BARANG KERJA' }}" data-unit="{{ $prod->unit->name ?? 'pcs' }}" data-stock="{{ (int)$stockQty }}">
+                                        {{ $prod->name }} • Stok: {{ (int)$stockQty }} {{ $prod->unit->name ?? 'pcs' }} ({{ $prod->code }})
+                                    </option>
+                                @endforeach
+                            @endif
+                        </datalist>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Target Halaman / Lembar *</label>
+                        <select name="page_number" x-model="addItemPage" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white font-bold">
+                            <option value="2">Halaman 2: Checklist Barang Kerja Team</option>
+                            <option value="3">Halaman 3: Checklist PIC (Kit Operator & Spares)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Kategori Barang *</label>
+                        <input type="text" name="category" id="new_item_category" list="checklist_categories" required placeholder="Contoh: KABINET & KELISTRIKAN, TOOLS BOX, dll." class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white">
+                        <datalist id="checklist_categories">
+                            <option value="KABINET & KELISTRIKAN">
+                            <option value="TOOLS BOX">
+                            <option value="GROUND STAKE">
+                            <option value="STAGE LEVEL">
+                            <option value="KIT OPERATOR">
+                            <option value="PROSESOR">
+                            <option value="SPARE PART LED">
+                            <option value="ATK TAMBAHAN">
+                            <option value="LED GANTUNG">
+                            <option value="PERALATAN TIDUR">
+                        </datalist>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Nama Barang Bawaan *</label>
+                        <input type="text" name="item_name" id="new_item_name" required placeholder="Nama barang bawaan..." class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white font-semibold">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Kategori Barang *</label>
-                            <input type="text" name="category" list="checklist_categories" required placeholder="Contoh: KABEL & DISTRIBUSI, TOOLBOX, RIGGING, dll." class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white">
-                            <datalist id="checklist_categories">
-                                <option value="KABINET LED & HARDCASE">
-                                <option value="KABEL POWER & DATA JUMPER">
-                                <option value="PANEL LISTRIK & DISTRIBUSI">
-                                <option value="GROUND STAKE & TRUSS">
-                                <option value="STAGE LEVEL & LEVELING">
-                                <option value="13 ITEM TOOLBOX TEAM">
-                                <option value="VIDEO PROCESSOR & SENDING CARD">
-                                <option value="OPERATOR KIT & LAPTOP">
-                                <option value="SPARE PARTS & MODULE CADANGAN">
-                                <option value="PERALATAN TIDUR & CAMPING KRU">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Jumlah (QTY) *</label>
+                            <input type="number" name="quantity" min="0" value="1" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white font-bold">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Satuan *</label>
+                            <input type="text" name="unit" id="new_item_unit" list="unit_options" value="pcs" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white">
+                            <datalist id="unit_options">
+                                <option value="pcs">
+                                <option value="box">
+                                <option value="unit">
+                                <option value="roll">
+                                <option value="batang">
+                                <option value="set">
+                                <option value="meter">
+                                <option value="lembar">
                             </datalist>
                         </div>
-
-                        <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Nama Barang Bawaan *</label>
-                            <input type="text" name="item_name" required placeholder="Nama barang bawaan..." class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white">
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Jumlah (QTY) *</label>
-                                <input type="number" name="quantity" min="0" value="1" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white font-bold">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Satuan *</label>
-                                <input type="text" name="unit" list="unit_options" value="Pcs" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white">
-                                <datalist id="unit_options">
-                                    <option value="Pcs">
-                                    <option value="Box">
-                                    <option value="Unit">
-                                    <option value="Roll">
-                                    <option value="Batang">
-                                    <option value="Set">
-                                    <option value="Meter">
-                                </datalist>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Detail / Keterangan Spesifik (Opsional)</label>
-                            <input type="text" name="item_detail" placeholder="Contoh: Panjang 15m, Warna Biru, Cadangan..." class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white">
-                        </div>
                     </div>
 
-                    <div class="px-6 py-4 bg-slate-50 dark:bg-slate-950/60 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-3">
-                        <button type="button" @click="showAddItemModal = false" class="px-4 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold">
-                            Batal
-                        </button>
-                        <button type="submit" class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-md">
-                            + Tambah ke Checklist
-                        </button>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Detail / Keterangan Spesifik (Opsional)</label>
+                        <input type="text" name="item_detail" id="new_item_detail" placeholder="Contoh: Panjang 15m, Warna Biru, Cadangan..." class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white">
                     </div>
-                </form>
-            </div>
+                </div>
+
+                <div class="px-6 py-4 -mx-6 -mb-6 mt-5 bg-slate-50 dark:bg-slate-950/60 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-3 rounded-b-2xl">
+                    <button type="button" @click="showAddItemModal = false" class="px-4 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold hover:bg-slate-300 transition-colors">
+                        Batal
+                    </button>
+                    <button type="submit" class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-md transition-colors">
+                        + Tambah ke Checklist
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
     <!-- MODAL 4: EDIT ITEM CHECKLIST (showEditItemModal) -->
-    <div x-show="showEditItemModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div x-show="showEditItemModal" @click="showEditItemModal = false" class="fixed inset-0 bg-black/60 transition-opacity" aria-hidden="true"></div>
-            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+    <div x-show="showEditItemModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs overflow-y-auto" @keydown.escape.window="showEditItemModal = false">
+        <div class="fixed inset-0" @click="showEditItemModal = false"></div>
 
-            <div class="relative z-10 inline-block align-bottom bg-white dark:bg-slate-900 rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full border border-slate-300 dark:border-slate-700">
-                <form :action="'/spk/items/' + editItem.id" method="POST">
+        <div class="relative z-10 w-full max-w-md bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-2xl border border-slate-300 dark:border-slate-700 space-y-4 my-auto" @click.stop>
+            <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+                <div>
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                        <span>✏️ Edit Item Checklist</span>
+                    </h3>
+                    <p class="text-xs text-slate-500">Sesuaikan kuantitas bawaan atau keterangan item.</p>
+                </div>
+                <button type="button" @click="showEditItemModal = false" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xl font-bold">&times;</button>
+            </div>
+
+            <form :action="'/spk/items/' + editItem.id" method="POST" class="space-y-4">
+                @csrf
+                @method('PUT')
+
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Nama Barang *</label>
+                    <input type="text" name="item_name" x-model="editItem.name" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white font-semibold">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Jumlah (QTY) *</label>
+                        <input type="number" name="quantity" min="0" x-model="editItem.qty" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white font-bold">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Satuan *</label>
+                        <input type="text" name="unit" list="unit_options" x-model="editItem.unit" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Detail / Keterangan</label>
+                    <input type="text" name="item_detail" x-model="editItem.detail" placeholder="Detail spesifik..." class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white">
+                </div>
+
+                <div class="pt-3 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-3">
+                    <button type="button" @click="showEditItemModal = false" class="px-4 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold hover:bg-slate-300 transition-colors">
+                        Batal
+                    </button>
+                    <button type="submit" class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md transition-colors">
+                        Simpan Perubahan Item
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 5: PILIH TEMPLATE CHECKLIST (showTemplateModal) -->
+    <div x-show="showTemplateModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs overflow-y-auto" @keydown.escape.window="showTemplateModal = false">
+        <div class="fixed inset-0" @click="showTemplateModal = false"></div>
+
+        <div class="relative z-10 w-full max-w-lg bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-2xl border border-slate-300 dark:border-slate-700 space-y-4 my-auto" @click.stop>
+            <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+                <div>
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white">Pilih Template Muatan Checklist</h3>
+                    <p class="text-xs text-slate-500">Sesuaikan daftar bawaan sesuai skala event dan kebutuhan lapangan.</p>
+                </div>
+                <button type="button" @click="showTemplateModal = false" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xl font-bold">&times;</button>
+            </div>
+
+            <div class="space-y-3">
+                <!-- Option 1: Template Esensial -->
+                <form action="{{ route('spk.apply-template', $assignment) }}" method="POST" onsubmit="return confirm('Terapkan Template Esensial? Item checklist saat ini akan diperbarui sesuai hasil kalkulasi layar & alat utama.')">
                     @csrf
-                    @method('PUT')
-                    <div class="p-6 space-y-4">
-                        <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
-                            <div>
-                                <h3 class="text-lg font-bold text-slate-900 dark:text-white">Edit Item Checklist</h3>
-                                <p class="text-xs text-slate-500">Sesuaikan kuantitas bawaan atau keterangan item.</p>
-                            </div>
-                            <button type="button" @click="showEditItemModal = false" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xl font-bold">&times;</button>
-                        </div>
-
+                    <input type="hidden" name="template" value="essential">
+                    <input type="hidden" name="tab" :value="activeTab">
+                    <button type="submit" class="w-full text-left p-4 rounded-xl border-2 border-indigo-200 dark:border-indigo-900/60 hover:border-indigo-600 dark:hover:border-indigo-500 bg-indigo-50/50 dark:bg-indigo-950/20 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 transition-all flex items-start gap-3">
+                        <span class="text-2xl">⚡</span>
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Nama Barang *</label>
-                            <input type="text" name="item_name" x-model="editItem.name" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white">
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Jumlah (QTY) *</label>
-                                <input type="number" name="quantity" min="0" x-model="editItem.qty" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white font-bold">
+                            <div class="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
+                                <span>Template Esensial (Default Praktis)</span>
+                                <span class="text-[10px] px-2 py-0.5 rounded-full bg-indigo-600 text-white font-bold">Rekomendasi</span>
                             </div>
-                            <div>
-                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Satuan *</label>
-                                <input type="text" name="unit" list="unit_options" x-model="editItem.unit" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white">
-                            </div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                                Hanya memuat barang yang benar-benar dipakai berdasarkan kalkulasi layar (Kabinet, Jumper, Panel 16A, 1 Box Toolbox Teknisi, Video Processor, Laptop & Modul Spare). Bebas dari puluhan baris yang tidak dipakai.
+                            </p>
                         </div>
+                    </button>
+                </form>
 
+                <!-- Option 2: Template Lengkap -->
+                <form action="{{ route('spk.apply-template', $assignment) }}" method="POST" onsubmit="return confirm('Terapkan Template Lengkap? Semua item aksesoris, perincian toolbox, rigging, dan perlengkapan tidur kru akan dimuat.')">
+                    @csrf
+                    <input type="hidden" name="template" value="full">
+                    <input type="hidden" name="tab" :value="activeTab">
+                    <button type="submit" class="w-full text-left p-4 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-indigo-500 bg-slate-50 dark:bg-slate-800/40 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all flex items-start gap-3">
+                        <span class="text-2xl">📦</span>
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Detail / Keterangan</label>
-                            <input type="text" name="item_detail" x-model="editItem.detail" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white">
+                            <div class="font-bold text-sm text-slate-900 dark:text-white">
+                                Template Lengkap (Full Event & Luar Kota)
+                            </div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                                Memuat 50+ item lengkap mencakup rincian 13 item toolbox individual, rigging ground stake, cat walk, APD ketinggian, dan perlengkapan tidur kru.
+                            </p>
                         </div>
-                    </div>
+                    </button>
+                </form>
 
-                    <div class="px-6 py-4 bg-slate-50 dark:bg-slate-950/60 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-3">
-                        <button type="button" @click="showEditItemModal = false" class="px-4 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold">
-                            Batal
-                        </button>
-                        <button type="submit" class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md">
-                            Simpan Perubahan Item
-                        </button>
-                    </div>
+                <!-- Option 3: Kosongkan Checklist -->
+                <form action="{{ route('spk.apply-template', $assignment) }}" method="POST" onsubmit="return confirm('Yakin ingin mengosongkan seluruh checklist SPK ini? Anda dapat menambahkan barang manual dari awal.')">
+                    @csrf
+                    <input type="hidden" name="template" value="empty">
+                    <input type="hidden" name="tab" :value="activeTab">
+                    <button type="submit" class="w-full text-left p-4 rounded-xl border border-rose-200 dark:border-rose-900/60 hover:border-rose-500 bg-rose-50/30 dark:bg-rose-950/20 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-all flex items-start gap-3">
+                        <span class="text-2xl">🗑️</span>
+                        <div>
+                            <div class="font-bold text-sm text-rose-600 dark:text-rose-400">
+                                Kosongkan Seluruh Checklist (Input Manual)
+                            </div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                                Hapus semua item saat ini agar daftar checklist menjadi bersih/kosong untuk input custom dari Master Barang secara mandiri.
+                            </p>
+                        </div>
+                    </button>
                 </form>
             </div>
         </div>
@@ -926,6 +1052,20 @@ function editItemNote(itemId) {
     const newNote = prompt("Masukkan catatan kondisi barang / temuan di lapangan:", currentNote);
     if (newNote !== null) {
         toggleChecklistItem(itemId, 'condition_notes', newNote);
+    }
+}
+
+function selectProductFromMaster(val) {
+    const datalist = document.getElementById('master_products_list');
+    if (!datalist) return;
+    const option = Array.from(datalist.options).find(o => o.value === val);
+    if (option) {
+        const nameInput = document.getElementById('new_item_name');
+        const catInput = document.getElementById('new_item_category');
+        const unitInput = document.getElementById('new_item_unit');
+        if (nameInput) nameInput.value = option.value;
+        if (catInput && option.dataset.category) catInput.value = option.dataset.category;
+        if (unitInput && option.dataset.unit) unitInput.value = option.dataset.unit;
     }
 }
 

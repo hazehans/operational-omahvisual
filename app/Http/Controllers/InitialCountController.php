@@ -6,6 +6,7 @@ use App\Models\AuditLog;
 use App\Models\InventoryCount;
 use App\Models\InventoryCountItem;
 use App\Models\Location;
+use App\Models\Product;
 use App\Models\StockBalance;
 use App\Models\StockMovement;
 use App\Models\StockMovementItem;
@@ -60,8 +61,10 @@ class InitialCountController extends Controller
         }
 
         $items = $session->items()->with(['product.unit', 'product.category'])->get();
+        $availableProducts = Product::where('is_active', true)->with('unit')->orderBy('name')->get();
+        $locations = Location::where('is_active', true)->orderBy('name')->get();
 
-        return view('initial_counts.index', compact('session', 'items'));
+        return view('initial_counts.index', compact('session', 'items', 'availableProducts', 'locations'));
     }
 
     /**
@@ -87,6 +90,18 @@ class InitialCountController extends Controller
             ]);
 
             $count->items()->update(['is_verified' => true]);
+
+            // Sync atau update saldo stok fisik berjalan
+            foreach ($count->items as $item) {
+                $balance = StockBalance::firstOrNew([
+                    'product_id' => $item->product_id,
+                    'location_id' => $count->location_id,
+                    'ownership' => $item->ownership,
+                    'condition' => $item->condition,
+                ]);
+                $balance->quantity = $item->physical_quantity;
+                $balance->save();
+            }
 
             // Buat record mutasi resmi Initial Count jika belum ada
             $movementNumber = 'MOV-INIT-'.date('Ym').'-0001';
@@ -129,6 +144,100 @@ class InitialCountController extends Controller
 
         return redirect()->route('initial-counts.index')
             ->with('success', 'Stok awal berhasil diverifikasi dan resmi disahkan sebagai saldo berjalan operasional Omah Visual!');
+    }
+
+    /**
+     * Clear all items in the initial stock count session so user can start with a clean slate.
+     */
+    public function clearItems(Request $request, InventoryCount $count): RedirectResponse
+    {
+        if (! Auth::user()->hasRole(['Warehouse', 'Owner', 'Superuser'])) {
+            abort(403, 'Aksi ini hanya dapat dilakukan oleh Warehouse, Owner, atau Superuser.');
+        }
+
+        DB::transaction(function () use ($count, $request) {
+            $count->items()->delete();
+            $count->update([
+                'status' => 'pending_verification',
+                'verified_by' => null,
+                'finalized_at' => null,
+                'notes' => 'Sesi stok awal dikosongkan untuk pengisian mandiri manual dari nol.',
+            ]);
+
+            if ($request->boolean('reset_balances')) {
+                StockBalance::query()->update(['quantity' => 0]);
+            }
+
+            // Hapus mutasi initial stock jika ada
+            $movementNumber = 'MOV-INIT-'.date('Ym').'-0001';
+            $movement = StockMovement::where('movement_number', $movementNumber)->first();
+            if ($movement) {
+                $movement->items()->delete();
+                $movement->delete();
+            }
+
+            AuditLog::log(
+                action: 'clear_initial_stock_items',
+                entityType: 'InventoryCount',
+                entityId: $count->id,
+                description: 'Daftar item stok awal dikosongkan oleh '.Auth::user()->name.' untuk pengisian mandiri dari awal.'
+            );
+        });
+
+        return redirect()->route('initial-counts.index')
+            ->with('success', 'Daftar item stok awal telah dikosongkan! Anda dapat mulai menambahkan saldo barang secara mandiri di bawah.');
+    }
+
+    /**
+     * Add a manual stock item to the initial count session.
+     */
+    public function addItem(Request $request, InventoryCount $count): RedirectResponse
+    {
+        if (! Auth::user()->hasRole(['Warehouse', 'Owner', 'Superuser'])) {
+            abort(403, 'Aksi ini hanya dapat dilakukan oleh Warehouse, Owner, atau Superuser.');
+        }
+
+        $validated = $request->validate([
+            'product_id' => ['required', 'exists:products,id'],
+            'condition' => ['required', 'in:available,damaged,in_service'],
+            'ownership' => ['required', 'in:company,external'],
+            'physical_quantity' => ['required', 'numeric', 'min:0.01'],
+            'notes' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $item = InventoryCountItem::updateOrCreate(
+            [
+                'inventory_count_id' => $count->id,
+                'product_id' => $validated['product_id'],
+                'condition' => $validated['condition'],
+                'ownership' => $validated['ownership'],
+            ],
+            [
+                'system_quantity' => 0,
+                'physical_quantity' => $validated['physical_quantity'],
+                'difference' => $validated['physical_quantity'],
+                'is_verified' => false,
+                'notes' => $validated['notes'] ?? 'Input manual stok awal',
+            ]
+        );
+
+        return redirect()->route('initial-counts.index')
+            ->with('success', 'Barang berhasil ditambahkan ke sesi stok awal.');
+    }
+
+    /**
+     * Delete an item from the initial count session.
+     */
+    public function deleteItem(Request $request, InventoryCount $count, InventoryCountItem $item): RedirectResponse
+    {
+        if (! Auth::user()->hasRole(['Warehouse', 'Owner', 'Superuser'])) {
+            abort(403, 'Aksi ini hanya dapat dilakukan oleh Warehouse, Owner, atau Superuser.');
+        }
+
+        $item->delete();
+
+        return redirect()->route('initial-counts.index')
+            ->with('success', 'Item berhasil dihapus dari sesi stok awal.');
     }
 
     /**

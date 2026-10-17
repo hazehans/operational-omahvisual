@@ -168,7 +168,7 @@ class InventoryDatabaseSeeder extends Seeder
 
         // 6. Products & Assets / Stock Balances
 
-        // A. Video Processors (Individual tracking)
+        // A. Video Processors (Quantity tracking)
         $prodNovastar = Product::firstOrCreate(
             ['code' => 'SYS-NOV-VX-SERIES'],
             [
@@ -176,34 +176,14 @@ class InventoryDatabaseSeeder extends Seeder
                 'unit_id' => $unitMap['unit']->id,
                 'name' => 'Video Processor Novastar (All Series)',
                 'brand' => 'Novastar',
-                'tracking_type' => 'individual',
+                'tracking_type' => 'quantity',
                 'specification' => 'Processor Utama Videotron',
             ]
         );
-
-        $processorModels = [
-            1 => 'VX20M', 2 => 'VX10', 3 => 'VX10', 4 => 'VX10', 5 => 'VX10', 6 => 'VX10',
-            7 => 'VX8M', 8 => 'VX6 QL', 9 => 'VX 4E QL', 10 => 'VX 4E QL', 11 => 'VX 4E QL',
-            12 => 'VX4M', 13 => 'VX4M', 14 => 'VX4M', 15 => 'VX4M', 16 => 'VX4M', 17 => 'VX4M',
-            18 => 'VX4s', 19 => 'VX2S', 20 => 'VX2M', 21 => 'VX4M', 22 => 'VX2M', 23 => 'VX2M',
-            24 => 'VX2M', 25 => 'VX2M',
-        ];
-
-        foreach ($processorModels as $no => $model) {
-            $code = 'OVL-PROC-'.str_pad($no, 3, '0', STR_PAD_LEFT);
-            Asset::firstOrCreate(
-                ['asset_code' => $code],
-                [
-                    'product_id' => $prodNovastar->id,
-                    'current_location_id' => $locAlmari1->id,
-                    'serial_number' => 'SN-NOVA-'.$model.'-'.str_pad($no, 2, '0', STR_PAD_LEFT),
-                    'ownership' => 'company',
-                    'condition' => 'available',
-                    'status' => 'in_storage',
-                    'notes' => 'Nomor Unit '.$no.' ('.$model.')',
-                ]
-            );
-        }
+        StockBalance::firstOrCreate(
+            ['product_id' => $prodNovastar->id, 'location_id' => $locAlmari1->id, 'ownership' => 'company', 'condition' => 'available'],
+            ['quantity' => 25.00]
+        );
 
         // B. LED Cabinets (with sqm calculation!)
         $cabP39Big = Product::firstOrCreate(
@@ -260,7 +240,7 @@ class InventoryDatabaseSeeder extends Seeder
             ['quantity' => 42.00] // 42 unit = 21 m²
         );
 
-        // C. Televisi & Display (Individual)
+        // C. Televisi & Display (Quantity)
         $prodTv50 = Product::firstOrCreate(
             ['code' => 'TV-DISP-50-SAMS'],
             [
@@ -268,24 +248,14 @@ class InventoryDatabaseSeeder extends Seeder
                 'unit_id' => $unitMap['unit']->id,
                 'name' => 'Smart TV 50 inch Samsung 4K',
                 'brand' => 'Samsung',
-                'tracking_type' => 'individual',
+                'tracking_type' => 'quantity',
                 'specification' => '50 inch + Flightcase 125x14x76 cm',
             ]
         );
-        for ($i = 1; $i <= 5; $i++) {
-            Asset::firstOrCreate(
-                ['asset_code' => 'OVL-TV50-'.str_pad($i, 2, '0', STR_PAD_LEFT)],
-                [
-                    'product_id' => $prodTv50->id,
-                    'current_location_id' => $locAlmari3->id,
-                    'serial_number' => 'SAMS-50-'.rand(100000, 999999),
-                    'ownership' => 'company',
-                    'condition' => 'available',
-                    'status' => 'in_storage',
-                    'notes' => 'Unit TV 50" #'.$i.' Hardcase Standar',
-                ]
-            );
-        }
+        StockBalance::firstOrCreate(
+            ['product_id' => $prodTv50->id, 'location_id' => $locAlmari3->id, 'ownership' => 'company', 'condition' => 'available'],
+            ['quantity' => 5.00]
+        );
 
         // D. Cables & Rigging (Quantity)
         $kabelLanJumper = Product::firstOrCreate(
@@ -336,27 +306,77 @@ class InventoryDatabaseSeeder extends Seeder
             ['quantity' => 1.00]
         );
 
-        // F. Toolboxes TB-01 s/d TB-10 (Assets)
+        // F. Toolboxes TB-01 s/d TB-10 (Quantity)
         $prodToolbox = Product::firstOrCreate(
             ['code' => 'TLS-BOX-STD'],
             [
                 'category_id' => $subTools->id,
                 'unit_id' => $unitMap['unit']->id,
                 'name' => 'Toolbox Operasional Teknisi (Standar 13 Items)',
-                'tracking_type' => 'individual',
+                'tracking_type' => 'quantity',
                 'specification' => 'Isi Tang kombinasi, potong, obeng +/-, kunci L/Y, cutter, dll',
             ]
         );
-        for ($t = 1; $t <= 10; $t++) {
+        StockBalance::firstOrCreate(
+            ['product_id' => $prodToolbox->id, 'location_id' => $locWorkshop->id, 'ownership' => 'company', 'condition' => 'available'],
+            ['quantity' => 10.00]
+        );
+
+        // G. Flight Case Kabinet LED (Satu-satunya kategori ber-ID / Aset Serial Unik)
+        $fc100 = Product::firstOrCreate(
+            ['code' => 'FC-CAB-P39-100X50'],
+            [
+                'category_id' => $subCase->id,
+                'unit_id' => $unitMap['unit']->id,
+                'name' => 'Flight Case Kabinet LED 100x50 cm (Isi 6)',
+                'brand' => 'Omah Visual Hardcase',
+                'model_series' => 'FC-100',
+                'specification' => 'Hardcase Roda 4, Kapasitas 6 Kabinet 100x50 cm',
+                'tracking_type' => 'individual',
+            ]
+        );
+        for ($i = 1; $i <= 12; $i++) {
+            $numStr = str_pad($i, 2, '0', STR_PAD_LEFT);
             Asset::firstOrCreate(
-                ['asset_code' => 'TB-'.str_pad($t, 2, '0', STR_PAD_LEFT)],
+                ['asset_code' => "FC-100-{$numStr}"],
                 [
-                    'product_id' => $prodToolbox->id,
-                    'current_location_id' => $locWorkshop->id,
+                    'product_id' => $fc100->id,
+                    'current_location_id' => $locStaging->id,
+                    'serial_number' => "SN-FC100-{$numStr}",
+                    'barcode' => "BC-FC100-{$numStr}",
                     'ownership' => 'company',
                     'condition' => 'available',
                     'status' => 'in_storage',
-                    'notes' => 'Toolbox Unit '.$t.' Standar Kerja Lapangan',
+                    'notes' => "Flight Case Kabinet 100x50 cm Unit #{$i} (Kapasitas 6 Kabinet)",
+                ]
+            );
+        }
+
+        $fc50 = Product::firstOrCreate(
+            ['code' => 'FC-CAB-P39-50X50'],
+            [
+                'category_id' => $subCase->id,
+                'unit_id' => $unitMap['unit']->id,
+                'name' => 'Flight Case Kabinet LED 50x50 cm (Isi 8)',
+                'brand' => 'Omah Visual Hardcase',
+                'model_series' => 'FC-50',
+                'specification' => 'Hardcase Roda 4, Kapasitas 8 Kabinet 50x50 cm',
+                'tracking_type' => 'individual',
+            ]
+        );
+        for ($j = 1; $j <= 6; $j++) {
+            $numStr = str_pad($j, 2, '0', STR_PAD_LEFT);
+            Asset::firstOrCreate(
+                ['asset_code' => "FC-050-{$numStr}"],
+                [
+                    'product_id' => $fc50->id,
+                    'current_location_id' => $locStaging->id,
+                    'serial_number' => "SN-FC050-{$numStr}",
+                    'barcode' => "BC-FC050-{$numStr}",
+                    'ownership' => 'company',
+                    'condition' => 'available',
+                    'status' => 'in_storage',
+                    'notes' => "Flight Case Kabinet 50x50 cm Unit #{$j} (Kapasitas 8 Kabinet)",
                 ]
             );
         }

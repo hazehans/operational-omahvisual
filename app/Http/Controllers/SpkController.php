@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Crew;
 use App\Models\EventOrder;
+use App\Models\Product;
 use App\Models\SpkAssignment;
 use App\Models\SpkChecklistItem;
 use App\Models\User;
 use App\Models\Vehicle;
+use App\Services\LedCalculationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -25,8 +27,12 @@ class SpkController extends Controller
         $users = User::orderBy('name')->get();
         $crews = Crew::where('is_active', true)->orderBy('nickname')->get();
         $vehicles = Vehicle::where('is_active', true)->orderBy('name')->get();
+        $products = Product::where('is_active', true)
+            ->with(['category', 'unit', 'stockBalances'])
+            ->orderBy('name')
+            ->get();
 
-        return view('spk.show', compact('assignment', 'users', 'crews', 'vehicles'));
+        return view('spk.show', compact('assignment', 'users', 'crews', 'vehicles', 'products'));
     }
 
     /**
@@ -147,7 +153,10 @@ class SpkController extends Controller
             'checked_in' => false,
         ]);
 
-        return back()->with('status', 'Barang baru berhasil ditambahkan ke Checklist!');
+        $tab = (int) $validated['page_number'];
+
+        return redirect()->to(route('spk.show', $assignment).'?tab='.$tab)
+            ->with('status', 'Barang baru berhasil ditambahkan ke Checklist!');
     }
 
     /**
@@ -176,7 +185,10 @@ class SpkController extends Controller
             ]);
         }
 
-        return back()->with('status', 'Data item checklist berhasil diperbarui!');
+        $tab = (int) ($item->page_number ?? 2);
+
+        return redirect()->to(route('spk.show', $item->spkAssignment).'?tab='.$tab)
+            ->with('status', 'Data item checklist berhasil diperbarui!');
     }
 
     /**
@@ -184,6 +196,8 @@ class SpkController extends Controller
      */
     public function deleteChecklistItem(Request $request, SpkChecklistItem $item): JsonResponse|RedirectResponse
     {
+        $tab = (int) ($item->page_number ?? 2);
+        $assignment = $item->spkAssignment;
         $item->delete();
 
         if ($request->wantsJson()) {
@@ -193,7 +207,34 @@ class SpkController extends Controller
             ]);
         }
 
-        return back()->with('status', 'Item berhasil dihapus dari checklist.');
+        return redirect()->to(route('spk.show', $assignment).'?tab='.$tab)
+            ->with('status', 'Item berhasil dihapus dari checklist.');
+    }
+
+    /**
+     * Apply or reset SPK Checklist template.
+     */
+    public function applyTemplate(Request $request, SpkAssignment $assignment): RedirectResponse
+    {
+        $validated = $request->validate([
+            'template' => ['required', 'in:essential,full,empty'],
+            'tab' => ['nullable', 'in:2,3'],
+        ]);
+
+        $tab = (int) ($validated['tab'] ?? 2);
+        $template = $validated['template'];
+
+        if ($template === 'empty') {
+            $assignment->checklistItems()->delete();
+            $msg = 'Seluruh checklist muatan berhasil dikosongkan. Anda dapat menambahkan barang manual dari awal.';
+        } else {
+            app(LedCalculationService::class)->generateStandardChecklist($assignment, $assignment->eventOrder, $template);
+            $msg = $template === 'essential'
+                ? 'Template Esensial (Alat Utama & Hasil Kalkulasi) berhasil diterapkan!'
+                : 'Template Lengkap (Seluruh Aksesoris & Perlengkapan) berhasil diterapkan!';
+        }
+
+        return redirect()->to(route('spk.show', $assignment).'?tab='.$tab)->with('status', $msg);
     }
 
     /**

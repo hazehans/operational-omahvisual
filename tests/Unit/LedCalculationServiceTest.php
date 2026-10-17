@@ -73,19 +73,29 @@ class LedCalculationServiceTest extends TestCase
             'spk_number' => 'SPK-2026-'.fake()->unique()->numerify('#####'),
         ]);
 
-        $service->generateStandardChecklist($assignment, $order);
+        // 1. Test Essential template (Default)
+        $service->generateStandardChecklist($assignment, $order, 'essential');
 
-        // Verify Page 2 items
         $page2Items = $assignment->checklistItems()->where('page_number', 2)->get();
         $this->assertNotEmpty($page2Items);
-        $this->assertTrue($page2Items->contains('item_name', 'Tang Kombinasi'));
         $this->assertTrue($page2Items->contains('item_name', 'Besi Ground dan Kabel Grounding 50 Mtr'));
+        $this->assertTrue($page2Items->contains('item_name', 'Toolbox Operasional Teknisi (Standar 13 Items)'));
 
-        // Verify Page 3 items
         $page3Items = $assignment->checklistItems()->where('page_number', 3)->get();
         $this->assertNotEmpty($page3Items);
         $this->assertTrue($page3Items->contains('item_name', 'Laptop Operator'));
-        $this->assertTrue($page3Items->contains('item_name', 'Test Pen + Volt Meter + Minyak Wangi'));
-        $this->assertTrue($page3Items->contains('item_name', 'Hammock'));
+
+        // 2. Test Full template
+        $service->generateStandardChecklist($assignment, $order, 'full');
+
+        $fullPage2Items = $assignment->checklistItems()->where('page_number', 2)->get();
+        $this->assertTrue($fullPage2Items->contains('item_name', 'Tang Kombinasi'));
+
+        $fullPage3Items = $assignment->checklistItems()->where('page_number', 3)->get();
+        $this->assertTrue($fullPage3Items->contains('item_name', 'Hammock'));
+
+        // 3. Test Empty template
+        $service->generateStandardChecklist($assignment, $order, 'empty');
+        $this->assertEquals(0, $assignment->checklistItems()->count());
     }
 }

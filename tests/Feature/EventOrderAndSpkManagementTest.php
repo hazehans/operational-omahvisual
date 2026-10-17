@@ -122,8 +122,8 @@ class EventOrderAndSpkManagementTest extends TestCase
         $this->assertEquals('TRAGA 1', $spk->vehicle_name);
 
         // Verify checklists populated (page 2 and page 3)
-        $this->assertGreaterThan(20, $spk->checklistItems()->where('page_number', 2)->count());
-        $this->assertGreaterThan(15, $spk->checklistItems()->where('page_number', 3)->count());
+        $this->assertGreaterThan(10, $spk->checklistItems()->where('page_number', 2)->count());
+        $this->assertGreaterThan(10, $spk->checklistItems()->where('page_number', 3)->count());
 
         $response->assertRedirect(route('orders.show', $order));
     }
@@ -509,5 +509,47 @@ class EventOrderAndSpkManagementTest extends TestCase
         $deleteResponse = $this->actingAs($this->user)->delete(route('spk.items.destroy', $item));
         $deleteResponse->assertSessionHasNoErrors();
         $this->assertDatabaseMissing('spk_checklist_items', ['id' => $item->id]);
+    }
+
+    public function test_user_can_apply_spk_checklist_templates(): void
+    {
+        $customer = Customer::factory()->create();
+        $order = EventOrder::factory()->create(['customer_id' => $customer->id]);
+        OrderLedScreen::factory()->create([
+            'event_order_id' => $order->id,
+            'width_m' => 6.0,
+            'height_m' => 3.0,
+            'total_sqm' => 18.0,
+            'cabinets_1m' => 36,
+            'cabinets_50cm' => 0,
+            'total_cabinets' => 36,
+            'total_hardcases' => 6,
+            'brand_series' => 'SAGA',
+        ]);
+        $assignment = SpkAssignment::factory()->create(['event_order_id' => $order->id]);
+
+        // 1. Apply Full Template
+        $fullResponse = $this->actingAs($this->user)->post(route('spk.apply-template', $assignment), [
+            'template' => 'full',
+            'tab' => 2,
+        ]);
+        $fullResponse->assertRedirect(route('spk.show', $assignment).'?tab=2');
+        $this->assertGreaterThan(20, $assignment->checklistItems()->where('page_number', 2)->count());
+
+        // 2. Apply Empty Template
+        $emptyResponse = $this->actingAs($this->user)->post(route('spk.apply-template', $assignment), [
+            'template' => 'empty',
+            'tab' => 3,
+        ]);
+        $emptyResponse->assertRedirect(route('spk.show', $assignment).'?tab=3');
+        $this->assertEquals(0, $assignment->checklistItems()->count());
+
+        // 3. Apply Essential Template
+        $essentialResponse = $this->actingAs($this->user)->post(route('spk.apply-template', $assignment), [
+            'template' => 'essential',
+            'tab' => 2,
+        ]);
+        $essentialResponse->assertRedirect(route('spk.show', $assignment).'?tab=2');
+        $this->assertGreaterThan(10, $assignment->checklistItems()->where('page_number', 2)->count());
     }
 }

@@ -41,7 +41,7 @@
     @endif
 
     <!-- Event Hero Card -->
-    <div class="bg-gradient-to-br from-indigo-950 via-slate-900 to-slate-900 p-5 rounded-2xl border border-indigo-800/50 shadow-xl space-y-3">
+    <div class="bg-linear-to-br from-indigo-950 via-slate-900 to-slate-900 p-5 rounded-2xl border border-indigo-800/50 shadow-xl space-y-3">
         <div class="text-xs font-mono text-indigo-400 font-bold uppercase tracking-wider">
             {{ $order->order_number }}
         </div>
@@ -314,7 +314,7 @@
                     <div class="space-y-2 bg-slate-900/70 p-3 rounded-lg border border-slate-700/60">
                         <label class="block text-[11px] font-bold text-slate-300">Foto Bukti Layar Panggung (BAST Visual)</label>
                         <input type="hidden" name="remove_qc_photo" id="remove_qc_photo_live" value="0">
-                        
+
                         <div class="relative w-full h-36 rounded-lg border border-slate-700 bg-slate-950 flex items-center justify-center overflow-hidden">
                             <img id="live_qc_photo_preview" src="{{ $order->spkAssignment->qc_photo_path ? asset('storage/' . $order->spkAssignment->qc_photo_path) : '' }}" alt="QC Layar" class="w-full h-full object-cover {{ $order->spkAssignment->qc_photo_path ? '' : 'hidden' }}">
                             <div id="live_qc_photo_placeholder" class="text-center p-3 text-slate-500 {{ $order->spkAssignment->qc_photo_path ? 'hidden' : '' }}">
