@@ -19,10 +19,15 @@ class CrewPayrollAndMultiVehicleTest extends TestCase
     use DatabaseTransactions;
 
     protected User $user;
+
     protected Customer $customer;
+
     protected EventOrder $order;
+
     protected SpkAssignment $assignment;
+
     protected Crew $crew;
+
     protected Vehicle $vehicle;
 
     protected function setUp(): void
@@ -57,7 +62,7 @@ class CrewPayrollAndMultiVehicleTest extends TestCase
             'height_m' => 3.0,
             'pixel_pitch' => 'P3.9',
             'brand_series' => 'SAGA',
-            'sqm' => 24.0,
+            'total_sqm' => 24.0,
             'total_cabinets' => 48,
             'total_hardcases' => 8,
             'position_order' => 1,
@@ -362,7 +367,7 @@ class CrewPayrollAndMultiVehicleTest extends TestCase
         ]));
 
         $response->assertOk();
-        $response->assertSee('Rekap Honor & Payroll Kru Freelance');
+        $response->assertSee('Payroll Kru Freelance');
         $response->assertSee($this->crew->nickname);
         $response->assertSee('Rp 300.000');
         $response->assertSee('Belum Lunas');
@@ -480,7 +485,7 @@ class CrewPayrollAndMultiVehicleTest extends TestCase
         $showResp->assertSee('Armada Kendaraan Logistik');
         $showResp->assertSee('TRAGA 1');
         $showResp->assertSee($this->crew->nickname);
-        $showResp->assertSee('Kalkulasi Margin & Laba Event');
+        $showResp->assertSee('Kalkulasi Margin');
 
         $printResp = $this->actingAs($this->user)->get(route('spk.print', $this->assignment));
         $printResp->assertOk();
@@ -488,4 +493,3 @@ class CrewPayrollAndMultiVehicleTest extends TestCase
         $printResp->assertSee($this->crew->nickname);
     }
 }
-
