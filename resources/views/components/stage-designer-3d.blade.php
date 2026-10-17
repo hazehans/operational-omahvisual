@@ -26,12 +26,12 @@
             <div>
                 <div class="font-bold text-sm text-white flex items-center gap-2">
                     <span>Virtual 3D Stage & Layout LED Designer</span>
-                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">
-                        Interactive
+                    <span class="px-2 py-0.5 rounded text-[10px] font-bold {{ $isEditable ? 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30' : 'bg-slate-700/40 text-slate-300 border border-slate-700' }}">
+                        {{ $isEditable ? 'Interactive' : 'Viewer (Read-Only)' }}
                     </span>
                 </div>
                 <div class="text-xs text-slate-400">
-                    Drag & Drop layar di panggung, pilih formasi panggung, hasil otomatis dicetak 2D di SPK
+                    {{ $isEditable ? 'Drag & Drop layar di panggung, pilih formasi panggung, hasil otomatis dicetak 2D di SPK' : 'Pratinjau 3D Formasi Layar & Panggung (Klik & geser untuk memutar kamera)' }}
                 </div>
             </div>
         </div>
@@ -51,39 +51,41 @@
                 </button>
             </div>
 
-            <!-- 1-Click Formasi Presets -->
-            <div class="inline-flex rounded-xl bg-slate-800 p-0.5 border border-slate-700 text-xs">
-                <button type="button" id="btnPresetCenter" class="px-2.5 py-1 rounded-lg font-semibold text-slate-300 hover:text-white hover:bg-slate-700 transition-all" title="Formasi 1 Layar Tunggal di Tengah Panggung">
-                    🎪 Tengah Tunggal
-                </button>
-                <button type="button" id="btnPresetWings" class="px-2.5 py-1 rounded-lg font-semibold text-slate-300 hover:text-white hover:bg-slate-700 transition-all" title="Formasi 1 Main + 2 Wings Miring (Konser / Seminar / Wedding)">
-                    🦅 Main + 2 Wings
-                </button>
-                <button type="button" id="btnPresetTriptych" class="px-2.5 py-1 rounded-lg font-semibold text-slate-300 hover:text-white hover:bg-slate-700 transition-all" title="Formasi 3 Layar Berjajar Rata (Triptych)">
-                    🖼️ Triptych 3 Layar
-                </button>
-            </div>
+            @if($isEditable)
+                <!-- 1-Click Formasi Presets -->
+                <div class="inline-flex rounded-xl bg-slate-800 p-0.5 border border-slate-700 text-xs">
+                    <button type="button" id="btnPresetCenter" class="px-2.5 py-1 rounded-lg font-semibold text-slate-300 hover:text-white hover:bg-slate-700 transition-all" title="Formasi 1 Layar Tunggal di Tengah Panggung">
+                        🎪 Tengah Tunggal
+                    </button>
+                    <button type="button" id="btnPresetWings" class="px-2.5 py-1 rounded-lg font-semibold text-slate-300 hover:text-white hover:bg-slate-700 transition-all" title="Formasi 1 Main + 2 Wings Miring (Konser / Seminar / Wedding)">
+                        🦅 Main + 2 Wings
+                    </button>
+                    <button type="button" id="btnPresetTriptych" class="px-2.5 py-1 rounded-lg font-semibold text-slate-300 hover:text-white hover:bg-slate-700 transition-all" title="Formasi 3 Layar Berjajar Rata (Triptych)">
+                        🖼️ Triptych 3 Layar
+                    </button>
+                </div>
 
-            <!-- 🧲 Snap Magnet Action -->
-            <div class="inline-flex rounded-xl bg-slate-800 p-0.5 border border-slate-700 text-xs items-center">
-                <button type="button" id="btnToggleSnap" class="px-2.5 py-1 rounded-lg font-semibold bg-emerald-600 text-white transition-all flex items-center gap-1.5 shadow-xs" title="Klik untuk mengaktifkan / mematikan snap magnetik">
-                    <span class="w-2 h-2 rounded-full bg-emerald-300 animate-pulse"></span>
-                    <span id="snapToggleLabel">🧲 Snap: ON</span>
-                </button>
-                <select id="selectSnapStep" class="bg-slate-900 text-slate-300 text-xs rounded-r-lg px-2 py-1 border-0 focus:ring-0 cursor-pointer font-medium" title="Pilihan interval snap grid">
-                    <option value="0.5">0.5m (Kabinet 50cm)</option>
-                    <option value="0.25">0.25m (Presisi Halus)</option>
-                    <option value="1.0">1.0m (1 Meter)</option>
-                </select>
-            </div>
+                <!-- 🧲 Snap Magnet Action -->
+                <div class="inline-flex rounded-xl bg-slate-800 p-0.5 border border-slate-700 text-xs items-center">
+                    <button type="button" id="btnToggleSnap" class="px-2.5 py-1 rounded-lg font-semibold bg-emerald-600 text-white transition-all flex items-center gap-1.5 shadow-xs" title="Klik untuk mengaktifkan / mematikan snap magnetik">
+                        <span class="w-2 h-2 rounded-full bg-emerald-300 animate-pulse"></span>
+                        <span id="snapToggleLabel">🧲 Snap: ON</span>
+                    </button>
+                    <select id="selectSnapStep" class="bg-slate-900 text-slate-300 text-xs rounded-r-lg px-2 py-1 border-0 focus:ring-0 cursor-pointer font-medium" title="Pilihan interval snap grid">
+                        <option value="0.5">0.5m (Kabinet 50cm)</option>
+                        <option value="0.25">0.25m (Presisi Halus)</option>
+                        <option value="1.0">1.0m (1 Meter)</option>
+                    </select>
+                </div>
 
-            @if($saveUrl)
-                <button type="button" id="btnSaveStageLayoutAjax" class="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-md shadow-emerald-600/30 flex items-center gap-1.5 transition-all">
-                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
-                    </svg>
-                    <span>Simpan Layout 3D & Blueprint 2D</span>
-                </button>
+                @if($saveUrl)
+                    <button type="button" id="btnSaveStageLayoutAjax" class="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-md shadow-emerald-600/30 flex items-center gap-1.5 transition-all">
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                        </svg>
+                        <span>Simpan Layout 3D & Blueprint 2D</span>
+                    </button>
+                @endif
             @endif
         </div>
     </div>
@@ -111,9 +113,13 @@
 
         <!-- Floating Tooltip / Click Instructions -->
         <div class="absolute bottom-3 left-3 bg-slate-950/80 backdrop-blur-md px-3 py-1.5 rounded-xl border border-slate-800 text-[11px] text-slate-300 flex items-center gap-2">
-            <span>🖱️ Geser layar di panggung (Snap Otomatis Aktif)</span>
-            <span class="text-slate-500">•</span>
-            <span>Tahan <kbd class="px-1 py-0.5 rounded bg-slate-800 text-[10px] font-mono text-amber-400 border border-slate-700">Shift</kbd> untuk drag bebas</span>
+            @if($isEditable)
+                <span>🖱️ Geser layar di panggung (Snap Otomatis Aktif)</span>
+                <span class="text-slate-500">•</span>
+                <span>Tahan <kbd class="px-1 py-0.5 rounded bg-slate-800 text-[10px] font-mono text-amber-400 border border-slate-700">Shift</kbd> untuk drag bebas</span>
+            @else
+                <span>🖱️ Klik & geser untuk memutar sudut pandang 3D (Read-Only)</span>
+            @endif
         </div>
 
         <!-- 🧭 3D Compass Rose HUD (Utara & Selatan) -->
@@ -132,146 +138,149 @@
             </div>
         </div>
 
-        <!-- Selected Screen Inspector Floating Widget (Panel CRUD) -->
-        <div id="screenInspectorBox" class="absolute top-14 right-3 max-h-[calc(100%-4.25rem)] overflow-y-auto bg-slate-950/95 backdrop-blur-md p-3.5 rounded-xl border border-slate-700 text-xs w-72 space-y-2.5 shadow-2xl transition-all hidden z-30">
-            <div class="flex items-center justify-between border-b border-slate-800 pb-2">
-                <div class="font-bold text-white flex items-center gap-1.5 truncate flex-1 mr-2">
-                    <span class="w-2.5 h-2.5 rounded-full bg-indigo-500 shrink-0"></span>
-                    <input type="text" id="inspectScreenNameInput" value="Main Screen" class="w-full px-2 py-0.5 rounded bg-slate-900 border border-slate-700 text-xs font-bold text-white focus:ring-1 focus:ring-indigo-500">
+        @if($isEditable)
+            <!-- Selected Screen Inspector Floating Widget (Panel CRUD) -->
+            <div id="screenInspectorBox" class="absolute top-14 right-3 max-h-[calc(100%-4.25rem)] overflow-y-auto bg-slate-950/95 backdrop-blur-md p-3.5 rounded-xl border border-slate-700 text-xs w-72 space-y-2.5 shadow-2xl transition-all hidden z-30">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                    <div class="font-bold text-white flex items-center gap-1.5 truncate flex-1 mr-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-indigo-500 shrink-0"></span>
+                        <input type="text" id="inspectScreenNameInput" value="Main Screen" class="w-full px-2 py-0.5 rounded bg-slate-900 border border-slate-700 text-xs font-bold text-white focus:ring-1 focus:ring-indigo-500">
+                    </div>
+                    <button type="button" id="btnCloseInspector" class="text-slate-400 hover:text-white font-bold text-xs p-1" title="Tutup Inspector">✕</button>
                 </div>
-                <button type="button" id="btnCloseInspector" class="text-slate-400 hover:text-white font-bold text-xs p-1" title="Tutup Inspector">✕</button>
+
+                <div class="space-y-2 text-[11px]">
+                    <div class="flex items-center justify-between text-slate-400">
+                        <span>Dimensi Layar:</span>
+                        <div class="flex items-center gap-1 text-slate-200">
+                            <input type="number" step="0.5" min="0.5" max="30" id="inspectScreenWidthInput" value="6.0" class="w-14 px-1.5 py-0.5 rounded bg-slate-900 border border-slate-700 text-xs font-bold text-center text-white" title="Lebar (m)">
+                            <span>×</span>
+                            <input type="number" step="0.5" min="0.5" max="20" id="inspectScreenHeightInput" value="3.0" class="w-14 px-1.5 py-0.5 rounded bg-slate-900 border border-slate-700 text-xs font-bold text-center text-white" title="Tinggi (m)">
+                            <span class="text-[10px] text-slate-400">m</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Pos X Slider -->
+                    <div>
+                        <div class="flex justify-between text-slate-400 mb-0.5">
+                            <span>Geser Kiri / Kanan (X):</span>
+                            <span class="font-bold text-indigo-400" id="inspectPosXVal">0.0m</span>
+                        </div>
+                        <input type="range" id="inspectPosX" min="-6" max="6" step="0.1" value="0" class="w-full accent-indigo-500">
+                    </div>
+
+                    <!-- Pos Z Slider (Maju / Mundur) -->
+                    <div>
+                        <div class="flex justify-between text-slate-400 mb-0.5">
+                            <span>Maju / Mundur (Z):</span>
+                            <span class="font-bold text-indigo-400" id="inspectPosZVal">-1.5m</span>
+                        </div>
+                        <input type="range" id="inspectPosZ" min="-4" max="2" step="0.1" value="-1.5" class="w-full accent-indigo-500">
+                    </div>
+
+                    <!-- Rotation Y (Wing Angle) -->
+                    <div>
+                        <div class="flex justify-between text-slate-400 mb-0.5">
+                            <span>Kemiringan Sayap (Rotasi):</span>
+                            <span class="font-bold text-amber-400" id="inspectRotYVal">0°</span>
+                        </div>
+                        <input type="range" id="inspectRotY" min="-45" max="45" step="5" value="0" class="w-full accent-amber-500">
+                    </div>
+
+                    <!-- Rigging Type Toggle -->
+                    <div class="pt-1 border-t border-slate-800 flex items-center justify-between">
+                        <span class="text-slate-400">Metode Pasang:</span>
+                        <select id="inspectRigging" class="bg-slate-900 border border-slate-700 rounded px-2 py-0.5 text-slate-200 text-[10px]">
+                            <option value="ground_stake">Ground Stack (Lantai)</option>
+                            <option value="hanging">Hanging (Truss Gantung)</option>
+                        </select>
+                    </div>
+
+                    <!-- Delete Screen Button (Panel CRUD) -->
+                    <div class="pt-2 border-t border-slate-800">
+                        <button type="button" id="btnDeleteScreen" class="w-full py-1.5 px-3 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-md shadow-rose-900/40 transition-colors">
+                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                            <span>Hapus Panel Layar Ini</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        @endif
+    </div>
+
+    @if($isEditable)
+        <!-- Bottom Stage Configuration & 2D Blueprint Preview Bar -->
+        <div class="p-4 bg-slate-950 border-t border-slate-800 grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+            <!-- Stage Dimensions Inputs (Supports 0 for flat indoor ground/floor) -->
+            <div class="space-y-1">
+                <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400">Ukuran Panggung Lapangan (Meter)</label>
+                <div class="grid grid-cols-3 gap-2">
+                    <div>
+                        <div class="text-[9px] text-slate-500 mb-0.5">Lebar (0 = Tanpa)</div>
+                        <input type="number" step="0.5" min="0" max="50" id="inputStageWidth" name="stage_width_m" value="{{ $stageWidth }}"
+                            class="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-xs font-bold text-white focus:ring-1 focus:ring-indigo-500">
+                    </div>
+                    <div>
+                        <div class="text-[9px] text-slate-500 mb-0.5">Kedalaman (Maju)</div>
+                        <input type="number" step="0.5" min="0" max="30" id="inputStageDepth" name="stage_depth_m" value="{{ $stageDepth }}"
+                            class="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-xs font-bold text-white focus:ring-1 focus:ring-indigo-500">
+                    </div>
+                    <div>
+                        <div class="text-[9px] text-slate-500 mb-0.5">Tinggi Level</div>
+                        <input type="number" step="0.1" min="0" max="5" id="inputStageHeight" name="stage_height_m" value="{{ $stageHeight }}"
+                            class="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-xs font-bold text-white focus:ring-1 focus:ring-indigo-500">
+                    </div>
+                </div>
             </div>
 
-            <div class="space-y-2 text-[11px]">
-                <div class="flex items-center justify-between text-slate-400">
-                    <span>Dimensi Layar:</span>
-                    <div class="flex items-center gap-1 text-slate-200">
-                        <input type="number" step="0.5" min="0.5" max="30" id="inspectScreenWidthInput" value="6.0" class="w-14 px-1.5 py-0.5 rounded bg-slate-900 border border-slate-700 text-xs font-bold text-center text-white" title="Lebar (m)">
-                        <span>×</span>
-                        <input type="number" step="0.5" min="0.5" max="20" id="inspectScreenHeightInput" value="3.0" class="w-14 px-1.5 py-0.5 rounded bg-slate-900 border border-slate-700 text-xs font-bold text-center text-white" title="Tinggi (m)">
-                        <span class="text-[10px] text-slate-400">m</span>
+            <!-- Live 2D Blueprint Snapshot Previews (Tampak Atas with Compass & Tampak Depan for SPK Printout) -->
+            <div class="space-y-1">
+                <div class="flex items-center justify-between text-[11px]">
+                    <span class="font-bold uppercase tracking-wider text-slate-400">Blueprint 2D SPK (Atas & Depan)</span>
+                    <span class="text-[10px] text-emerald-400 font-semibold" id="blueprintStatus">✓ 2 Gambar Siap</span>
+                </div>
+                <div class="grid grid-cols-2 gap-2 h-16">
+                    <!-- Tampak Atas (Top Plan) with Compass -->
+                    <div class="bg-slate-900 rounded-lg border border-slate-800 p-1 flex flex-col items-center justify-center overflow-hidden relative">
+                        <span class="absolute top-1 left-1 text-[8px] bg-slate-950/85 px-1 rounded text-cyan-400 font-bold z-10 border border-slate-800">Tampak Atas (Kompas)</span>
+                        <img id="blueprintThumbnail" src="{{ $savedImage ?: '' }}" alt="Blueprint Tampak Atas" class="max-h-full object-contain rounded {{ $savedImage ? '' : 'hidden' }}">
+                        <div id="blueprintPlaceholder" class="text-[9px] text-slate-500 text-center {{ $savedImage ? 'hidden' : '' }}">
+                            Denah Atas
+                        </div>
+                    </div>
+                    <!-- Tampak Depan (Front Elevation) without Compass -->
+                    <div class="bg-slate-900 rounded-lg border border-slate-800 p-1 flex flex-col items-center justify-center overflow-hidden relative">
+                        <span class="absolute top-1 left-1 text-[8px] bg-slate-950/85 px-1 rounded text-amber-400 font-bold z-10 border border-slate-800">Tampak Depan</span>
+                        <img id="blueprintFrontThumbnail" src="{{ $savedFrontImage ?: '' }}" alt="Blueprint Tampak Depan" class="max-h-full object-contain rounded {{ $savedFrontImage ? '' : 'hidden' }}">
+                        <div id="blueprintFrontPlaceholder" class="text-[9px] text-slate-500 text-center {{ $savedFrontImage ? 'hidden' : '' }}">
+                            Elevasi Depan
+                        </div>
                     </div>
                 </div>
-                
-                <!-- Pos X Slider -->
-                <div>
-                    <div class="flex justify-between text-slate-400 mb-0.5">
-                        <span>Geser Kiri / Kanan (X):</span>
-                        <span class="font-bold text-indigo-400" id="inspectPosXVal">0.0m</span>
-                    </div>
-                    <input type="range" id="inspectPosX" min="-6" max="6" step="0.1" value="0" class="w-full accent-indigo-500">
-                </div>
+            </div>
 
-                <!-- Pos Z Slider (Maju / Mundur) -->
-                <div>
-                    <div class="flex justify-between text-slate-400 mb-0.5">
-                        <span>Maju / Mundur (Z):</span>
-                        <span class="font-bold text-indigo-400" id="inspectPosZVal">-1.5m</span>
-                    </div>
-                    <input type="range" id="inspectPosZ" min="-4" max="2" step="0.1" value="-1.5" class="w-full accent-indigo-500">
+            <!-- Add Panel & Screen Action Buttons (CRUD) -->
+            <div class="flex flex-col justify-end space-y-1.5">
+                <div class="text-[11px] text-slate-400 flex items-center justify-between">
+                    <span>Total Layar Aktif di Panggung:</span>
+                    <span class="font-bold text-indigo-400" id="stageScreenCountBadge">1 Layar</span>
                 </div>
-
-                <!-- Rotation Y (Wing Angle) -->
-                <div>
-                    <div class="flex justify-between text-slate-400 mb-0.5">
-                        <span>Kemiringan Sayap (Rotasi):</span>
-                        <span class="font-bold text-amber-400" id="inspectRotYVal">0°</span>
-                    </div>
-                    <input type="range" id="inspectRotY" min="-45" max="45" step="5" value="0" class="w-full accent-amber-500">
-                </div>
-
-                <!-- Rigging Type Toggle -->
-                <div class="pt-1 border-t border-slate-800 flex items-center justify-between">
-                    <span class="text-slate-400">Metode Pasang:</span>
-                    <select id="inspectRigging" class="bg-slate-900 border border-slate-700 rounded px-2 py-0.5 text-slate-200 text-[10px]">
-                        <option value="ground_stake">Ground Stack (Lantai)</option>
-                        <option value="hanging">Hanging (Truss Gantung)</option>
-                    </select>
-                </div>
-
-                <!-- Delete Screen Button (Panel CRUD) -->
-                <div class="pt-2 border-t border-slate-800">
-                    <button type="button" id="btnDeleteScreen" class="w-full py-1.5 px-3 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-md shadow-rose-900/40 transition-colors">
-                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                        <span>Hapus Panel Layar Ini</span>
+                <div class="flex items-center gap-1.5">
+                    <button type="button" id="btnAddCustomScreen" class="py-1.5 px-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold text-white transition-all flex items-center justify-center gap-1 shadow-xs" title="Tambah Panel Baru">
+                        <span>+ Panel</span>
+                    </button>
+                    <button type="button" id="btnAddWingScreen" class="py-1.5 px-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-semibold text-slate-200 transition-all flex items-center justify-center gap-1" title="Tambah Layar Sayap (Wing)">
+                        <span>+ Sayap</span>
+                    </button>
+                    <button type="button" id="btnRefreshBlueprint" class="py-1.5 px-2 rounded-lg bg-indigo-600/20 hover:bg-indigo-600/30 border border-indigo-500/30 text-xs font-semibold text-indigo-300" title="Render Ulang Blueprint 2D">
+                        🔄 Render
                     </button>
                 </div>
             </div>
         </div>
-    </div>
-
-    <!-- Bottom Stage Configuration & 2D Blueprint Preview Bar -->
-    <div class="p-4 bg-slate-950 border-t border-slate-800 grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
-        <!-- Stage Dimensions Inputs (Supports 0 for flat indoor ground/floor) -->
-        <div class="space-y-1">
-            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400">Ukuran Panggung Lapangan (Meter)</label>
-            <div class="grid grid-cols-3 gap-2">
-                <div>
-                    <div class="text-[9px] text-slate-500 mb-0.5">Lebar (0 = Tanpa)</div>
-                    <input type="number" step="0.5" min="0" max="50" id="inputStageWidth" name="stage_width_m" value="{{ $stageWidth }}"
-                        class="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-xs font-bold text-white focus:ring-1 focus:ring-indigo-500">
-                </div>
-                <div>
-                    <div class="text-[9px] text-slate-500 mb-0.5">Kedalaman (Maju)</div>
-                    <input type="number" step="0.5" min="0" max="30" id="inputStageDepth" name="stage_depth_m" value="{{ $stageDepth }}"
-                        class="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-xs font-bold text-white focus:ring-1 focus:ring-indigo-500">
-                </div>
-                <div>
-                    <div class="text-[9px] text-slate-500 mb-0.5">Tinggi Level</div>
-                    <input type="number" step="0.1" min="0" max="5" id="inputStageHeight" name="stage_height_m" value="{{ $stageHeight }}"
-                        class="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-xs font-bold text-white focus:ring-1 focus:ring-indigo-500">
-                </div>
-            </div>
-        </div>
-
-        <!-- Live 2D Blueprint Snapshot Previews (Tampak Atas with Compass & Tampak Depan for SPK Printout) -->
-        <div class="space-y-1">
-            <div class="flex items-center justify-between text-[11px]">
-                <span class="font-bold uppercase tracking-wider text-slate-400">Blueprint 2D SPK (Atas & Depan)</span>
-                <span class="text-[10px] text-emerald-400 font-semibold" id="blueprintStatus">✓ 2 Gambar Siap</span>
-            </div>
-            <div class="grid grid-cols-2 gap-2 h-16">
-                <!-- Tampak Atas (Top Plan) with Compass -->
-                <div class="bg-slate-900 rounded-lg border border-slate-800 p-1 flex flex-col items-center justify-center overflow-hidden relative">
-                    <span class="absolute top-1 left-1 text-[8px] bg-slate-950/85 px-1 rounded text-cyan-400 font-bold z-10 border border-slate-800">Tampak Atas (Kompas)</span>
-                    <img id="blueprintThumbnail" src="{{ $savedImage ?: '' }}" alt="Blueprint Tampak Atas" class="max-h-full object-contain rounded {{ $savedImage ? '' : 'hidden' }}">
-                    <div id="blueprintPlaceholder" class="text-[9px] text-slate-500 text-center {{ $savedImage ? 'hidden' : '' }}">
-                        Denah Atas
-                    </div>
-                </div>
-                <!-- Tampak Depan (Front Elevation) without Compass -->
-                <div class="bg-slate-900 rounded-lg border border-slate-800 p-1 flex flex-col items-center justify-center overflow-hidden relative">
-                    <span class="absolute top-1 left-1 text-[8px] bg-slate-950/85 px-1 rounded text-amber-400 font-bold z-10 border border-slate-800">Tampak Depan</span>
-                    <img id="blueprintFrontThumbnail" src="{{ $savedFrontImage ?: '' }}" alt="Blueprint Tampak Depan" class="max-h-full object-contain rounded {{ $savedFrontImage ? '' : 'hidden' }}">
-                    <div id="blueprintFrontPlaceholder" class="text-[9px] text-slate-500 text-center {{ $savedFrontImage ? 'hidden' : '' }}">
-                        Elevasi Depan
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Add Panel & Screen Action Buttons (CRUD) -->
-        <div class="flex flex-col justify-end space-y-1.5">
-            <div class="text-[11px] text-slate-400 flex items-center justify-between">
-                <span>Total Layar Aktif di Panggung:</span>
-                <span class="font-bold text-indigo-400" id="stageScreenCountBadge">1 Layar</span>
-            </div>
-            <div class="flex items-center gap-1.5">
-                <button type="button" id="btnAddCustomScreen" class="py-1.5 px-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold text-white transition-all flex items-center justify-center gap-1 shadow-xs" title="Tambah Panel Baru">
-                    <span>+ Panel</span>
-                </button>
-                <button type="button" id="btnAddWingScreen" class="py-1.5 px-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-semibold text-slate-200 transition-all flex items-center justify-center gap-1" title="Tambah Layar Sayap (Wing)">
-                    <span>+ Sayap</span>
-                </button>
-                <button type="button" id="btnRefreshBlueprint" class="py-1.5 px-2 rounded-lg bg-indigo-600/20 hover:bg-indigo-600/30 border border-indigo-500/30 text-xs font-semibold text-indigo-300" title="Render Ulang Blueprint 2D">
-                    🔄 Render
-                </button>
-            </div>
-        </div>
-    </div>
-    </div>
+    @endif
 
     <!-- Hidden Inputs to bind with Laravel Form -->
     <input type="hidden" name="stage_layout_json" id="inputStageLayoutJson" value="{{ $layoutJsonString }}">
@@ -296,6 +305,7 @@
 <!-- STAGE DESIGNER 3D & 2D ENGINE SCRIPT -->
 <script>
 (function() {
+    const isEditable = {{ $isEditable ? 'true' : 'false' }};
     let container, canvasDiv, renderer, scene, camera, controls;
     let stageMesh, stageGrid, stageEdgeBorder, trussGroup;
     let screenObjects = [];
@@ -439,9 +449,11 @@
 
         // 9. Attach Event Listeners
         window.addEventListener('resize', onWindowResize);
-        renderer.domElement.addEventListener('pointerdown', onPointerDown);
-        renderer.domElement.addEventListener('pointermove', onPointerMove);
-        window.addEventListener('pointerup', onPointerUp);
+        if (isEditable) {
+            renderer.domElement.addEventListener('pointerdown', onPointerDown);
+            renderer.domElement.addEventListener('pointermove', onPointerMove);
+            window.addEventListener('pointerup', onPointerUp);
+        }
 
         setupControlsUI();
 
@@ -721,6 +733,7 @@
     }
 
     function onPointerDown(event) {
+        if (!isEditable) return;
         if (event.button !== 0) return; // Only left-click drag
 
         const hit = getIntersectedScreen(event);
@@ -831,6 +844,7 @@
     }
 
     function onPointerMove(event) {
+        if (!isEditable) return;
         if (!isDragging || !selectedScreen) return;
 
         const rect = renderer.domElement.getBoundingClientRect();
@@ -905,6 +919,7 @@
 
     // Select a screen and open inspector
     function selectScreen(screenObj) {
+        if (!isEditable) return;
         screenObjects.forEach(so => {
             if (so.outline) so.outline.material.visible = false;
         });

@@ -268,8 +268,8 @@
 
             <!-- Collapsible Form for Crew to Submit / Update -->
             <details class="group" {{ $order->spkAssignment->qc_status === 'pending' ? 'open' : '' }}>
-                <summary class="cursor-pointer text-xs font-bold text-indigo-400 hover:text-indigo-300 flex items-center justify-between py-1">
-                    <span>📝 {{ $order->spkAssignment->qc_verified_at ? 'Perbarui Laporan QC / BAST' : 'Isi Laporan Uji Kelayakan & BAST' }}</span>
+                <summary class="cursor-pointer text-xs font-bold text-indigo-400 hover:text-indigo-300 flex items-center justify-between py-2 px-3 rounded-xl bg-slate-900/60 border border-slate-700/60">
+                    <span>✏️ {{ $order->spkAssignment->qc_verified_at ? 'Edit / Perbarui Laporan QC & Foto' : 'Isi Laporan Uji Kelayakan & BAST' }}</span>
                     <span class="group-open:rotate-180 transition-transform">▼</span>
                 </summary>
 
@@ -311,9 +311,30 @@
                         </div>
                     </div>
 
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-300 mb-1">Foto Bukti Layar Panggung (BAST Visual)</label>
-                        <input type="file" name="qc_photo" accept="image/*" capture="environment" class="w-full text-xs text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-700 file:text-slate-200">
+                    <div class="space-y-2 bg-slate-900/70 p-3 rounded-lg border border-slate-700/60">
+                        <label class="block text-[11px] font-bold text-slate-300">Foto Bukti Layar Panggung (BAST Visual)</label>
+                        <input type="hidden" name="remove_qc_photo" id="remove_qc_photo_live" value="0">
+                        
+                        <div class="relative w-full h-36 rounded-lg border border-slate-700 bg-slate-950 flex items-center justify-center overflow-hidden">
+                            <img id="live_qc_photo_preview" src="{{ $order->spkAssignment->qc_photo_path ? asset('storage/' . $order->spkAssignment->qc_photo_path) : '' }}" alt="QC Layar" class="w-full h-full object-cover {{ $order->spkAssignment->qc_photo_path ? '' : 'hidden' }}">
+                            <div id="live_qc_photo_placeholder" class="text-center p-3 text-slate-500 {{ $order->spkAssignment->qc_photo_path ? 'hidden' : '' }}">
+                                <svg class="w-8 h-8 mx-auto mb-1 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                <span class="text-[10px]">Belum ada foto panggung yang diunggah</span>
+                            </div>
+                        </div>
+
+                        <input type="file" name="qc_photo" id="live_qc_photo_input" accept="image/*" capture="environment" class="w-full text-xs text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-700 file:text-slate-200 cursor-pointer">
+
+                        <div class="flex items-center justify-between pt-1">
+                            <span class="text-[10px] text-slate-500">Kamera atau Galeri HP</span>
+                            <div class="flex items-center gap-2">
+                                <button type="button" id="btn_delete_live_qc_photo" class="{{ $order->spkAssignment->qc_photo_path ? '' : 'hidden' }} text-[11px] font-bold text-rose-400 hover:text-rose-300 hover:underline">🗑️ Hapus Foto</button>
+                                <button type="button" id="btn_undo_live_qc_photo" class="hidden text-[11px] font-bold text-amber-400 hover:underline">↩️ Batal Hapus</button>
+                            </div>
+                        </div>
                     </div>
 
                     <div>
@@ -322,7 +343,7 @@
                     </div>
 
                     <button type="submit" class="w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/30 transition-all">
-                        <span>Kirim Laporan QC & BAST ke Kantor</span>
+                        <span>{{ $order->spkAssignment->qc_verified_at ? 'Simpan Perubahan Laporan QC & BAST' : 'Kirim Laporan QC & BAST ke Kantor' }}</span>
                     </button>
                 </form>
             </details>
@@ -333,6 +354,61 @@
         Omah Visual LED ERP System • Halaman Resmi Tim Lapangan
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const fileInp = document.getElementById('live_qc_photo_input');
+    const preview = document.getElementById('live_qc_photo_preview');
+    const placeholder = document.getElementById('live_qc_photo_placeholder');
+    const removeInp = document.getElementById('remove_qc_photo_live');
+    const btnDelete = document.getElementById('btn_delete_live_qc_photo');
+    const btnUndo = document.getElementById('btn_undo_live_qc_photo');
+    const originalSrc = "{{ $order->spkAssignment->qc_photo_path ? asset('storage/' . $order->spkAssignment->qc_photo_path) : '' }}";
+
+    fileInp?.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                preview.src = evt.target.result;
+                preview.classList.remove('hidden');
+                placeholder.classList.add('hidden');
+                if (removeInp) removeInp.value = '0';
+                btnDelete?.classList.remove('hidden');
+                btnUndo?.classList.add('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    btnDelete?.addEventListener('click', function() {
+        if (preview) {
+            preview.src = '';
+            preview.classList.add('hidden');
+        }
+        placeholder?.classList.remove('hidden');
+        if (fileInp) fileInp.value = '';
+        if (removeInp) removeInp.value = '1';
+        btnDelete?.classList.add('hidden');
+        if (originalSrc && btnUndo) {
+            btnUndo.classList.remove('hidden');
+        }
+    });
+
+    btnUndo?.addEventListener('click', function() {
+        if (originalSrc) {
+            if (preview) {
+                preview.src = originalSrc;
+                preview.classList.remove('hidden');
+            }
+            placeholder?.classList.add('hidden');
+            if (removeInp) removeInp.value = '0';
+            btnDelete?.classList.remove('hidden');
+            btnUndo?.classList.add('hidden');
+        }
+    });
+});
+</script>
 
 </body>
 </html>

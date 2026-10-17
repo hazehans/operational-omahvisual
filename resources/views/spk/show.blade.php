@@ -3,7 +3,16 @@
 @section('title', 'SPK ' . $assignment->spk_number . ' - Omah Visual')
 
 @section('content')
-<div class="space-y-6" x-data="{ activeTab: 1, showAssignModal: false, showQcModal: false }">
+<div class="space-y-6" x-data="{
+    activeTab: 1,
+    showAssignModal: false,
+    showQcModal: false,
+    showAddItemModal: false,
+    addItemPage: 2,
+    filterOnlyQty: false,
+    showEditItemModal: false,
+    editItem: { id: null, name: '', detail: '', qty: 1, unit: 'Pcs' }
+}">
     <!-- Header with Action -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
@@ -144,6 +153,14 @@
                                     <div class="mt-2 text-base font-bold text-slate-900 dark:text-white">{{ $assignment->departure_pic_warehouse_name }}</div>
                                 </div>
                             </div>
+                            <div class="mt-4 pt-3 border-t border-indigo-200 dark:border-slate-800 flex justify-end">
+                                <form action="{{ route('spk.reset-departure', $assignment) }}" method="POST" onsubmit="return confirm('Batalkan pengesahan keberangkatan? Anda dapat mengedit nama PIC dan mengesahkan ulang.');">
+                                    @csrf
+                                    <button type="submit" class="px-3 py-1.5 rounded-lg bg-indigo-100 hover:bg-rose-100 text-indigo-700 hover:text-rose-700 dark:bg-slate-800 dark:hover:bg-rose-900/40 dark:text-indigo-300 dark:hover:text-rose-300 text-xs font-bold transition-colors flex items-center gap-1.5">
+                                        <span>↩️ Batalkan / Edit Ulang Pengesahan Keberangkatan</span>
+                                    </button>
+                                </form>
+                            </div>
                         @else
                             <form action="{{ route('spk.verify-departure', $assignment) }}" method="POST" class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
                                 @csrf
@@ -239,9 +256,9 @@
                     </div>
                 </div>
 
-                <!-- Strict Rule Banner -->
-                <div class="text-center py-2 px-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-700 dark:text-amber-400 font-extrabold text-xs tracking-wider uppercase">
-                    ⚠️ PIC Kepulangan Barang Wajib Orang yg Berbeda dari Keberangkatan
+                <!-- Info Banner -->
+                <div class="text-center py-2 px-4 rounded-xl bg-slate-100 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 text-xs">
+                    ℹ️ PIC Kepulangan dapat diserahkan ke PIC yang sama atau PIC pengganti di lapangan.
                 </div>
 
                 <!-- Red Banner: KEPULANGAN -->
@@ -268,12 +285,20 @@
                                     <div class="mt-2 text-base font-bold text-slate-900 dark:text-white">{{ $assignment->return_pic_warehouse_name }}</div>
                                 </div>
                             </div>
+                            <div class="mt-4 pt-3 border-t border-rose-200 dark:border-slate-800 flex justify-end">
+                                <form action="{{ route('spk.reset-return', $assignment) }}" method="POST" onsubmit="return confirm('Batalkan pengesahan kepulangan? Anda dapat mengedit nama PIC dan mengesahkan ulang.');">
+                                    @csrf
+                                    <button type="submit" class="px-3 py-1.5 rounded-lg bg-rose-100 hover:bg-rose-200 text-rose-700 hover:text-rose-800 dark:bg-slate-800 dark:hover:bg-rose-900/40 dark:text-rose-300 dark:hover:text-rose-200 text-xs font-bold transition-colors flex items-center gap-1.5">
+                                        <span>↩️ Batalkan / Edit Ulang Pengesahan Kepulangan</span>
+                                    </button>
+                                </form>
+                            </div>
                         @else
                             <form action="{{ route('spk.verify-return', $assignment) }}" method="POST" class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
                                 @csrf
                                 <div>
                                     <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Nama PIC Event Kepulangan *</label>
-                                    <input type="text" name="return_pic_event_name" value="{{ old('return_pic_event_name') }}" required placeholder="Wajib beda orang!" class="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-sm">
+                                    <input type="text" name="return_pic_event_name" value="{{ old('return_pic_event_name', $assignment->crew_pic_event_name ?? $assignment->departure_pic_event_name) }}" required placeholder="Nama PIC Event Kepulangan" class="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-sm">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Nama PIC Gudang Kepulangan *</label>
@@ -324,13 +349,18 @@
     <!-- TAB 2: HALAMAN 2 - CHECKLIST BARANG KERJA TEAM -->
     <div x-show="activeTab === 2" class="space-y-4">
         <div class="bg-white dark:bg-slate-900/60 p-6 rounded-2xl border border-slate-200 dark:border-slate-800/80 shadow-xs">
-            <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3 mb-4">
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-3 mb-4">
                 <div>
                     <h2 class="text-base font-bold text-slate-900 dark:text-white">Checklist Barang Kerja TEAM Omahvisual LED</h2>
                     <p class="text-xs text-slate-500">Kabinet, kabel jumper, panel listrik, ground stake, stage level, dan 13 item toolbox.</p>
                 </div>
-                <div class="text-xs font-semibold text-slate-500">
-                    Klik kotak untuk menandai status keluar dan kembali secara instan.
+                <div class="flex items-center gap-2">
+                    <button type="button" @click="filterOnlyQty = !filterOnlyQty" :class="filterOnlyQty ? 'bg-indigo-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'" class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 border border-slate-300 dark:border-slate-700">
+                        <span x-text="filterOnlyQty ? '✓ Filter: Hanya QTY > 0' : '🔍 Filter: QTY > 0'"></span>
+                    </button>
+                    <button type="button" @click="addItemPage = 2; showAddItemModal = true" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-xs transition-colors flex items-center gap-1.5">
+                        <span>+ Tambah Barang (Lembar 2)</span>
+                    </button>
                 </div>
             </div>
 
@@ -344,7 +374,7 @@
                             <th class="px-3 py-2.5 w-20 text-center">QTY</th>
                             <th class="px-3 py-2.5 w-24 text-center bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-400 font-bold">Keluar</th>
                             <th class="px-3 py-2.5 w-24 text-center bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400 font-bold">Kembali</th>
-                            <th class="px-3 py-2.5 w-48 text-center">Catatan & Aksi Pasca-Event</th>
+                            <th class="px-3 py-2.5 w-56 text-center">Catatan & Aksi Pasca-Event</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
@@ -358,11 +388,15 @@
                                     </td>
                                 </tr>
                             @endif
-                            <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30">
+                            <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30" :class="filterOnlyQty && {{ $item->quantity <= 0 ? 'true' : 'false' }} ? 'hidden' : ''">
                                 <td class="px-3 py-2 text-center text-slate-400">{{ $no++ }}</td>
                                 <td class="px-3 py-2 font-semibold text-slate-900 dark:text-white">{{ $item->item_name }}</td>
                                 <td class="px-3 py-2 text-slate-500">{{ $item->item_detail ?? '-' }}</td>
-                                <td class="px-3 py-2 text-center font-bold">{{ $item->quantity }} {{ $item->unit }}</td>
+                                <td class="px-3 py-2 text-center font-bold">
+                                    <span class="cursor-pointer hover:text-indigo-600" @click="editItem = { id: {{ $item->id }}, name: '{{ addslashes($item->item_name) }}', detail: '{{ addslashes($item->item_detail ?? '') }}', qty: {{ $item->quantity }}, unit: '{{ addslashes($item->unit) }}' }; showEditItemModal = true" title="Klik untuk ubah QTY">
+                                        {{ $item->quantity }} {{ $item->unit }}
+                                    </span>
+                                </td>
                                 <td class="px-3 py-2 text-center bg-indigo-50/30 dark:bg-indigo-950/20">
                                     <input type="checkbox" {{ $item->checked_out ? 'checked' : '' }} onchange="toggleChecklistItem({{ $item->id }}, 'checked_out', this.checked)" class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer">
                                 </td>
@@ -375,6 +409,20 @@
                                             📝 <span class="note-text">{{ $item->condition_notes }}</span>
                                         </div>
                                         <div class="flex items-center justify-center gap-1.5">
+                                            <button type="button" @click="editItem = { id: {{ $item->id }}, name: '{{ addslashes($item->item_name) }}', detail: '{{ addslashes($item->item_detail ?? '') }}', qty: {{ $item->quantity }}, unit: '{{ addslashes($item->unit) }}' }; showEditItemModal = true" class="p-1 rounded hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400" title="Edit QTY & Detail">
+                                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                </svg>
+                                            </button>
+                                            <form action="{{ route('spk.items.destroy', $item) }}" method="POST" class="inline" onsubmit="return confirm('Hapus item {{ addslashes($item->item_name) }} dari checklist SPK?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="p-1 rounded hover:bg-rose-100 dark:hover:bg-rose-900/40 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400" title="Hapus Item">
+                                                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                    </svg>
+                                                </button>
+                                            </form>
                                             <button type="button" onclick="editItemNote({{ $item->id }})" class="p-1 rounded hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200" title="Tambah / Edit Catatan">
                                                 <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
@@ -400,13 +448,18 @@
     <!-- TAB 3: HALAMAN 3 - CHECKLIST PIC -->
     <div x-show="activeTab === 3" class="space-y-4">
         <div class="bg-white dark:bg-slate-900/60 p-6 rounded-2xl border border-slate-200 dark:border-slate-800/80 shadow-xs">
-            <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3 mb-4">
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-3 mb-4">
                 <div>
                     <h2 class="text-base font-bold text-slate-900 dark:text-white">CHECKLIST PIC Omahvisual LED</h2>
                     <p class="text-xs text-slate-500">Kit operator laptop/capture card, Novastar VX series, modul spare part, rigging gantung, peralatan tidur.</p>
                 </div>
-                <div class="text-xs font-semibold text-slate-500">
-                    Klik kotak untuk menandai status keluar dan kembali secara instan.
+                <div class="flex items-center gap-2">
+                    <button type="button" @click="filterOnlyQty = !filterOnlyQty" :class="filterOnlyQty ? 'bg-indigo-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'" class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 border border-slate-300 dark:border-slate-700">
+                        <span x-text="filterOnlyQty ? '✓ Filter: Hanya QTY > 0' : '🔍 Filter: QTY > 0'"></span>
+                    </button>
+                    <button type="button" @click="addItemPage = 3; showAddItemModal = true" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-xs transition-colors flex items-center gap-1.5">
+                        <span>+ Tambah Barang (Lembar 3)</span>
+                    </button>
                 </div>
             </div>
 
@@ -420,7 +473,7 @@
                             <th class="px-3 py-2.5 w-20 text-center">QTY</th>
                             <th class="px-3 py-2.5 w-24 text-center bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-400 font-bold">Keluar</th>
                             <th class="px-3 py-2.5 w-24 text-center bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400 font-bold">Kembali</th>
-                            <th class="px-3 py-2.5 w-48 text-center">Catatan & Aksi Pasca-Event</th>
+                            <th class="px-3 py-2.5 w-56 text-center">Catatan & Aksi Pasca-Event</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
@@ -434,11 +487,15 @@
                                     </td>
                                 </tr>
                             @endif
-                            <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30">
+                            <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30" :class="filterOnlyQty && {{ $item->quantity <= 0 ? 'true' : 'false' }} ? 'hidden' : ''">
                                 <td class="px-3 py-2 text-center text-slate-400">{{ $no++ }}</td>
                                 <td class="px-3 py-2 font-semibold text-slate-900 dark:text-white">{{ $item->item_name }}</td>
                                 <td class="px-3 py-2 text-slate-500">{{ $item->item_detail ?? '-' }}</td>
-                                <td class="px-3 py-2 text-center font-bold">{{ $item->quantity }} {{ $item->unit }}</td>
+                                <td class="px-3 py-2 text-center font-bold">
+                                    <span class="cursor-pointer hover:text-indigo-600" @click="editItem = { id: {{ $item->id }}, name: '{{ addslashes($item->item_name) }}', detail: '{{ addslashes($item->item_detail ?? '') }}', qty: {{ $item->quantity }}, unit: '{{ addslashes($item->unit) }}' }; showEditItemModal = true" title="Klik untuk ubah QTY">
+                                        {{ $item->quantity }} {{ $item->unit }}
+                                    </span>
+                                </td>
                                 <td class="px-3 py-2 text-center bg-indigo-50/30 dark:bg-indigo-950/20">
                                     <input type="checkbox" {{ $item->checked_out ? 'checked' : '' }} onchange="toggleChecklistItem({{ $item->id }}, 'checked_out', this.checked)" class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer">
                                 </td>
@@ -451,6 +508,20 @@
                                             📝 <span class="note-text">{{ $item->condition_notes }}</span>
                                         </div>
                                         <div class="flex items-center justify-center gap-1.5">
+                                            <button type="button" @click="editItem = { id: {{ $item->id }}, name: '{{ addslashes($item->item_name) }}', detail: '{{ addslashes($item->item_detail ?? '') }}', qty: {{ $item->quantity }}, unit: '{{ addslashes($item->unit) }}' }; showEditItemModal = true" class="p-1 rounded hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400" title="Edit QTY & Detail">
+                                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                </svg>
+                                            </button>
+                                            <form action="{{ route('spk.items.destroy', $item) }}" method="POST" class="inline" onsubmit="return confirm('Hapus item {{ addslashes($item->item_name) }} dari checklist SPK?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="p-1 rounded hover:bg-rose-100 dark:hover:bg-rose-900/40 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400" title="Hapus Item">
+                                                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                    </svg>
+                                                </button>
+                                            </form>
                                             <button type="button" onclick="editItemNote({{ $item->id }})" class="p-1 rounded hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200" title="Tambah / Edit Catatan">
                                                 <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
@@ -653,6 +724,147 @@
                         </button>
                         <button type="submit" class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-md">
                             Simpan Verifikasi QC
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 3: TAMBAH BARANG MANUAL KE SPK -->
+    <div x-show="showAddItemModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div x-show="showAddItemModal" @click="showAddItemModal = false" class="fixed inset-0 bg-black/60 transition-opacity" aria-hidden="true"></div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+            <div class="relative z-10 inline-block align-bottom bg-white dark:bg-slate-900 rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full border border-slate-300 dark:border-slate-700">
+                <form action="{{ route('spk.items.store', $assignment) }}" method="POST">
+                    @csrf
+                    <div class="p-6 space-y-4">
+                        <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+                            <div>
+                                <h3 class="text-lg font-bold text-slate-900 dark:text-white">Tambah Barang ke SPK</h3>
+                                <p class="text-xs text-slate-500">Masukkan barang tambahan sesuai kebutuhan spesifik event.</p>
+                            </div>
+                            <button type="button" @click="showAddItemModal = false" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xl font-bold">&times;</button>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Target Halaman / Lembar *</label>
+                            <select name="page_number" x-model="addItemPage" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white font-bold">
+                                <option value="2">Halaman 2: Checklist Barang Kerja Team</option>
+                                <option value="3">Halaman 3: Checklist PIC (Kit Operator & Spares)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Kategori Barang *</label>
+                            <input type="text" name="category" list="checklist_categories" required placeholder="Contoh: KABEL & DISTRIBUSI, TOOLBOX, RIGGING, dll." class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white">
+                            <datalist id="checklist_categories">
+                                <option value="KABINET LED & HARDCASE">
+                                <option value="KABEL POWER & DATA JUMPER">
+                                <option value="PANEL LISTRIK & DISTRIBUSI">
+                                <option value="GROUND STAKE & TRUSS">
+                                <option value="STAGE LEVEL & LEVELING">
+                                <option value="13 ITEM TOOLBOX TEAM">
+                                <option value="VIDEO PROCESSOR & SENDING CARD">
+                                <option value="OPERATOR KIT & LAPTOP">
+                                <option value="SPARE PARTS & MODULE CADANGAN">
+                                <option value="PERALATAN TIDUR & CAMPING KRU">
+                            </datalist>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Nama Barang Bawaan *</label>
+                            <input type="text" name="item_name" required placeholder="Nama barang bawaan..." class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Jumlah (QTY) *</label>
+                                <input type="number" name="quantity" min="0" value="1" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white font-bold">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Satuan *</label>
+                                <input type="text" name="unit" list="unit_options" value="Pcs" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white">
+                                <datalist id="unit_options">
+                                    <option value="Pcs">
+                                    <option value="Box">
+                                    <option value="Unit">
+                                    <option value="Roll">
+                                    <option value="Batang">
+                                    <option value="Set">
+                                    <option value="Meter">
+                                </datalist>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Detail / Keterangan Spesifik (Opsional)</label>
+                            <input type="text" name="item_detail" placeholder="Contoh: Panjang 15m, Warna Biru, Cadangan..." class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white">
+                        </div>
+                    </div>
+
+                    <div class="px-6 py-4 bg-slate-50 dark:bg-slate-950/60 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-3">
+                        <button type="button" @click="showAddItemModal = false" class="px-4 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold">
+                            Batal
+                        </button>
+                        <button type="submit" class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-md">
+                            + Tambah ke Checklist
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 4: EDIT ITEM CHECKLIST (showEditItemModal) -->
+    <div x-show="showEditItemModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div x-show="showEditItemModal" @click="showEditItemModal = false" class="fixed inset-0 bg-black/60 transition-opacity" aria-hidden="true"></div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+            <div class="relative z-10 inline-block align-bottom bg-white dark:bg-slate-900 rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full border border-slate-300 dark:border-slate-700">
+                <form :action="'/spk/items/' + editItem.id" method="POST">
+                    @csrf
+                    @method('PUT')
+                    <div class="p-6 space-y-4">
+                        <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+                            <div>
+                                <h3 class="text-lg font-bold text-slate-900 dark:text-white">Edit Item Checklist</h3>
+                                <p class="text-xs text-slate-500">Sesuaikan kuantitas bawaan atau keterangan item.</p>
+                            </div>
+                            <button type="button" @click="showEditItemModal = false" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xl font-bold">&times;</button>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Nama Barang *</label>
+                            <input type="text" name="item_name" x-model="editItem.name" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Jumlah (QTY) *</label>
+                                <input type="number" name="quantity" min="0" x-model="editItem.qty" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white font-bold">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Satuan *</label>
+                                <input type="text" name="unit" list="unit_options" x-model="editItem.unit" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Detail / Keterangan</label>
+                            <input type="text" name="item_detail" x-model="editItem.detail" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white">
+                        </div>
+                    </div>
+
+                    <div class="px-6 py-4 bg-slate-50 dark:bg-slate-950/60 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-3">
+                        <button type="button" @click="showEditItemModal = false" class="px-4 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold">
+                            Batal
+                        </button>
+                        <button type="submit" class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md">
+                            Simpan Perubahan Item
                         </button>
                     </div>
                 </form>

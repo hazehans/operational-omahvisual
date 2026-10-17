@@ -167,7 +167,7 @@ class EventOrderAndSpkManagementTest extends TestCase
         $this->assertEquals('loading', $assignment->eventOrder->status);
     }
 
-    public function test_return_gate_enforces_different_pic_rule(): void
+    public function test_return_gate_allows_same_pic_and_supports_reset(): void
     {
         $assignment = SpkAssignment::factory()->create([
             'departure_status' => 'verified',
@@ -176,26 +176,31 @@ class EventOrderAndSpkManagementTest extends TestCase
             'return_status' => 'pending',
         ]);
 
-        // Attempt return verification with IDENTICAL PIC name
+        // Attempt return verification with IDENTICAL PIC name (now allowed)
         $response = $this->actingAs($this->user)->post(route('spk.verify-return', $assignment), [
             'return_pic_event_name' => 'Boby PIC',
             'return_pic_warehouse_name' => 'Pak Joko Gudang',
         ]);
 
-        $response->assertSessionHasErrors('return_pic_event_name');
-        $assignment->refresh();
-        $this->assertEquals('pending', $assignment->return_status);
-
-        // Now attempt with a DIFFERENT PIC name
-        $successResponse = $this->actingAs($this->user)->post(route('spk.verify-return', $assignment), [
-            'return_pic_event_name' => 'Yoga PIC Kepulangan',
-            'return_pic_warehouse_name' => 'Pak Joko Gudang',
-        ]);
-
-        $successResponse->assertSessionHasNoErrors();
+        $response->assertSessionHasNoErrors();
         $assignment->refresh();
         $this->assertEquals('verified', $assignment->return_status);
+        $this->assertEquals('Boby PIC', $assignment->return_pic_event_name);
         $this->assertEquals('completed', $assignment->eventOrder->status);
+
+        // Reset return gate
+        $resetReturnResponse = $this->actingAs($this->user)->post(route('spk.reset-return', $assignment));
+        $resetReturnResponse->assertSessionHasNoErrors();
+        $assignment->refresh();
+        $this->assertEquals('pending', $assignment->return_status);
+        $this->assertNull($assignment->return_pic_event_name);
+
+        // Reset departure gate
+        $resetDepResponse = $this->actingAs($this->user)->post(route('spk.reset-departure', $assignment));
+        $resetDepResponse->assertSessionHasNoErrors();
+        $assignment->refresh();
+        $this->assertEquals('pending', $assignment->departure_status);
+        $this->assertNull($assignment->departure_pic_event_name);
     }
 
     public function test_field_crew_can_access_live_view_without_login_via_token(): void
@@ -465,5 +470,44 @@ class EventOrderAndSpkManagementTest extends TestCase
 
         $item->refresh();
         $this->assertEquals('Soket powercon sedikit kendur pasca-event', $item->condition_notes);
+    }
+
+    public function test_user_can_add_update_and_delete_checklist_item(): void
+    {
+        $customer = Customer::factory()->create();
+        $order = EventOrder::factory()->create(['customer_id' => $customer->id]);
+        $assignment = SpkAssignment::factory()->create(['event_order_id' => $order->id]);
+
+        // Add item
+        $addResponse = $this->actingAs($this->user)->post(route('spk.items.store', $assignment), [
+            'page_number' => 2,
+            'category' => 'KABEL & DISTRIBUSI',
+            'item_name' => 'Kabel SDI 50m Drum',
+            'item_detail' => 'Kabel drum biru canare',
+            'quantity' => 2,
+            'unit' => 'Roll',
+        ]);
+        $addResponse->assertSessionHasNoErrors();
+
+        $item = SpkChecklistItem::where('item_name', 'Kabel SDI 50m Drum')->first();
+        $this->assertNotNull($item);
+        $this->assertEquals(2, $item->quantity);
+        $this->assertEquals('Roll', $item->unit);
+
+        // Update item
+        $updateResponse = $this->actingAs($this->user)->put(route('spk.items.update', $item), [
+            'item_name' => 'Kabel SDI 50m Drum Canare HD',
+            'quantity' => 4,
+            'unit' => 'Roll',
+        ]);
+        $updateResponse->assertSessionHasNoErrors();
+        $item->refresh();
+        $this->assertEquals(4, $item->quantity);
+        $this->assertEquals('Kabel SDI 50m Drum Canare HD', $item->item_name);
+
+        // Delete item
+        $deleteResponse = $this->actingAs($this->user)->delete(route('spk.items.destroy', $item));
+        $deleteResponse->assertSessionHasNoErrors();
+        $this->assertDatabaseMissing('spk_checklist_items', ['id' => $item->id]);
     }
 }

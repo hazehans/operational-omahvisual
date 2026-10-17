@@ -64,7 +64,8 @@ class SpkController extends Controller
     }
 
     /**
-     * Verify Return Gate (Kepulangan - Rule: PIC Kepulangan Wajib Orang yg Berbeda).
+     * Verify Return Gate (Kepulangan).
+     * Note: PIC Keberangkatan dan Kepulangan diperbolehkan orang yang sama bila bertugas penuh.
      */
     public function verifyReturn(Request $request, SpkAssignment $assignment): RedirectResponse
     {
@@ -73,16 +74,6 @@ class SpkController extends Controller
             'return_pic_warehouse_name' => ['required', 'string', 'max:255'],
             'return_notes' => ['nullable', 'string'],
         ]);
-
-        // Enforcement of business rule from spk_ref.pdf: PIC Kepulangan Barang Wajib Orang Berbeda
-        if (
-            ! empty($assignment->departure_pic_event_name) &&
-            strcasecmp(trim($assignment->departure_pic_event_name), trim($validated['return_pic_event_name'])) === 0
-        ) {
-            return back()->withErrors([
-                'return_pic_event_name' => 'Aturan Operasional Wajib: PIC Kepulangan Barang WAJIB orang yang berbeda dari PIC Keberangkatan ('.$assignment->departure_pic_event_name.')!',
-            ])->withInput();
-        }
 
         $assignment->update([
             'return_pic_event_name' => $validated['return_pic_event_name'],
@@ -95,6 +86,114 @@ class SpkController extends Controller
         $assignment->eventOrder->update(['status' => 'completed']);
 
         return back()->with('status', 'Pemeriksaan Kepulangan Berhasil Disahkan! Seluruh barang telah kembali ke gudang.');
+    }
+
+    /**
+     * Reset Departure Gate (Batalkan Pengesahan Keberangkatan untuk koreksi data).
+     */
+    public function resetDeparture(SpkAssignment $assignment): RedirectResponse
+    {
+        $assignment->update([
+            'departure_status' => 'pending',
+            'departure_datetime' => null,
+            'departure_pic_event_name' => null,
+            'departure_pic_warehouse_name' => null,
+        ]);
+
+        $assignment->eventOrder->update(['status' => 'confirmed']);
+
+        return back()->with('status', 'Pengesahan Keberangkatan berhasil dibatalkan. Anda dapat mengedit kembali.');
+    }
+
+    /**
+     * Reset Return Gate (Batalkan Pengesahan Kepulangan untuk koreksi data).
+     */
+    public function resetReturn(SpkAssignment $assignment): RedirectResponse
+    {
+        $assignment->update([
+            'return_status' => 'pending',
+            'return_datetime' => null,
+            'return_pic_event_name' => null,
+            'return_pic_warehouse_name' => null,
+        ]);
+
+        $assignment->eventOrder->update(['status' => 'loading']);
+
+        return back()->with('status', 'Pengesahan Kepulangan berhasil dibatalkan. Anda dapat mengedit kembali.');
+    }
+
+    /**
+     * Add a new item to SPK checklist (Page 2 or Page 3).
+     */
+    public function addChecklistItem(Request $request, SpkAssignment $assignment): RedirectResponse
+    {
+        $validated = $request->validate([
+            'page_number' => ['required', 'in:2,3'],
+            'category' => ['required', 'string', 'max:100'],
+            'item_name' => ['required', 'string', 'max:255'],
+            'item_detail' => ['nullable', 'string', 'max:255'],
+            'quantity' => ['required', 'integer', 'min:1'],
+            'unit' => ['nullable', 'string', 'max:50'],
+        ]);
+
+        $assignment->checklistItems()->create([
+            'page_number' => (int) $validated['page_number'],
+            'category' => $validated['category'],
+            'item_name' => $validated['item_name'],
+            'item_detail' => $validated['item_detail'] ?? null,
+            'quantity' => (int) $validated['quantity'],
+            'unit' => $validated['unit'] ?? 'Unit',
+            'checked_out' => false,
+            'checked_in' => false,
+        ]);
+
+        return back()->with('status', 'Barang baru berhasil ditambahkan ke Checklist!');
+    }
+
+    /**
+     * Update an item on SPK checklist (Quantity, Item Name, or Detail).
+     */
+    public function updateChecklistItem(Request $request, SpkChecklistItem $item): JsonResponse|RedirectResponse
+    {
+        $validated = $request->validate([
+            'quantity' => ['required', 'integer', 'min:0'],
+            'item_name' => ['nullable', 'string', 'max:255'],
+            'item_detail' => ['nullable', 'string', 'max:255'],
+            'unit' => ['nullable', 'string', 'max:50'],
+        ]);
+
+        $item->update([
+            'quantity' => (int) $validated['quantity'],
+            'item_name' => $validated['item_name'] ?? $item->item_name,
+            'item_detail' => $validated['item_detail'] ?? $item->item_detail,
+            'unit' => $validated['unit'] ?? $item->unit,
+        ]);
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'item' => $item,
+            ]);
+        }
+
+        return back()->with('status', 'Data item checklist berhasil diperbarui!');
+    }
+
+    /**
+     * Delete an item from SPK checklist.
+     */
+    public function deleteChecklistItem(Request $request, SpkChecklistItem $item): JsonResponse|RedirectResponse
+    {
+        $item->delete();
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Item berhasil dihapus dari checklist.',
+            ]);
+        }
+
+        return back()->with('status', 'Item berhasil dihapus dari checklist.');
     }
 
     /**
@@ -206,7 +305,15 @@ class SpkController extends Controller
         ]);
 
         $photoPath = $assignment->qc_photo_path;
-        if ($request->hasFile('qc_photo')) {
+        if ($request->boolean('remove_qc_photo')) {
+            if ($assignment->qc_photo_path) {
+                Storage::disk('public')->delete($assignment->qc_photo_path);
+            }
+            $photoPath = null;
+        } elseif ($request->hasFile('qc_photo')) {
+            if ($assignment->qc_photo_path) {
+                Storage::disk('public')->delete($assignment->qc_photo_path);
+            }
             $photoPath = $request->file('qc_photo')->store('venue-qc', 'public');
         }
 

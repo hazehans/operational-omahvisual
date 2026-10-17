@@ -102,7 +102,12 @@ Route::middleware('auth')->group(function () {
     Route::put('/spk/{assignment}/assignment', [SpkController::class, 'updateAssignment'])->name('spk.update-assignment');
     Route::post('/spk/{assignment}/qc', [SpkController::class, 'updateQc'])->name('spk.update-qc');
     Route::post('/spk/{assignment}/verify-departure', [SpkController::class, 'verifyDeparture'])->name('spk.verify-departure');
+    Route::post('/spk/{assignment}/reset-departure', [SpkController::class, 'resetDeparture'])->name('spk.reset-departure');
     Route::post('/spk/{assignment}/verify-return', [SpkController::class, 'verifyReturn'])->name('spk.verify-return');
+    Route::post('/spk/{assignment}/reset-return', [SpkController::class, 'resetReturn'])->name('spk.reset-return');
+    Route::post('/spk/{assignment}/items', [SpkController::class, 'addChecklistItem'])->name('spk.items.store');
+    Route::put('/spk/items/{item}', [SpkController::class, 'updateChecklistItem'])->name('spk.items.update');
+    Route::delete('/spk/items/{item}', [SpkController::class, 'deleteChecklistItem'])->name('spk.items.destroy');
     Route::post('/spk/items/{item}/toggle', [SpkController::class, 'toggleItem'])->name('spk.toggle-item');
 
     // User & Role Management (Superuser & Owner)
