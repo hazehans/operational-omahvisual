@@ -4,6 +4,7 @@ use App\Http\Controllers\AssetController;
 use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CrewController;
+use App\Http\Controllers\CrewPayrollController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EventOrderController;
@@ -113,6 +114,22 @@ Route::middleware('auth')->group(function () {
     Route::put('/spk/items/{item}', [SpkController::class, 'updateChecklistItem'])->name('spk.items.update');
     Route::delete('/spk/items/{item}', [SpkController::class, 'deleteChecklistItem'])->name('spk.items.destroy');
     Route::post('/spk/items/{item}/toggle', [SpkController::class, 'toggleItem'])->name('spk.toggle-item');
+
+    // SPK Multi-Vehicle, Crew Assignments, & Operational Costs
+    Route::post('/spk/{assignment}/crews', [SpkController::class, 'addCrewAssignment'])->name('spk.crews.store');
+    Route::put('/spk/crews/{assignment}', [SpkController::class, 'updateCrewAssignment'])->name('spk.crews.update');
+    Route::delete('/spk/crews/{assignment}', [SpkController::class, 'deleteCrewAssignment'])->name('spk.crews.destroy');
+    Route::post('/spk/{assignment}/vehicles', [SpkController::class, 'addVehicleAssignment'])->name('spk.vehicles.store');
+    Route::put('/spk/vehicles/{vehicle}', [SpkController::class, 'updateVehicleAssignment'])->name('spk.vehicles.update');
+    Route::delete('/spk/vehicles/{vehicle}', [SpkController::class, 'deleteVehicleAssignment'])->name('spk.vehicles.destroy');
+    Route::put('/spk/{assignment}/costs', [SpkController::class, 'updateOperationalCosts'])->name('spk.costs.update');
+
+    // Crew Payroll & Freelance Payslip (Admin & Finance)
+    Route::get('/crew-payroll', [CrewPayrollController::class, 'index'])->name('crew-payroll.index');
+    Route::post('/crew-payroll/{assignment}/mark-paid', [CrewPayrollController::class, 'markPaid'])->name('crew-payroll.mark-paid');
+    Route::post('/crew-payroll/batch-mark-paid', [CrewPayrollController::class, 'batchMarkPaid'])->name('crew-payroll.batch-mark-paid');
+    Route::get('/crew-payroll/{assignment}/slip', [CrewPayrollController::class, 'showSlip'])->name('crew-payroll.slip');
+    Route::get('/crew-payroll/crew/{crew}/monthly-slip', [CrewPayrollController::class, 'crewMonthlySlip'])->name('crew-payroll.crew-monthly-slip');
 
     // User & Role Management (Superuser & Owner)
     Route::post('/users/{user}/reset-password', [UserController::class, 'resetPassword'])->name('users.reset-password');

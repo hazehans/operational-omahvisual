@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Crew;
+use App\Models\EventCrewAssignment;
 use App\Models\EventOrder;
+use App\Models\EventVehicle;
 use App\Models\Product;
 use App\Models\SpkAssignment;
 use App\Models\SpkChecklistItem;
@@ -23,7 +25,13 @@ class SpkController extends Controller
      */
     public function show(SpkAssignment $assignment): View
     {
-        $assignment->load(['eventOrder.customer', 'eventOrder.screens', 'checklistItems']);
+        $assignment->load([
+            'eventOrder.customer',
+            'eventOrder.screens',
+            'checklistItems',
+            'crewAssignments.crew',
+            'assignedVehicles.vehicle',
+        ]);
         $users = User::orderBy('name')->get();
         $crews = Crew::where('is_active', true)->orderBy('nickname')->get();
         $vehicles = Vehicle::where('is_active', true)->orderBy('name')->get();
@@ -40,7 +48,13 @@ class SpkController extends Controller
      */
     public function print(SpkAssignment $assignment): View
     {
-        $assignment->load(['eventOrder.customer', 'eventOrder.screens', 'checklistItems']);
+        $assignment->load([
+            'eventOrder.customer',
+            'eventOrder.screens',
+            'checklistItems',
+            'crewAssignments.crew',
+            'assignedVehicles.vehicle',
+        ]);
 
         return view('spk.print', compact('assignment'));
     }
@@ -412,5 +426,195 @@ class SpkController extends Controller
         ]);
 
         return back()->with('status', 'Status QC Instalasi Venue berhasil diperbarui!');
+    }
+
+    /**
+     * Add crew assignment with specific role and fees.
+     */
+    public function addCrewAssignment(Request $request, SpkAssignment $assignment): RedirectResponse
+    {
+        $validated = $request->validate([
+            'crew_id' => ['required', 'exists:crews,id'],
+            'role_label' => ['required', 'string', 'max:100'],
+            'fee_loading_in' => ['nullable', 'numeric', 'min:0'],
+            'fee_loading_out' => ['nullable', 'numeric', 'min:0'],
+            'fee_meal' => ['nullable', 'numeric', 'min:0'],
+            'fee_standby' => ['nullable', 'numeric', 'min:0'],
+            'fee_transport' => ['nullable', 'numeric', 'min:0'],
+            'fee_bonus' => ['nullable', 'numeric', 'min:0'],
+            'status' => ['required', 'in:offered,acc,declined,completed'],
+            'notes' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $crew = Crew::findOrFail($validated['crew_id']);
+
+        EventCrewAssignment::create([
+            'event_order_id' => $assignment->event_order_id,
+            'spk_assignment_id' => $assignment->id,
+            'crew_id' => $crew->id,
+            'role_label' => $validated['role_label'],
+            'fee_loading_in' => $validated['fee_loading_in'] ?? 0,
+            'fee_loading_out' => $validated['fee_loading_out'] ?? 0,
+            'fee_meal' => $validated['fee_meal'] ?? 0,
+            'fee_standby' => $validated['fee_standby'] ?? 0,
+            'fee_transport' => $validated['fee_transport'] ?? 0,
+            'fee_bonus' => $validated['fee_bonus'] ?? 0,
+            'status' => $validated['status'],
+            'notes' => $validated['notes'] ?? null,
+        ]);
+
+        return back()->with('status', "Kru {$crew->nickname} berhasil ditugaskan ke event ({$validated['role_label']})!");
+    }
+
+    /**
+     * Update crew assignment fees or confirmation status.
+     */
+    public function updateCrewAssignment(Request $request, EventCrewAssignment $assignment): RedirectResponse
+    {
+        $validated = $request->validate([
+            'role_label' => ['required', 'string', 'max:100'],
+            'fee_loading_in' => ['nullable', 'numeric', 'min:0'],
+            'fee_loading_out' => ['nullable', 'numeric', 'min:0'],
+            'fee_meal' => ['nullable', 'numeric', 'min:0'],
+            'fee_standby' => ['nullable', 'numeric', 'min:0'],
+            'fee_transport' => ['nullable', 'numeric', 'min:0'],
+            'fee_bonus' => ['nullable', 'numeric', 'min:0'],
+            'status' => ['required', 'in:offered,acc,declined,completed'],
+            'payment_status' => ['nullable', 'in:unpaid,paid'],
+            'notes' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $assignment->update([
+            'role_label' => $validated['role_label'],
+            'fee_loading_in' => $validated['fee_loading_in'] ?? 0,
+            'fee_loading_out' => $validated['fee_loading_out'] ?? 0,
+            'fee_meal' => $validated['fee_meal'] ?? 0,
+            'fee_standby' => $validated['fee_standby'] ?? 0,
+            'fee_transport' => $validated['fee_transport'] ?? 0,
+            'fee_bonus' => $validated['fee_bonus'] ?? 0,
+            'status' => $validated['status'],
+            'payment_status' => $validated['payment_status'] ?? $assignment->payment_status,
+            'notes' => $validated['notes'] ?? null,
+        ]);
+
+        return back()->with('status', "Penugasan kru {$assignment->crew->nickname} berhasil diperbarui!");
+    }
+
+    /**
+     * Delete crew assignment.
+     */
+    public function deleteCrewAssignment(EventCrewAssignment $assignment): RedirectResponse
+    {
+        $name = $assignment->crew?->nickname ?? 'Kru';
+        $assignment->delete();
+
+        return back()->with('status', "Penugasan kru {$name} berhasil dibatalkan/dihapus.");
+    }
+
+    /**
+     * Add vehicle (pickup / truck) to event.
+     */
+    public function addVehicleAssignment(Request $request, SpkAssignment $assignment): RedirectResponse
+    {
+        $validated = $request->validate([
+            'vehicle_id' => ['nullable', 'exists:vehicles,id'],
+            'vehicle_name' => ['required', 'string', 'max:150'],
+            'plate_number' => ['nullable', 'string', 'max:50'],
+            'driver_name' => ['nullable', 'string', 'max:100'],
+            'has_etoll' => ['nullable', 'boolean'],
+            'has_kunci_ban' => ['nullable', 'boolean'],
+            'has_stnk' => ['nullable', 'boolean'],
+            'has_kir' => ['nullable', 'boolean'],
+            'has_barcode_bbm' => ['nullable', 'boolean'],
+            'notes' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        EventVehicle::create([
+            'event_order_id' => $assignment->event_order_id,
+            'spk_assignment_id' => $assignment->id,
+            'vehicle_id' => $validated['vehicle_id'] ?? null,
+            'vehicle_name' => $validated['vehicle_name'],
+            'plate_number' => $validated['plate_number'] ?? null,
+            'driver_name' => $validated['driver_name'] ?? null,
+            'has_etoll' => $request->boolean('has_etoll'),
+            'has_kunci_ban' => $request->boolean('has_kunci_ban'),
+            'has_stnk' => $request->boolean('has_stnk'),
+            'has_kir' => $request->boolean('has_kir'),
+            'has_barcode_bbm' => $request->boolean('has_barcode_bbm'),
+            'notes' => $validated['notes'] ?? null,
+        ]);
+
+        return back()->with('status', "Armada kendaraan {$validated['vehicle_name']} berhasil ditambahkan ke penugasan event!");
+    }
+
+    /**
+     * Update vehicle checklist or status.
+     */
+    public function updateVehicleAssignment(Request $request, EventVehicle $vehicle): RedirectResponse
+    {
+        $validated = $request->validate([
+            'vehicle_name' => ['required', 'string', 'max:150'],
+            'plate_number' => ['nullable', 'string', 'max:50'],
+            'driver_name' => ['nullable', 'string', 'max:100'],
+            'has_etoll' => ['nullable', 'boolean'],
+            'has_kunci_ban' => ['nullable', 'boolean'],
+            'has_stnk' => ['nullable', 'boolean'],
+            'has_kir' => ['nullable', 'boolean'],
+            'has_barcode_bbm' => ['nullable', 'boolean'],
+            'departure_status' => ['nullable', 'string', 'max:50'],
+            'return_status' => ['nullable', 'string', 'max:50'],
+            'notes' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $vehicle->update([
+            'vehicle_name' => $validated['vehicle_name'],
+            'plate_number' => $validated['plate_number'] ?? $vehicle->plate_number,
+            'driver_name' => $validated['driver_name'] ?? $vehicle->driver_name,
+            'has_etoll' => $request->boolean('has_etoll'),
+            'has_kunci_ban' => $request->boolean('has_kunci_ban'),
+            'has_stnk' => $request->boolean('has_stnk'),
+            'has_kir' => $request->boolean('has_kir'),
+            'has_barcode_bbm' => $request->boolean('has_barcode_bbm'),
+            'departure_status' => $validated['departure_status'] ?? $vehicle->departure_status,
+            'return_status' => $validated['return_status'] ?? $vehicle->return_status,
+            'notes' => $validated['notes'] ?? $vehicle->notes,
+        ]);
+
+        return back()->with('status', "Kesiapan armada {$vehicle->vehicle_name} berhasil diperbarui!");
+    }
+
+    /**
+     * Delete vehicle assignment.
+     */
+    public function deleteVehicleAssignment(EventVehicle $vehicle): RedirectResponse
+    {
+        $name = $vehicle->vehicle_name;
+        $vehicle->delete();
+
+        return back()->with('status', "Armada {$name} berhasil dihapus dari event.");
+    }
+
+    /**
+     * Update operational costs for the event (BBM, Tol, Penginapan, Lain-lain).
+     */
+    public function updateOperationalCosts(Request $request, SpkAssignment $assignment): RedirectResponse
+    {
+        $validated = $request->validate([
+            'cost_fuel' => ['nullable', 'numeric', 'min:0'],
+            'cost_toll' => ['nullable', 'numeric', 'min:0'],
+            'cost_lodging' => ['nullable', 'numeric', 'min:0'],
+            'cost_other' => ['nullable', 'numeric', 'min:0'],
+            'cost_other_notes' => ['nullable', 'string'],
+        ]);
+
+        $assignment->eventOrder->update([
+            'cost_fuel' => $validated['cost_fuel'] ?? 0,
+            'cost_toll' => $validated['cost_toll'] ?? 0,
+            'cost_lodging' => $validated['cost_lodging'] ?? 0,
+            'cost_other' => $validated['cost_other'] ?? 0,
+            'cost_other_notes' => $validated['cost_other_notes'] ?? null,
+        ]);
+
+        return back()->with('status', 'Biaya Operasional Tambahan (BBM, Tol, Penginapan, Lain-lain) berhasil disimpan!');
     }
 }

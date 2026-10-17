@@ -156,9 +156,68 @@
                 </div>
             </div>
 
-            <!-- Section 4: Foto Dokumen & Rate Card -->
+            <!-- Section 4: Tarif Standar Kru (Rate Card Acuan) & Rekening Bank -->
             <div class="border-b border-slate-200 dark:border-slate-800 pb-2 pt-2">
-                <h2 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">4. Lampiran Foto, KTP, dan Rate Card</h2>
+                <h2 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">4. Standar Tarif Honor Kru & Rekening Pencairan</h2>
+                <p class="text-xs text-slate-500">Tarif standar self-rated kru sebagai nilai default saat penugasan SPK event, serta rekening tujuan pencairan gaji.</p>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
+                <div>
+                    <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Fee Loading In (Rp)</label>
+                    <input type="number" name="default_fee_loading_in" value="{{ old('default_fee_loading_in', 100000) }}" min="0" step="1000" placeholder="100000"
+                        class="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs font-mono font-bold text-slate-900 dark:text-white">
+                    @error('default_fee_loading_in') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Fee Loading Out (Rp)</label>
+                    <input type="number" name="default_fee_loading_out" value="{{ old('default_fee_loading_out', 100000) }}" min="0" step="1000" placeholder="100000"
+                        class="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs font-mono font-bold text-slate-900 dark:text-white">
+                    @error('default_fee_loading_out') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Uang Makan (Rp)</label>
+                    <input type="number" name="default_fee_meal" value="{{ old('default_fee_meal', 25000) }}" min="0" step="1000" placeholder="25000"
+                        class="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs font-mono font-bold text-slate-900 dark:text-white">
+                    @error('default_fee_meal') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Standby/Operator (Rp)</label>
+                    <input type="number" name="default_fee_standby" value="{{ old('default_fee_standby', 50000) }}" min="0" step="1000" placeholder="50000"
+                        class="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs font-mono font-bold text-slate-900 dark:text-white">
+                    @error('default_fee_standby') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Nama Bank Transfer</label>
+                    <input type="text" name="bank_name" value="{{ old('bank_name', 'BCA') }}" placeholder="BCA / Mandiri / BRI / Seabank / dll"
+                        class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-sm text-slate-900 dark:text-white">
+                    @error('bank_name') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Nomor Rekening</label>
+                    <input type="text" name="bank_account_number" value="{{ old('bank_account_number') }}" placeholder="Nomor rekening transfer..."
+                        class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-sm font-mono text-slate-900 dark:text-white">
+                    @error('bank_account_number') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Atas Nama Rekening</label>
+                    <input type="text" name="bank_account_holder" value="{{ old('bank_account_holder') }}" placeholder="Nama pemilik rekening bank..."
+                        class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-sm text-slate-900 dark:text-white">
+                    @error('bank_account_holder') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
+                </div>
+            </div>
+
+            <!-- Section 5: Foto Dokumen & Rate Card -->
+            <div class="border-b border-slate-200 dark:border-slate-800 pb-2 pt-2">
+                <h2 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">5. Lampiran Foto, KTP, dan Bukti Rate Card</h2>
                 <p class="text-xs text-slate-500">Upload foto profil kru, kartu identitas KTP, dan foto tabel rate card bayaran kru dengan fitur crop otomatis.</p>
             </div>
 

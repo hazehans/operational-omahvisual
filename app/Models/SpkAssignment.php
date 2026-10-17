@@ -83,6 +83,16 @@ class SpkAssignment extends Model
         return $this->hasMany(SpkChecklistItem::class);
     }
 
+    public function crewAssignments(): HasMany
+    {
+        return $this->hasMany(EventCrewAssignment::class);
+    }
+
+    public function assignedVehicles(): HasMany
+    {
+        return $this->hasMany(EventVehicle::class);
+    }
+
     public function getPage2ItemsAttribute()
     {
         return $this->checklistItems->where('page_number', 2);

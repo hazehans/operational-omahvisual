@@ -52,6 +52,11 @@ class EventOrder extends Model
         'down_payment',
         'down_payment_method',
         'paid_amount',
+        'cost_fuel',
+        'cost_toll',
+        'cost_lodging',
+        'cost_other',
+        'cost_other_notes',
         'payment_status',
         'vehicle_loading_in',
         'vehicle_loading_out',
@@ -77,6 +82,10 @@ class EventOrder extends Model
             'total_price' => 'decimal:2',
             'down_payment' => 'decimal:2',
             'paid_amount' => 'decimal:2',
+            'cost_fuel' => 'decimal:2',
+            'cost_toll' => 'decimal:2',
+            'cost_lodging' => 'decimal:2',
+            'cost_other' => 'decimal:2',
             'stage_width_m' => 'decimal:2',
             'stage_depth_m' => 'decimal:2',
             'stage_height_m' => 'decimal:2',
@@ -108,6 +117,35 @@ class EventOrder extends Model
     public function screens(): HasMany
     {
         return $this->hasMany(OrderLedScreen::class);
+    }
+
+    public function crewAssignments(): HasMany
+    {
+        return $this->hasMany(EventCrewAssignment::class);
+    }
+
+    public function assignedVehicles(): HasMany
+    {
+        return $this->hasMany(EventVehicle::class);
+    }
+
+    public function getTotalCrewFeesAttribute(): float
+    {
+        return (float) $this->crewAssignments->where('status', '!=', 'declined')->sum('total_fee');
+    }
+
+    public function getTotalOperationalCostAttribute(): float
+    {
+        return (float) $this->cost_fuel
+            + (float) $this->cost_toll
+            + (float) $this->cost_lodging
+            + (float) $this->cost_other
+            + $this->total_crew_fees;
+    }
+
+    public function getNetProfitAttribute(): float
+    {
+        return (float) $this->total_price - $this->total_operational_cost;
     }
 
     public function spkAssignment(): HasOne

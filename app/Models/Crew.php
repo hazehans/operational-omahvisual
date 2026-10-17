@@ -30,6 +30,13 @@ class Crew extends Model
         'photo_path',
         'ktp_photo_path',
         'rate_card_photo_path',
+        'default_fee_loading_in',
+        'default_fee_loading_out',
+        'default_fee_meal',
+        'default_fee_standby',
+        'bank_name',
+        'bank_account_number',
+        'bank_account_holder',
         'is_active',
         'user_id',
     ];
@@ -41,6 +48,10 @@ class Crew extends Model
             'positions' => 'array',
             'birth_date' => 'date',
             'join_date' => 'date',
+            'default_fee_loading_in' => 'decimal:2',
+            'default_fee_loading_out' => 'decimal:2',
+            'default_fee_meal' => 'decimal:2',
+            'default_fee_standby' => 'decimal:2',
         ];
     }
 
@@ -56,5 +67,10 @@ class Crew extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function eventCrewAssignments(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(EventCrewAssignment::class);
     }
 }

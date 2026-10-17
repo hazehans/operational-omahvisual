@@ -282,15 +282,30 @@
                                 <tr><td style="padding: 2.5px 0;">Keterangan Lain</td><td>: {{ $assignment->eventOrder->notes ?? '-' }}</td></tr>
                             </table>
 
-                            <div style="margin-top: 14px;">
-                                <table style="width: 100%; border-collapse: collapse; font-size: 11.5px;">
-                                    @for($i = 1; $i <= 7; $i++)
-                                        @php $field = "crew_{$i}_name"; @endphp
-                                        <tr>
-                                            <td style="width: 80px; padding: 2.5px 0;">Crew {{ $i }}</td>
-                                            <td>: {{ $assignment->$field ?? '............................................' }}</td>
-                                        </tr>
-                                    @endfor
+                            <div style="margin-top: 10px;">
+                                <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
+                                    @if($assignment->crewAssignments->count() > 0)
+                                        @foreach($assignment->crewAssignments->take(7) as $idx => $ca)
+                                            <tr>
+                                                <td style="width: 75px; padding: 2px 0;">Crew {{ $idx + 1 }}</td>
+                                                <td>: <strong>{{ $ca->crew->nickname }}</strong> ({{ $ca->role_label }})</td>
+                                            </tr>
+                                        @endforeach
+                                        @for($i = $assignment->crewAssignments->count() + 1; $i <= 7; $i++)
+                                            <tr>
+                                                <td style="width: 75px; padding: 2px 0;">Crew {{ $i }}</td>
+                                                <td>: ............................................</td>
+                                            </tr>
+                                        @endfor
+                                    @else
+                                        @for($i = 1; $i <= 7; $i++)
+                                            @php $field = "crew_{$i}_name"; @endphp
+                                            <tr>
+                                                <td style="width: 75px; padding: 2.5px 0;">Crew {{ $i }}</td>
+                                                <td>: {{ $assignment->$field ?? '............................................' }}</td>
+                                            </tr>
+                                        @endfor
+                                    @endif
                                 </table>
                             </div>
                         </td>
@@ -325,14 +340,30 @@
                                 </div>
                             </div>
 
-                            <table style="width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 8px;">
-                                <tr><td style="width: 95px; padding: 2.5px 0;">Kendaraan</td><td>: <strong>{{ $assignment->vehicle_name ?? 'TRAGA 1' }}</strong></td></tr>
-                                <tr><td style="padding: 2.5px 0;">E toll</td><td>: {{ $assignment->has_etoll ? 'Ada / Siap' : '.......' }}</td></tr>
-                                <tr><td style="padding: 2.5px 0;">Kunci Ban</td><td>: {{ $assignment->has_kunci_ban ? 'Ada / Siap' : '.......' }}</td></tr>
-                                <tr><td style="padding: 2.5px 0;">STNK</td><td>: {{ $assignment->has_stnk ? 'Ada / Siap' : '.......' }}</td></tr>
-                                <tr><td style="padding: 2.5px 0;">Kartu KIR</td><td>: {{ $assignment->has_kir ? 'Ada / Siap' : '.......' }}</td></tr>
-                                <tr><td style="padding: 2.5px 0;">BardCode BBM</td><td>: {{ $assignment->has_barcode_bbm ? 'Ada / Siap' : '.......' }}</td></tr>
-                            </table>
+                            @if($assignment->assignedVehicles->count() > 0)
+                                <div style="margin-top: 6px; font-size: 10px;">
+                                    <div style="font-weight: bold; font-size: 10.5px; border-bottom: 1px solid #000; padding-bottom: 2px; margin-bottom: 4px;">
+                                        Armada Kendaraan ({{ $assignment->assignedVehicles->count() }} Unit):
+                                    </div>
+                                    @foreach($assignment->assignedVehicles as $vIndex => $veh)
+                                        <div style="margin-bottom: 4px; padding: 3px 5px; background: #f8fafc; border: 1px solid #cbd5e1; font-size: 10px;">
+                                            <div><strong>{{ $vIndex + 1 }}. {{ $veh->vehicle_name }}</strong> ({{ $veh->plate_number ?? '-' }}) • Driver: <strong>{{ $veh->driver_name ?? '-' }}</strong></div>
+                                            <div style="font-size: 9px; color: #334155; margin-top: 1px;">
+                                                E-Toll: <strong>{{ $veh->has_etoll ? 'Ada' : 'Belum' }}</strong> • Kunci: <strong>{{ $veh->has_kunci_ban ? 'Ada' : 'Belum' }}</strong> • STNK: <strong>{{ $veh->has_stnk ? 'Ada' : 'Belum' }}</strong> • KIR: <strong>{{ $veh->has_kir ? 'Ada' : 'Belum' }}</strong> • BBM: <strong>{{ $veh->has_barcode_bbm ? 'Ada' : 'Belum' }}</strong>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @else
+                                <table style="width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 8px;">
+                                    <tr><td style="width: 95px; padding: 2.5px 0;">Kendaraan</td><td>: <strong>{{ $assignment->vehicle_name ?? 'TRAGA 1' }}</strong></td></tr>
+                                    <tr><td style="padding: 2.5px 0;">E toll</td><td>: {{ $assignment->has_etoll ? 'Ada / Siap' : '.......' }}</td></tr>
+                                    <tr><td style="padding: 2.5px 0;">Kunci Ban</td><td>: {{ $assignment->has_kunci_ban ? 'Ada / Siap' : '.......' }}</td></tr>
+                                    <tr><td style="padding: 2.5px 0;">STNK</td><td>: {{ $assignment->has_stnk ? 'Ada / Siap' : '.......' }}</td></tr>
+                                    <tr><td style="padding: 2.5px 0;">Kartu KIR</td><td>: {{ $assignment->has_kir ? 'Ada / Siap' : '.......' }}</td></tr>
+                                    <tr><td style="padding: 2.5px 0;">BardCode BBM</td><td>: {{ $assignment->has_barcode_bbm ? 'Ada / Siap' : '.......' }}</td></tr>
+                                </table>
+                            @endif
                         </td>
                     </tr>
                 </table>
