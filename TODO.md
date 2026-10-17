@@ -241,9 +241,36 @@
   - Generator kode otomatis pada Pelanggan, Kru, dan Armada dilengkapi loop verifikasi anti-duplikasi.
   - Seluruh pengujian otomatis mencapai **76 Tests, 465 Assertions, 100% Lulus (Green)**.
 
+### 22. Fleksibilitas Operasional SPK, Multi-Armada Kendaraan, Payroll Kru Freelance & Standarisasi WhatsApp — ✅ Selesai
+- [x] **Fleksibilitas Penugasan Kru & Pembatalan Gate SPK:**
+  - Penyesuaian gate pembatalan SPK saat order dibatalkan (dapat di-cancel tanpa terhalang checklist).
+  - Skema negosiasi tarif mandiri kru (*self-rated rate-card*) dengan 6 komponen biaya transparan (*Loading In*, *Loading Out*, *Uang Makan*, *Standby*, *Transport*, *Bonus*).
+  - Tautan WhatsApp langsung penawaran tugas ke kru dengan konfirmasi status *ACC* / *Ditolak*.
+- [x] **Dukungan Multi-Armada Logistik & Biaya Tambahan Operasional:**
+  - Satu event kini dapat menampung multi armada kendaraan logistik (beberapa unit pickup/truk TRAGA sekaligus).
+  - Pencatatan 5 pos biaya operasional tambahan di SPK: *Biaya BBM*, *Biaya Tol*, *Biaya Penginapan*, *Biaya Lain-lain*, dan *Keterangan Biaya Lain-lain*.
+  - Perhitungan margin kotor dan laba bersih operasional event secara otomatis.
+- [x] **Portal Penggajian Kru Freelance (`/crew-payroll`):**
+  - Halaman rekap payroll untuk admin & finance melihat penugasan kru per event.
+  - Filter bulanan dan status pembayaran (*Pending* vs *Paid*).
+  - Pembayaran massal (*bulk pay*) dengan pencatatan referensi transfer dan tanggal bayar.
+  - Lembar cetak slip gaji event A4 (`/crew-payroll/slip/{id}`).
+  - Lembar cetak rekapitulasi honor bulanan kru A4 (`/crew-payroll/monthly/{crew}`).
+  - Tombol 1-klik bagikan slip rincian honor ke WhatsApp masing-masing kru.
+- [x] **Perbaikan Modal Pop-up SPK & Penyesuaian Tailwind CSS v4:**
+  - Upgrade 6 modal SPK ke pola centered flexbox modern (`fixed inset-0 z-50 flex items-center justify-center p-4`) menuntaskan bug pop-up terhalang blur.
+  - Perbaikan 4 Intelephense typing errors pada `CrewPayrollController` dan `EventCrewAssignment`.
+- [x] **Standarisasi Format WhatsApp Indonesia (`wa.me/62...`):**
+  - Helper `App\Support\WhatsAppHelper` untuk normalisasi nomor telepon Indonesia (`08...`, `8...`, `+62...`, `62...`).
+  - Pembaruan seluruh URL `wa.me` di seluruh sistem ke format internasional resmi WhatsApp `https://wa.me/628xxxxxxxxxx`.
+  - Penambahan input group visual dengan badge `🇮🇩 +62` pada formulir kru dan customer.
+  - Normalisasi nomor seluruh kru eksisting di database ke format `+628...`.
+- [x] **Suite Pengujian Otomatis:** Total meningkat mencapai **96 Tests, 597 Assertions, 100% Lulus (Green)**.
+
 ---
 
 ## 🔮 Roadmap Jangka Panjang (Operasional Lanjutan Sesuai PRD Global)
+- [ ] **Dropdown Kode Negara Internasional Dinamis (Kru & Customer):** Menyediakan pilihan dropdown kode negara di form data kru untuk mendukung nomor telepon luar negeri / regional selain +62 Indonesia.
 - [ ] Integrasi Barcode / QR Code Fisik Scanner (Ditunda sementara sesuai arahan user agar fokus pematangan operasional)
 - [ ] Demobilisasi & Rekonsiliasi Pasca-Event Otomatis ke Stok Gudang (Otomatis potong modul rusak ke status Service / Maintenance)
 - [ ] Dashboard Analisis Manajer Operasional (Grafik utilisasi armada TRAGA 1/2/3, tren ukuran layar LED, performa crew)

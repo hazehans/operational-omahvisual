@@ -177,13 +177,15 @@ operational-omahvisual/
 
 ## 🔮 8. Roadmap Pengembangan Berikutnya
 
-Sesuai dengan **PRD Global Operasional**, pengembangan modul berikutnya akan mencakup:
-* [ ] **Modul Customer & Order:** Pembuatan SPK sewa, Quotation, dan pencatatan order via WhatsApp.
-* [ ] **Modul SPK & Cargo List / Surat Jalan:** Pembuatan daftar muat barang otomatis berdasarkan luas $m^2$ LED yang dipesan.
-* [ ] **Gate Kesiapan Keberangkatan:** Pengecekan kesiapan 4 pilar sebelum truk jalan (Barang, Kru Teknisi, Armada Truk, Dana Operasional).
-* [ ] **Demobilisasi & Rekonsiliasi Pasca-Event:** Deteksi otomatis barang hilang, tertinggal di venue, atau modul LED rusak sehabis acara.
-* [ ] **Work Order Perbaikan Internal:** Manajemen servis modul LED dan penugasan teknisi internal.
-* [ ] **Integrasi Barcode Scanner Fisik:** Penerapan scanner barcode/QR code setelah alur SPK dan cargo list rampung.
+Sesuai dengan **PRD Global Operasional**, status implementasi fitur utama:
+* [x] **Modul Customer & Order:** Pembuatan SPK sewa, denah panggung 2D/3D, dan kontak customer WhatsApp terintegrasi.
+* [x] **Modul SPK & Cargo List / Surat Jalan:** Pembuatan daftar muat barang dinamis berdasarkan spesifikasi luas $m^2$ LED yang dipesan (Dual tracking kuantitas & serial flightcase).
+* [x] **Gate Kesiapan Keberangkatan & Multi-Armada:** Pengecekan kesiapan 4 pilar sebelum armada jalan (Barang, Kru Teknisi, Armada Multi-Kendaraan Logistik, Dana Operasional BBM/Tol).
+* [x] **Modul Penggajian & Rekapitulasi Honor Kru Freelance (`/crew-payroll`):** Rekapitulasi honor kru per event dan bulanan, cetak slip gaji A4, pelunasan massal, dan 1-klik bagikan slip via WhatsApp.
+* [x] **Work Order Perbaikan Internal (Workshop):** Manajemen tiket servis modul LED, karantina unit rusak, konsumsi sparepart, dan pemulihan saldo siap sewa.
+* [ ] **Dropdown Kode Negara Internasional Dinamis (Kru & Customer):** Dukungan multi-negara selain Indonesia (+62) pada form kontak.
+* [ ] **Demobilisasi & Rekonsiliasi Pasca-Event Otomatis:** Deteksi barang tertinggal atau modul rusak pasca-event ke tiket servis.
+* [ ] **Integrasi Barcode Scanner Fisik:** Penerapan scanner barcode/QR code fisik pasca alur SPK dan cargo list matang.
 
 ---
 

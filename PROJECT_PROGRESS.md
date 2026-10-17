@@ -243,14 +243,40 @@ Berdasarkan analisis 2 file Excel (`DATA TOOLS BOX .2` dan `DEV_STOCK OPNAME by 
 - [x] **Optimasi Aset Vendor Lokal & Uji Menyeluruh:**
   - Pustaka `Alpine.js` dan `Cropper.js` kini diunduh dan tersimpan lokal di `public/vendor/` untuk operasi yang 100% offline-ready dan stabil.
   - Pencegahan duplikasi nomor kode otomatis (*auto-code generation*) pada model Pelanggan, Kru, dan Armada menggunakan mekanisme loop anti-kolisi.
-  - Total pengujian otomatis saat ini mencapai **76 Tests, 465 Assertions, 100% Lulus (Green)** tanpa kegagalan.
+### Tahap 9: Fleksibilitas Penugasan Kru, Multi-Armada Logistik, Biaya Tambahan Operasional, Modul Payroll Honor Kru & Standarisasi WhatsApp Indonesia (SELESAI ✅)
+- [x] **Fleksibilitas Penugasan Kru, PIC, & Pembatalan Gate SPK:**
+  - Pembatalan SPK yang fleksibel (tidak lagi terkunci jika order di-cancel).
+  - Skema negosiasi honor kru lapangan mandiri (*self-rated rate-card*): breakdown per komponen (*Loading In*, *Loading Out*, *Uang Makan*, *Standby/Operator*, *Transport*, *Bonus/Lembur*).
+  - Tautan WhatsApp langsung untuk mengirim penawaran honor tugas event ke kru, status persetujuan (*Pending*, *ACC*, *Ditolak*), dan pencairan honor.
+- [x] **Dukungan Multi-Armada Logistik & Biaya Tambahan Operasional Event:**
+  - Satu event kini dapat menampung lebih dari satu armada kendaraan logistik (multi-pickup / truk traga).
+  - Pencatatan 5 pos biaya operasional tambahan di SPK: *Biaya BBM*, *Biaya Tol*, *Biaya Penginapan*, *Biaya Lain-lain*, dan *Keterangan Biaya Lain-lain*.
+  - Perhitungan margin kotor dan laba bersih operasional event secara otomatis (*Revenue - Total Crew Fees - Logistik Tambahan*).
+- [x] **Modul Payroll & Rekapitulasi Honor Kru Freelance (`/crew-payroll`):**
+  - Portal manajemen penggajian terdedikasi untuk Tim Finance dan Manajer Operasional tanpa memberikan akses login langsung kepada kru lepas.
+  - Filter rekapitulasi berdasarkan periode bulan dan status pembayaran (*Pending* vs *Paid*).
+  - Fitur pelunasan honor massal (*Bulk Mark as Paid*) dengan pencatatan tanggal bayar dan nomor referensi transfer bank.
+  - Lembar cetak slip gaji perorangan per event A4 (`/crew-payroll/slip/{id}`).
+  - Lembar cetak rekapitulasi honor bulanan kru A4 (`/crew-payroll/monthly/{crew}`).
+  - Tombol 1-klik bagikan slip rincian honor langsung ke WhatsApp kru dengan pesan terformat rapi.
+- [x] **Perbaikan Bug Modal Pop-up SPK & Penyesuaian Tailwind CSS v4:**
+  - Menstandarisasi seluruh 6 modal di halaman SPK (`+ Tambah Penugasan Kru`, `Edit Kru`, `Tambah Armada`, `Edit Armada`, `QC Gate`, dan `Assign PIC`) ke flexbox center modern (`fixed inset-0 z-50 flex items-center justify-center p-4`) mengatasi bug modal tertutup overlay blur.
+  - Menghilangkan 4 Intelephense typing warnings PHP pada `CrewPayrollController` dan `EventCrewAssignment`.
+- [x] **Standarisasi Format Nomor WhatsApp Indonesia (`wa.me/62...`):**
+  - Pembuatan kelas helper `App\Support\WhatsAppHelper` untuk normalisasi nomor telepon Indonesia (`08...`, `8...`, `+62...`, `62...`).
+  - Pembaruan seluruh link `wa.me` di seluruh sistem (SPK, payroll index, slip gaji tunggal, rekap bulanan, tabel kru & customer) ke format internasional resmi WhatsApp: `https://wa.me/628xxxxxxxxxx`.
+  - Penambahan input group visual dengan badge `🇮🇩 +62` pada formulir tambah & edit kru serta customer.
+  - Normalisasi seluruh nomor telepon kru eksisting di database PostgreSQL ke standar `+628...`.
+- [x] **Pengujian Otomatis Komprehensif:**
+  - Suite pengujian bertambah dari 76 tests menjadi **96 Tests, 597 Assertions, 100% Lulus (Green)** tanpa kegagalan.
 
 ---
 
-## 🔮 8. Roadmap Jangka Panjang (Operasional Lanjutan Sesuai PRD Global)
-- [ ] Integrasi Barcode / QR Code Fisik Scanner (Ditunda sementara sesuai arahan user agar fokus pematangan operasional)
-- [ ] Modul Invoicing & Verifikasi Pembayaran (Finance)
-- [ ] Fitur Ekspor Laporan Bulanan (Excel/PDF) untuk Rekapitulasi Barang Hilang & Biaya Servis
-- [ ] Notifikasi Discrepancy Otomatis via WhatsApp / Email saat ada barang kurang pasca-event
+## 🔮 8. Roadmap & Rencana Sesi Berikutnya
+- [ ] **Dropdown Kode Negara Internasional Dinamis (Kru & Customer):** Mengembangkan input kode negara berbasis pilihan dropdown multi-negara (tidak hanya +62 Indonesia) untuk persiapan kru atau vendor regional/internasional.
+- [ ] **Integrasi Barcode / QR Code Fisik Scanner:** Penerapan scanner barcode/QR code fisik pasca alur SPK dan cargo list rampung.
+- [ ] **Modul Invoicing & Verifikasi Pembayaran (Finance)**
+- [ ] **Fitur Ekspor Laporan Bulanan (Excel/PDF)** untuk Rekapitulasi Barang Hilang & Biaya Servis
+- [ ] **Notifikasi Discrepancy Otomatis via WhatsApp / Email** saat ada barang kurang pasca-event
 
 
