@@ -117,9 +117,9 @@ class CrewController extends Controller
             $positions = ['Crew'];
         }
 
-        $normalizedPhone = WhatsAppHelper::normalizeIndonesianPhone($validated['phone'], true) ?? $validated['phone'];
+        $normalizedPhone = WhatsAppHelper::normalizePhone($validated['phone'], null, true) ?? $validated['phone'];
         $normalizedEmergencyPhone = ! empty($validated['emergency_phone'])
-            ? (WhatsAppHelper::normalizeIndonesianPhone($validated['emergency_phone'], true) ?? $validated['emergency_phone'])
+            ? (WhatsAppHelper::normalizePhone($validated['emergency_phone'], null, true) ?? $validated['emergency_phone'])
             : null;
 
         Crew::create([
@@ -200,9 +200,9 @@ class CrewController extends Controller
             'rate_card_photo' => ['nullable', 'image', 'max:5120'],
         ]);
 
-        $normalizedPhone = WhatsAppHelper::normalizeIndonesianPhone($validated['phone'], true) ?? $validated['phone'];
+        $normalizedPhone = WhatsAppHelper::normalizePhone($validated['phone'], null, true) ?? $validated['phone'];
         $normalizedEmergencyPhone = ! empty($validated['emergency_phone'])
-            ? (WhatsAppHelper::normalizeIndonesianPhone($validated['emergency_phone'], true) ?? $validated['emergency_phone'])
+            ? (WhatsAppHelper::normalizePhone($validated['emergency_phone'], null, true) ?? $validated['emergency_phone'])
             : null;
 
         $updateData = [

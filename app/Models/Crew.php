@@ -87,7 +87,7 @@ class Crew extends Model
 
     public function getWhatsappNumberAttribute(): string
     {
-        return WhatsAppHelper::normalizeIndonesianPhone($this->phone, false) ?? '';
+        return WhatsAppHelper::normalizePhone($this->phone, null, false) ?? '';
     }
 
     public function getWhatsappUrlAttribute(): string
@@ -112,6 +112,6 @@ class Crew extends Model
 
     public function getFormattedPhoneAttribute(): string
     {
-        return WhatsAppHelper::normalizeIndonesianPhone($this->phone, true) ?? ($this->phone ?? '');
+        return WhatsAppHelper::normalizePhone($this->phone, null, true) ?? ($this->phone ?? '');
     }
 }

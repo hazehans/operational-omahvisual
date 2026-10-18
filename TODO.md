@@ -267,12 +267,32 @@
   - Normalisasi nomor seluruh kru eksisting di database ke format `+628...`.
 - [x] **Suite Pengujian Otomatis:** Total meningkat mencapai **96 Tests, 597 Assertions, 100% Lulus (Green)**.
 
+### 23. Input Nomor Telepon Multi-Negara Dinamis (International Phone Selector) & Standarisasi E.164 — ✅ Selesai
+- [x] **Helper Internasional Komprehensif (`WhatsAppHelper.php`):**
+  - Katalog 33 negara terkurasi (`COUNTRIES`) dengan kode ISO, dial code, dan bendera emoji.
+  - Parsing cerdas `parsePhone(?string $phone)` dengan urutan dial code descending guna mencegah kolisi prefix.
+  - Normalisasi E.164 `normalizePhone(?string $phone, ?string $selectedDialCode = null, bool $withPlus = false)`.
+  - Format tautan resmi WhatsApp `buildUrl(?string $phone, string $message = '')` (`https://wa.me/<dial_code><national_number>`).
+- [x] **Komponen Blade Reusable Modern (`resources/views/components/phone-input.blade.php`):**
+  - Dropdown interaktif Alpine.js dengan pencarian live nama negara, kode ISO, dan dial code.
+  - Auto-deteksi negara saat paste format `+<dial_code>`.
+  - Auto-trim angka nol di depan nomor nasional (`0812...` -> `812...`).
+  - Binding hidden input E.164 kompatibel penuh dengan database PostgreSQL.
+- [x] **Penerapan Luas pada Seluruh Formulir Sistem:**
+  - Master Kru: `crews/create.blade.php` & `crews/edit.blade.php` (Telepon & Kontak Darurat).
+  - Master Pelanggan: `customers/create.blade.php` & `customers/edit.blade.php` (Telepon & PIC Cadangan).
+  - Pesanan Cepat: `orders/create.blade.php` (Telepon Pelanggan).
+- [x] **Pengujian Otomatis & Pembersihan Gaya Kode:**
+  - 3 test baru di `CrewPayrollAndMultiVehicleTest.php` untuk parsing multi-negara (ID, MY, SG, AU, US), URL WhatsApp, serta simpan/ubah data kru & customer internasional.
+  - Total test suite: **99 Tests, 638 Assertions, 100% Lulus (Green)**.
+  - Difilter & diformat sesuai standar Laravel Pint.
+
 ---
 
 ## 🔮 Roadmap Jangka Panjang (Operasional Lanjutan Sesuai PRD Global)
-- [ ] **Dropdown Kode Negara Internasional Dinamis (Kru & Customer):** Menyediakan pilihan dropdown kode negara di form data kru untuk mendukung nomor telepon luar negeri / regional selain +62 Indonesia.
 - [ ] Integrasi Barcode / QR Code Fisik Scanner (Ditunda sementara sesuai arahan user agar fokus pematangan operasional)
 - [ ] Demobilisasi & Rekonsiliasi Pasca-Event Otomatis ke Stok Gudang (Otomatis potong modul rusak ke status Service / Maintenance)
 - [ ] Dashboard Analisis Manajer Operasional (Grafik utilisasi armada TRAGA 1/2/3, tren ukuran layar LED, performa crew)
 - [ ] Invoicing & Verifikasi Pembayaran Bertahap (DP vs Pelunasan via Rekening BCA/BRI)
 - [ ] Portal Pelacakan Mandiri oleh Customer (Tracking status persiapan LED screen via order token)
+

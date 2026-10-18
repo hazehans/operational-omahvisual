@@ -10,6 +10,7 @@ use App\Models\OrderLedScreen;
 use App\Models\SpkAssignment;
 use App\Models\Vehicle;
 use App\Services\LedCalculationService;
+use App\Support\WhatsAppHelper;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -110,7 +111,7 @@ class EventOrderController extends Controller
                     'customer_code' => 'CUST-'.str_pad((string) (Customer::count() + 1), 4, '0', STR_PAD_LEFT),
                     'name' => $validated['customer_name'],
                     'organization' => $validated['customer_organization'] ?? null,
-                    'phone' => $validated['customer_phone'],
+                    'phone' => WhatsAppHelper::normalizePhone($validated['customer_phone'], null, true) ?? $validated['customer_phone'],
                     'created_by' => Auth::id(),
                 ]);
                 $customerId = $customer->id;

@@ -564,4 +564,110 @@ class CrewPayrollAndMultiVehicleTest extends TestCase
         $this->assertEquals('+6281234567890', $dodi->emergency_phone);
         $this->assertEquals('https://wa.me/6287899990000', $dodi->whatsapp_url);
     }
+
+    public function test_whatsapp_helper_supports_international_numbers(): void
+    {
+        // Parse Indonesian phone
+        $idParsed = WhatsAppHelper::parsePhone('+6281234567890');
+        $this->assertEquals('ID', $idParsed['country']['code']);
+        $this->assertEquals('+62', $idParsed['dial_code']);
+        $this->assertEquals('81234567890', $idParsed['national_number']);
+
+        // Parse Singapore phone
+        $sgParsed = WhatsAppHelper::parsePhone('+6591234567');
+        $this->assertEquals('SG', $sgParsed['country']['code']);
+        $this->assertEquals('+65', $sgParsed['dial_code']);
+        $this->assertEquals('91234567', $sgParsed['national_number']);
+
+        // Parse Malaysia phone
+        $myParsed = WhatsAppHelper::parsePhone('+60123456789');
+        $this->assertEquals('MY', $myParsed['country']['code']);
+        $this->assertEquals('+60', $myParsed['dial_code']);
+        $this->assertEquals('123456789', $myParsed['national_number']);
+
+        // Parse Australia phone
+        $auParsed = WhatsAppHelper::parsePhone('+61412345678');
+        $this->assertEquals('AU', $auParsed['country']['code']);
+        $this->assertEquals('+61', $auParsed['dial_code']);
+        $this->assertEquals('412345678', $auParsed['national_number']);
+
+        // Parse USA phone
+        $usParsed = WhatsAppHelper::parsePhone('+14155552671');
+        $this->assertEquals('US', $usParsed['country']['code']);
+        $this->assertEquals('+1', $usParsed['dial_code']);
+        $this->assertEquals('4155552671', $usParsed['national_number']);
+
+        // Test normalizePhone with explicit dial code
+        $this->assertEquals('+6591234567', WhatsAppHelper::normalizePhone('91234567', '+65', true));
+        $this->assertEquals('6591234567', WhatsAppHelper::normalizePhone('91234567', '+65', false));
+        $this->assertEquals('+60123456789', WhatsAppHelper::normalizePhone('0123456789', '+60', true));
+
+        // Test WhatsApp Click to Chat URL format for international numbers
+        $this->assertEquals('https://wa.me/6591234567', WhatsAppHelper::buildUrl('+6591234567'));
+        $this->assertEquals('https://wa.me/60123456789?text='.urlencode('Hi Crew'), WhatsAppHelper::buildUrl('+60123456789', 'Hi Crew'));
+    }
+
+    public function test_can_store_and_update_crew_with_international_phone(): void
+    {
+        $storeResp = $this->actingAs($this->user)->post(route('crews.store'), [
+            'nickname' => 'Kenji SG',
+            'full_name' => 'Kenji Singapore',
+            'phone' => '+6591234567',
+            'emergency_phone' => '+60123456789',
+            'positions' => ['Operator LED'],
+            'employment_type' => 'freelance_outsourcing',
+            'is_active' => 1,
+        ]);
+
+        $storeResp->assertRedirect(route('crews.index'));
+
+        $kenji = Crew::where('nickname', 'Kenji SG')->first();
+        $this->assertNotNull($kenji);
+        $this->assertEquals('+6591234567', $kenji->phone);
+        $this->assertEquals('+60123456789', $kenji->emergency_phone);
+        $this->assertEquals('6591234567', $kenji->whatsapp_number);
+        $this->assertEquals('https://wa.me/6591234567', $kenji->whatsapp_url);
+        $this->assertEquals('91234567', $kenji->national_phone);
+
+        // Update with Australian phone
+        $updateResp = $this->actingAs($this->user)->put(route('crews.update', $kenji), [
+            'nickname' => 'Kenji AU',
+            'full_name' => 'Kenji Australia',
+            'phone' => '+61412345678',
+            'emergency_phone' => '+61487654321',
+            'positions' => ['Operator LED', 'Teknisi'],
+            'employment_type' => 'freelance_outsourcing',
+            'is_active' => 1,
+        ]);
+
+        $updateResp->assertRedirect(route('crews.index'));
+        $kenji->refresh();
+        $this->assertEquals('+61412345678', $kenji->phone);
+        $this->assertEquals('+61487654321', $kenji->emergency_phone);
+        $this->assertEquals('https://wa.me/61412345678', $kenji->whatsapp_url);
+        $this->assertEquals('412345678', $kenji->national_phone);
+    }
+
+    public function test_can_store_customer_with_international_phone(): void
+    {
+        $storeResp = $this->actingAs($this->user)->post(route('customers.store'), [
+            'name' => 'Marina Bay Events',
+            'full_name' => 'Marina Bay Events Pte Ltd',
+            'phone' => '+6581234567',
+            'pic_secondary_name' => 'David Lee',
+            'pic_secondary_phone' => '+6598765432',
+            'organization' => 'Marina Bay Sands SG',
+            'category' => 'Corporate / Perusahaan',
+            'city' => 'Singapore',
+        ]);
+
+        $storeResp->assertRedirect(route('customers.index'));
+
+        $customer = Customer::where('name', 'Marina Bay Events')->first();
+        $this->assertNotNull($customer);
+        $this->assertEquals('+6581234567', $customer->phone);
+        $this->assertEquals('+6598765432', $customer->pic_secondary_phone);
+        $this->assertEquals('6581234567', $customer->whatsapp_number);
+        $this->assertEquals('https://wa.me/6581234567', $customer->whatsapp_url);
+    }
 }

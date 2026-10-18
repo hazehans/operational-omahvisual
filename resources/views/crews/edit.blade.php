@@ -127,31 +127,22 @@
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Nomor WhatsApp *</label>
-                    <div class="flex rounded-xl overflow-hidden border border-slate-300 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:border-transparent transition-all">
-                        <span class="inline-flex items-center px-3.5 bg-slate-100 dark:bg-slate-900 border-r border-slate-300 dark:border-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300 select-none">
-                            🇮🇩 +62
-                        </span>
-                        <input type="text" name="phone" value="{{ old('phone', $crew->national_phone ?: $crew->phone) }}" required placeholder="812-3456-7890"
-                            class="w-full px-3.5 py-2.5 bg-transparent text-sm text-slate-900 dark:text-white border-0 focus:outline-hidden focus:ring-0">
-                    </div>
-                    <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">Format WhatsApp Indonesia (+62). Boleh ketik langsung <code>812...</code>, <code>0812...</code>, atau <code>+62812...</code>.</p>
-                    @error('phone') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
-                </div>
+                <x-phone-input 
+                    name="phone" 
+                    :value="old('phone', $crew->phone)" 
+                    label="Nomor WhatsApp *" 
+                    placeholder="812-3456-7890" 
+                    :required="true" 
+                    help-text="Pilih negara & ketik nomor. Misal: 812..., 0812..., atau +62812..." 
+                />
 
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Nomor Darurat (Keluarga)</label>
-                    <div class="flex rounded-xl overflow-hidden border border-slate-300 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:border-transparent transition-all">
-                        <span class="inline-flex items-center px-3.5 bg-slate-100 dark:bg-slate-900 border-r border-slate-300 dark:border-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300 select-none">
-                            🇮🇩 +62
-                        </span>
-                        <input type="text" name="emergency_phone" value="{{ old('emergency_phone', $crew->national_emergency_phone ?: $crew->emergency_phone) }}" placeholder="819-8765-4321"
-                            class="w-full px-3.5 py-2.5 bg-transparent text-sm text-slate-900 dark:text-white border-0 focus:outline-hidden focus:ring-0">
-                    </div>
-                    <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">Kontak alternatif keluarga saat kondisi darurat di lapangan.</p>
-                    @error('emergency_phone') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
-                </div>
+                <x-phone-input 
+                    name="emergency_phone" 
+                    :value="old('emergency_phone', $crew->emergency_phone)" 
+                    label="Nomor Darurat (Keluarga)" 
+                    placeholder="819-8765-4321" 
+                    help-text="Kontak alternatif keluarga saat kondisi darurat di lapangan." 
+                />
 
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Email Kru</label>

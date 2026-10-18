@@ -90,10 +90,12 @@
                     <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Nama Client *</label>
                     <input type="text" name="customer_name" id="newCustomerName" value="{{ old('customer_name') }}" placeholder="Misal: Hans Testing" class="w-full px-3.5 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
                 </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Nomor WhatsApp *</label>
-                    <input type="text" name="customer_phone" id="newCustomerPhone" value="{{ old('customer_phone') }}" placeholder="Misal: 081234567890" class="w-full px-3.5 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
-                </div>
+                <x-phone-input 
+                    name="customer_phone" 
+                    :value="old('customer_phone')" 
+                    label="Nomor WhatsApp *" 
+                    placeholder="812-3456-7890" 
+                />
                 <div>
                     <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Vendor / EO / Instansi</label>
                     <input type="text" name="customer_organization" value="{{ old('customer_organization') }}" placeholder="Misal: Bless Production" class="w-full px-3.5 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500">

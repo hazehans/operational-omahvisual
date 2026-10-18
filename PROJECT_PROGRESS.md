@@ -267,16 +267,37 @@ Berdasarkan analisis 2 file Excel (`DATA TOOLS BOX .2` dan `DEV_STOCK OPNAME by 
   - Pembaruan seluruh link `wa.me` di seluruh sistem (SPK, payroll index, slip gaji tunggal, rekap bulanan, tabel kru & customer) ke format internasional resmi WhatsApp: `https://wa.me/628xxxxxxxxxx`.
   - Penambahan input group visual dengan badge `🇮🇩 +62` pada formulir tambah & edit kru serta customer.
   - Normalisasi seluruh nomor telepon kru eksisting di database PostgreSQL ke standar `+628...`.
+- [x] **Suite Pengujian Otomatis:** Total meningkat mencapai **96 Tests, 597 Assertions, 100% Lulus (Green)**.
+
+### Tahap 10: Input Nomor Telepon Multi-Negara Dinamis (International Phone Selector) & Standarisasi E.164 (SELESAI ✅)
+- [x] **Dukungan Nomor Telepon Internasional Komprehensif (`WhatsAppHelper.php`):**
+  - Katalog 33 negara terkurasi (`COUNTRIES`) mencakup Asia Tenggara (Indonesia, Malaysia, Singapura, Filipina, Thailand, Vietnam, Brunei, dll.), Asia Pasifik (Australia, Selandia Baru, Jepang, Korea, Tiongkok, Hong Kong, Taiwan, India), Timur Tengah (Arab Saudi, UEA, Qatar), Eropa (Inggris, Jerman, Belanda, Prancis, Italia, Spanyol, Swiss, dll.), dan Amerika (AS, Kanada).
+  - Metode `parsePhone(?string $phone)`: Menganalisis string nomor telepon apa pun secara cerdas dan mengekstrak kode negara, dial code, nomor nasional, dan format lengkap. Menggunakan sorting dial code descending untuk mencegah kolisi prefix (contoh: `+673` Brunei tidak terpotong oleh `+67`).
+  - Metode `normalizePhone(?string $phone, ?string $selectedDialCode = null, bool $withPlus = false)`: Menormalisasi nomor lokal/internasional ke format E.164 yang bersih.
+  - Metode `buildUrl(?string $phone, string $message = '')`: Menghasilkan tautan resmi WhatsApp `https://wa.me/<country_code><national_number>?text=...` untuk nomor negara mana pun di dunia.
+- [x] **Komponen Blade Reusable Modern ([`components/phone-input.blade.php`](file:///d:/Job/ID_CV%20Han%20Media%20Tekindo/operational-omahvisual/resources/views/components/phone-input.blade.php)):**
+  - Dropdown kode negara interaktif berbasis Alpine.js dengan bendera emoji, nama negara, kode ISO, dan dial code.
+  - Fitur pencarian live negara (filter nama, kode ISO, atau dial code secara instan).
+  - Deteksi otomatis negara saat pengguna menempel (*paste*) nomor yang diawali `+<dial_code>`.
+  - Pemangkasan otomatis angka nol di awal nomor nasional (`0812...` otomatis menjadi `812...`).
+  - Mengirimkan string E.164 terpadu (`+62...`, `+65...`, dll.) via hidden input sehingga kompatibel 100% dengan skema database PostgreSQL tanpa memerlukan perubahan kolom tabel.
+- [x] **Penerapan Luas pada Seluruh Formulir Sistem:**
+  - Form Tambah & Edit Kru (`crews/create.blade.php` & `crews/edit.blade.php`) untuk kolom Nomor Telepon dan Kontak Darurat.
+  - Form Tambah & Edit Pelanggan (`customers/create.blade.php` & `customers/edit.blade.php`) untuk kolom Telepon dan PIC Cadangan.
+  - Form Pembuatan Pesanan Cepat (`orders/create.blade.php`) untuk nomor telepon pelanggan baru.
 - [x] **Pengujian Otomatis Komprehensif:**
-  - Suite pengujian bertambah dari 76 tests menjadi **96 Tests, 597 Assertions, 100% Lulus (Green)** tanpa kegagalan.
+  - Penambahan pengujian unit & fitur untuk parsing nomor multi-negara (ID, SG, MY, AU, US), pembuatan link `wa.me`, serta operasi simpan & ubah kru dan pelanggan dengan nomor internasional.
+  - Total pengujian meningkat menjadi **99 Tests, 638 Assertions, 100% Lulus (Green)**.
+  - Diformat rapi sesuai standar Laravel Pint.
 
 ---
 
 ## 🔮 8. Roadmap & Rencana Sesi Berikutnya
-- [ ] **Dropdown Kode Negara Internasional Dinamis (Kru & Customer):** Mengembangkan input kode negara berbasis pilihan dropdown multi-negara (tidak hanya +62 Indonesia) untuk persiapan kru atau vendor regional/internasional.
 - [ ] **Integrasi Barcode / QR Code Fisik Scanner:** Penerapan scanner barcode/QR code fisik pasca alur SPK dan cargo list rampung.
 - [ ] **Modul Invoicing & Verifikasi Pembayaran (Finance)**
 - [ ] **Fitur Ekspor Laporan Bulanan (Excel/PDF)** untuk Rekapitulasi Barang Hilang & Biaya Servis
 - [ ] **Notifikasi Discrepancy Otomatis via WhatsApp / Email** saat ada barang kurang pasca-event
+- [ ] **Portal Pelacakan Mandiri oleh Customer (Tracking Status LED Screen via Order Token)**
+
 
 

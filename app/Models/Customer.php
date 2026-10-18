@@ -60,7 +60,7 @@ class Customer extends Model
 
     public function getWhatsappNumberAttribute(): string
     {
-        return WhatsAppHelper::normalizeIndonesianPhone($this->phone, false) ?? '';
+        return WhatsAppHelper::normalizePhone($this->phone, null, false) ?? '';
     }
 
     public function getWhatsappUrlAttribute(): string

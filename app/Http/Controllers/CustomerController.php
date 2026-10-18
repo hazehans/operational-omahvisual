@@ -91,9 +91,9 @@ class CustomerController extends Controller
             'notes' => ['nullable', 'string'],
         ]);
 
-        $validated['phone'] = WhatsAppHelper::normalizeIndonesianPhone($validated['phone'], true) ?? $validated['phone'];
+        $validated['phone'] = WhatsAppHelper::normalizePhone($validated['phone'], null, true) ?? $validated['phone'];
         if (! empty($validated['pic_secondary_phone'])) {
-            $validated['pic_secondary_phone'] = WhatsAppHelper::normalizeIndonesianPhone($validated['pic_secondary_phone'], true) ?? $validated['pic_secondary_phone'];
+            $validated['pic_secondary_phone'] = WhatsAppHelper::normalizePhone($validated['pic_secondary_phone'], null, true) ?? $validated['pic_secondary_phone'];
         }
 
         $nextNum = Customer::count() + 1;
@@ -160,9 +160,9 @@ class CustomerController extends Controller
             'notes' => ['nullable', 'string'],
         ]);
 
-        $validated['phone'] = WhatsAppHelper::normalizeIndonesianPhone($validated['phone'], true) ?? $validated['phone'];
+        $validated['phone'] = WhatsAppHelper::normalizePhone($validated['phone'], null, true) ?? $validated['phone'];
         if (! empty($validated['pic_secondary_phone'])) {
-            $validated['pic_secondary_phone'] = WhatsAppHelper::normalizeIndonesianPhone($validated['pic_secondary_phone'], true) ?? $validated['pic_secondary_phone'];
+            $validated['pic_secondary_phone'] = WhatsAppHelper::normalizePhone($validated['pic_secondary_phone'], null, true) ?? $validated['pic_secondary_phone'];
         }
 
         $customer->update($validated);
