@@ -287,12 +287,42 @@
   - Total test suite: **99 Tests, 638 Assertions, 100% Lulus (Green)**.
   - Difilter & diformat sesuai standar Laravel Pint.
 
+### 24. Modul Invoicing, Penagihan Bertahap (DP & Pelunasan) & Kuitansi Resmi — ✅ Selesai
+- [x] **Skema Basis Data & Model Invoicing:**
+  - Tabel `invoices` (`INV-YYYYMM-XXXX`, tanggal invoice, jatuh tempo, tipe termin `full`/`down_payment`/`settlement`/`standard`/`custom`, diskon, PPN, grand total, status, rekening bank, syarat ketentuan).
+  - Tabel `invoice_items` (relasi baris layanan, kuantitas, satuan, harga, total).
+  - Tabel `invoice_payments` (`PAY-YYYYMM-XXXX`, tanggal bayar, nominal, metode transfer BCA/BRI/Mandiri/Cash/QRIS, no ref mutasi bank, upload bukti transfer, user penerima).
+- [x] **Kalkulasi Otomatis & Sinkronisasi Pembayaran Atomik:**
+  - Model `Invoice` otomatis menghitung ulang `subtotal`, `tax_amount`, `total_amount`, `paid_amount`, dan `balance_due`.
+  - Sinkronisasi instan ke pesanan event (`event_orders.paid_amount` & `event_orders.payment_status`: `unpaid`, `partial`, `paid`).
+- [x] **Penerbitan Invoice Cepat dari Pesanan Event (`/invoices/create`):**
+  - Pemilihan pesanan event yang otomatis mengekstrak rincian formasi layar LED ($m^2$, pixel pitch, seri), unit TV, proyektor, dan harga sewa.
+  - Tombol cepat tipe termin (Lunas 100%, DP 50%, atau Pelunasan Sisa) dengan kalkulasi live via Alpine.js.
+  - Input diskon rupiah dan persentase pajak PPN interaktif.
+- [x] **Antarmuka Pengelolaan & Ledger Pembayaran (`/invoices/{id}`):**
+  - Bilah indikator progres pembayaran persentase lunas (*Progress Bar*) dengan rekap 3 kartu ringkasan (Total Tagihan, Telah Diterima, Sisa Belum Bayar).
+  - Modal pop-up modern *+ Catat Pembayaran Masuk* dengan opsi upload foto bukti transfer bank.
+  - Riwayat pembayaran terperinci dengan nomor kuitansi, tanggal, metode, dan thumbnail bukti transfer.
+- [x] **Lembar Cetak Faktur Penagihan A4 & Kuitansi Resmi:**
+  - Cetak Faktur Tagihan A4 (`/invoices/{id}/print`): Kop surat Omah Visual LED / CV Han Media Tekindo, rincian customer, rincian pesanan event, tabel spesifikasi panggung, Terbilang Rupiah resmi, rekening bank BCA, pengesahan finance, serta stempel dinamis watermark *LUNAS* / *DP DITERIMA*.
+  - Cetak Kuitansi Tanda Terima Pembayaran A4 (`/invoices/payments/{id}/receipt`): Dokumen bukti penerimaan kas/transfer sah dengan Terbilang, rincian sisa tagihan, dan tanda tangan penerima.
+- [x] **Integrasi 1-Klik Bagikan Tagihan ke WhatsApp Customer:**
+  - Tautan WhatsApp langsung dengan format pesan profesional dan ramah, merinci nomor invoice, nama acara, total tagihan, nominal DP, sisa tagihan, dan rekening bank transfer BCA resmi.
+- [x] **Penyempurnaan Tampilan Detail Pesanan & Navigasi Sidebar:**
+  - Kartu *Faktur & Tagihan (Invoices)* dan tombol *+ Buat Invoice* tersemat di halaman rincian pesanan (`orders/show.blade.php`).
+  - Menu navigasi *Invoice & Penagihan* dengan badge `Billing` di sidebar.
+- [x] **Suite Pengujian Otomatis Komprehensif:**
+  - `tests/Feature/InvoiceManagementTest.php` (8 test baru lulus 100%).
+  - Total pengujian meningkat menjadi **107 Tests, 693 Assertions, 100% Lulus (Green)**.
+  - Diformat rapi sesuai standar Laravel Pint.
+
 ---
 
 ## 🔮 Roadmap Jangka Panjang (Operasional Lanjutan Sesuai PRD Global)
+- [ ] Dashboard Analisis Manajer Operasional (Grafik utilisasi armada TRAGA 1/2/3, tren ukuran layar LED, performa crew, analisa laba bersih event)
+- [ ] Portal Pelacakan Mandiri oleh Customer (Tracking status persiapan LED screen via order token)
+- [ ] Fitur Ekspor Laporan Bulanan (Excel/PDF) untuk Rekapitulasi Gaji Kru & Operasional Event
 - [ ] Integrasi Barcode / QR Code Fisik Scanner (Ditunda sementara sesuai arahan user agar fokus pematangan operasional)
 - [ ] Demobilisasi & Rekonsiliasi Pasca-Event Otomatis ke Stok Gudang (Otomatis potong modul rusak ke status Service / Maintenance)
-- [ ] Dashboard Analisis Manajer Operasional (Grafik utilisasi armada TRAGA 1/2/3, tren ukuran layar LED, performa crew)
-- [ ] Invoicing & Verifikasi Pembayaran Bertahap (DP vs Pelunasan via Rekening BCA/BRI)
-- [ ] Portal Pelacakan Mandiri oleh Customer (Tracking status persiapan LED screen via order token)
+
 

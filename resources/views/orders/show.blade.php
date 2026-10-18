@@ -69,6 +69,15 @@
                 </a>
             @endif
 
+            <!-- Invoice Action Button -->
+            <a href="{{ route('invoices.create', ['order_id' => $order->id]) }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-sm font-semibold shadow-md shadow-cyan-600/20 transition-all">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z" />
+                </svg>
+                <span>+ Buat Invoice</span>
+            </a>
+
+
             <!-- Delete Order -->
             <form action="{{ route('orders.destroy', $order) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pesanan {{ $order->order_number }} ini? Seluruh data SPK dan formasi layar akan dihapus.');" class="inline">
                 @csrf
@@ -319,8 +328,49 @@
                     Metode: {{ $order->down_payment_method ?? 'BCA' }}
                 </div>
             </div>
+
+            <!-- Invoices & Billing Card -->
+            <div class="bg-white dark:bg-slate-900/60 p-6 rounded-2xl border border-slate-200 dark:border-slate-800/80 shadow-xs space-y-3">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Faktur & Tagihan (Invoices)</h3>
+                    <a href="{{ route('invoices.create', ['order_id' => $order->id]) }}" class="text-[11px] font-semibold text-cyan-600 dark:text-cyan-400 hover:underline">
+                        + Buat Baru
+                    </a>
+                </div>
+
+                @forelse($order->invoices as $inv)
+                    <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-700/60 space-y-1.5 text-xs">
+                        <div class="flex items-center justify-between">
+                            <a href="{{ route('invoices.show', $inv) }}" class="font-mono font-bold text-indigo-600 dark:text-indigo-400 hover:underline">
+                                {{ $inv->invoice_number }}
+                            </a>
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold
+                                {{ $inv->status === 'paid' ? 'bg-emerald-500/10 text-emerald-600' : ($inv->status === 'partial' ? 'bg-amber-500/10 text-amber-600' : 'bg-rose-500/10 text-rose-600') }}">
+                                {{ $inv->status === 'paid' ? 'Lunas' : ($inv->status === 'partial' ? 'DP Masuk' : 'Belum Bayar') }}
+                            </span>
+                        </div>
+                        <div class="flex items-center justify-between text-slate-500">
+                            <span>Tagihan: <strong class="text-slate-900 dark:text-white">Rp {{ number_format($inv->total_amount, 0, ',', '.') }}</strong></span>
+                            <span>Sisa: <strong class="{{ $inv->balance_due > 0 ? 'text-rose-600' : 'text-emerald-600' }}">Rp {{ number_format($inv->balance_due, 0, ',', '.') }}</strong></span>
+                        </div>
+                        <div class="pt-1.5 border-t border-slate-200/50 dark:border-slate-700/50 flex items-center justify-between text-[11px]">
+                            <a href="{{ route('invoices.print', $inv) }}" target="_blank" class="text-slate-500 hover:text-slate-900 dark:hover:text-white">
+                                🖨️ Cetak Faktur A4
+                            </a>
+                            <a href="{{ route('invoices.show', $inv) }}" class="text-indigo-600 dark:text-indigo-400 font-semibold hover:underline">
+                                Kelola Pembayaran →
+                            </a>
+                        </div>
+                    </div>
+                @empty
+                    <div class="p-3 text-center rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-dashed border-slate-200 dark:border-slate-700 text-xs text-slate-400">
+                        Belum ada faktur tagihan diterbitkan untuk pesanan ini.
+                    </div>
+                @endforelse
+            </div>
         </div>
     </div>
 </div>
+
 @endsection
 

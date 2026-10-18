@@ -9,6 +9,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EventOrderController;
 use App\Http\Controllers\InitialCountController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
@@ -130,6 +131,13 @@ Route::middleware('auth')->group(function () {
     Route::post('/crew-payroll/batch-mark-paid', [CrewPayrollController::class, 'batchMarkPaid'])->name('crew-payroll.batch-mark-paid');
     Route::get('/crew-payroll/{assignment}/slip', [CrewPayrollController::class, 'showSlip'])->name('crew-payroll.slip');
     Route::get('/crew-payroll/crew/{crew}/monthly-slip', [CrewPayrollController::class, 'crewMonthlySlip'])->name('crew-payroll.crew-monthly-slip');
+
+    // Invoices & Client Billing Management
+    Route::get('/invoices/{invoice}/print', [InvoiceController::class, 'print'])->name('invoices.print');
+    Route::post('/invoices/{invoice}/payments', [InvoiceController::class, 'storePayment'])->name('invoices.payments.store');
+    Route::delete('/invoices/payments/{payment}', [InvoiceController::class, 'deletePayment'])->name('invoices.payments.destroy');
+    Route::get('/invoices/payments/{payment}/receipt', [InvoiceController::class, 'printReceipt'])->name('invoices.payments.receipt');
+    Route::resource('invoices', InvoiceController::class);
 
     // User & Role Management (Superuser & Owner)
     Route::post('/users/{user}/reset-password', [UserController::class, 'resetPassword'])->name('users.reset-password');

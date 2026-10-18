@@ -167,6 +167,17 @@
                     </svg>
                     <span>Armada Kendaraan</span>
                 </a>
+
+                <!-- Invoice & Penagihan Client -->
+                <a href="{{ route('invoices.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all {{ request()->routeIs('invoices.*') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-slate-800/50' }}">
+                    <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z" />
+                    </svg>
+                    <div class="flex items-center justify-between flex-1">
+                        <span>Invoice & Penagihan</span>
+                        <span class="px-1.5 py-0.5 text-[10px] rounded bg-cyan-500/20 text-cyan-400 font-bold">Billing</span>
+                    </div>
+                </a>
                 @endhasanyrole
 
                 <div class="pt-4 px-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">

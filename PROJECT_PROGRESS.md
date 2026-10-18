@@ -290,14 +290,44 @@ Berdasarkan analisis 2 file Excel (`DATA TOOLS BOX .2` dan `DEV_STOCK OPNAME by 
   - Total pengujian meningkat menjadi **99 Tests, 638 Assertions, 100% Lulus (Green)**.
   - Diformat rapi sesuai standar Laravel Pint.
 
+### Tahap 11: Modul Invoicing, Penagihan Bertahap (DP vs Pelunasan) & Kuitansi Pembayaran Resmi (SELESAI ✅)
+- [x] **Skema Basis Data Invoicing & Transaksi Pembayaran:**
+  - Tabel `invoices` (nomor otomatis anti-kolisi `INV-YYYYMM-XXXX`, tanggal invoice, jatuh tempo, tipe tagihan: `full`, `down_payment`, `settlement`, `standard`, `custom`, subtotal, diskon, PPN %, grand total, terbayar, sisa piutang, status, rekening bank, syarat ketentuan).
+  - Tabel `invoice_items` (relasi baris layanan/barang, kuantitas, satuan, harga satuan, total).
+  - Tabel `invoice_payments` (nomor kuitansi unik `PAY-YYYYMM-XXXX`, tanggal bayar, nominal, metode transfer BCA/BRI/Mandiri/Cash/QRIS, nomor referensi mutasi bank, upload bukti transfer, catatan, user penerima).
+- [x] **Kalkulasi Otomatis & Sinkronisasi Pembayaran Atomik:**
+  - Otomatisasi sinkronisasi saldo: Setiap pembayaran dicatat atau dihapus, model otomatis menghitung ulang `subtotal`, `tax_amount`, `total_amount`, `paid_amount`, dan `balance_due`.
+  - Sinkronisasi instan ke pesanan event (`event_orders.paid_amount` & `event_orders.payment_status`: `unpaid`, `partial`, `paid`).
+- [x] **Penerbitan Invoice Cepat dari Pesanan Event (`/invoices/create`):**
+  - Opsi pemilihan pesanan event yang otomatis mengekstrak rincian formasi layar LED ($m^2$, pixel pitch, seri), unit TV, proyektor, dan harga sewa.
+  - Tombol pintasan tipe termin (Lunas 100%, DP 50%, atau Pelunasan Sisa) dengan kalkulasi live via Alpine.js.
+  - Input diskon rupiah dan persentase pajak PPN interaktif.
+- [x] **Antarmuka Pengelolaan & Ledger Pembayaran (`/invoices/{id}`):**
+  - Bilah indikator progres pembayaran persentase lunas (*Progress Bar*) dengan rekap 3 kartu ringkasan (Total Tagihan, Telah Diterima, Sisa Belum Bayar).
+  - Modal pop-up modern *+ Catat Pembayaran Masuk* dengan opsi upload foto bukti transfer bank.
+  - Riwayat pembayaran terperinci dengan nomor kuitansi, tanggal, metode, dan thumbnail bukti transfer.
+- [x] **Lembar Cetak Faktur Penagihan A4 & Kuitansi Resmi:**
+  - Cetak Faktur Tagihan A4 (`/invoices/{id}/print`): Kop surat Omah Visual LED / CV Han Media Tekindo, rincian customer, rincian pesanan event, tabel spesifikasi panggung, Terbilang Rupiah resmi, rekening bank BCA, pengesahan finance, serta stempel dinamis watermark *LUNAS* / *DP DITERIMA*.
+  - Cetak Kuitansi Tanda Terima Pembayaran A4 (`/invoices/payments/{id}/receipt`): Dokumen bukti penerimaan kas/transfer sah dengan Terbilang, rincian sisa tagihan, dan tanda tangan penerima.
+- [x] **Integrasi 1-Klik Bagikan Tagihan ke WhatsApp Customer:**
+  - Tautan WhatsApp langsung dengan format pesan profesional dan ramah, merinci nomor invoice, nama acara, total tagihan, nominal DP, sisa tagihan, dan rekening bank transfer BCA resmi.
+- [x] **Penyempurnaan Tampilan Detail Pesanan & Navigasi Sidebar:**
+  - Kartu *Faktur & Tagihan (Invoices)* dan tombol *+ Buat Invoice* tersemat di halaman rincian pesanan (`orders/show.blade.php`).
+  - Menu navigasi *Invoice & Penagihan* dengan badge `Billing` di sidebar.
+- [x] **Suite Pengujian Otomatis Komprehensif:**
+  - `tests/Feature/InvoiceManagementTest.php` (8 test komprehensif baru: metrik dashboard, pembuatan invoice, kalkulasi item & pajak, sinkronisasi pesanan saat DP dan lunas, hapus pembayaran, cetak A4 & kuitansi, serta helper Terbilang bahasa Indonesia).
+  - Total pengujian meningkat menjadi **107 Tests, 693 Assertions, 100% Lulus (Green)**.
+  - Diformat rapi sesuai standar Laravel Pint.
+
 ---
 
 ## 🔮 8. Roadmap & Rencana Sesi Berikutnya
+- [ ] **Dashboard Analitik Manajer & Laba-Rugi Operasional:** Statistik omset vs realisasi biaya kru & logistik armada, grafik utilisasi TRAGA, dan ranking jam terbang kru.
+- [ ] **Portal Pelacakan Mandiri untuk Customer (`/track/{order_token}`):** Halaman live tracking progres pesanan & persiapan layar LED untuk EO tanpa login.
+- [ ] **Fitur Ekspor Laporan Bulanan (Excel/PDF):** Rekapitulasi penggajian kru bulanan dan pengeluaran operasional event.
 - [ ] **Integrasi Barcode / QR Code Fisik Scanner:** Penerapan scanner barcode/QR code fisik pasca alur SPK dan cargo list rampung.
-- [ ] **Modul Invoicing & Verifikasi Pembayaran (Finance)**
-- [ ] **Fitur Ekspor Laporan Bulanan (Excel/PDF)** untuk Rekapitulasi Barang Hilang & Biaya Servis
-- [ ] **Notifikasi Discrepancy Otomatis via WhatsApp / Email** saat ada barang kurang pasca-event
-- [ ] **Portal Pelacakan Mandiri oleh Customer (Tracking Status LED Screen via Order Token)**
+- [ ] **Notifikasi Discrepancy Otomatis via WhatsApp / Email:** Alert selisih fisik saat ada barang tertinggal pasca-event.
+
 
 
 

@@ -53,6 +53,11 @@ class Customer extends Model
         return $this->hasMany(EventOrder::class);
     }
 
+    public function invoices(): HasMany
+    {
+        return $this->hasMany(Invoice::class)->latest('invoice_date');
+    }
+
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');

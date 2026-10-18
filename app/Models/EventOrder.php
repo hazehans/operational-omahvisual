@@ -163,6 +163,11 @@ class EventOrder extends Model
         return (float) $this->screens->sum('total_sqm');
     }
 
+    public function invoices(): HasMany
+    {
+        return $this->hasMany(Invoice::class)->latest('invoice_date');
+    }
+
     public function getRemainingBalanceAttribute(): float
     {
         return max(0, (float) $this->total_price - (float) $this->paid_amount);
