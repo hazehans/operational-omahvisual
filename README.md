@@ -64,6 +64,18 @@ Aplikasi ini mengintegrasikan data fisik riil dari spreadsheet inventori lapanga
 * **Manajemen Pengguna Multi-Role (`/users`):** Dukungan penetapan banyak peran per pengguna (misal Warehouse merangkap Teknisi) serta proteksi Superuser.
 * **Aksi Cepat Inventori & Aset Serial (`/products` & `/assets`):** Shortcut tambah stok masuk, registrasi unit serial baru, dan pelaporan selisih/kehilangan barang.
 
+### 💰 F. Modul Invoicing, Penagihan Klien & Kuitansi Resmi (`/invoices`)
+* **Penerbitan Invoice Cepat:** Dibuat otomatis dari pesanan event dengan mengekstrak spesifikasi layar LED ($m^2$, pitch, seri), unit TV, dan aksesoris.
+* **Termin Tagihan Fleksibel:** Pilihan Lunas (100%), Down Payment (DP), atau Pelunasan Sisa Tagihan.
+* **Ledger Pembayaran Masuk:** Pencatatan bertahap (multi-payment) dengan nomor kuitansi unik `PAY-YYYYMM-XXXX`, metode transfer bank BCA resmi Omah Visual, dan upload bukti transfer.
+* **Dokumen Cetak Standar A4:** Lembar Faktur Tagihan resmi A4 (kop surat, Terbilang Rupiah, instruksi rekening bank, tanda tangan finance, stempel watermark *LUNAS* / *DP DITERIMA*) dan Kuitansi Penerimaan Pembayaran resmi.
+* **1-Klik Bagikan ke WhatsApp Customer:** Format pesan tagihan WhatsApp resmi dengan rincian total, DP, sisa piutang, dan nomor rekening transfer.
+
+### 🌐 G. Input Nomor Telepon Internasional Dinamis
+* Komponen interaktif `components/phone-input.blade.php` dengan katalog 33 negara (Asia Tenggara, Asia Pasifik, Timur Tengah, Eropa, Amerika).
+* Filter pencarian live bendera, nama negara, dan dial code, auto-detect prefix, auto-trim angka 0 di depan nomor, dan integrasi WhatsApp `wa.me` E.164.
+
+
 ---
 
 ## 💻 3. Tech Stack & Spesifikasi Sistem
@@ -73,7 +85,7 @@ Aplikasi ini mengintegrasikan data fisik riil dari spreadsheet inventori lapanga
 * **Frontend:** Laravel Blade, Tailwind CSS v4, Vite
 * **Autentikasi & RBAC:** Session Guard + `spatie/laravel-permission` v8.3
 * **Code Formatter:** Laravel Pint
-* **Automated Testing:** PHPUnit (76 feature tests, 465 assertions, 100% Green)
+* **Automated Testing:** PHPUnit (107 feature tests, 693 assertions, 100% Green)
 
 ---
 
@@ -183,7 +195,10 @@ Sesuai dengan **PRD Global Operasional**, status implementasi fitur utama:
 * [x] **Gate Kesiapan Keberangkatan & Multi-Armada:** Pengecekan kesiapan 4 pilar sebelum armada jalan (Barang, Kru Teknisi, Armada Multi-Kendaraan Logistik, Dana Operasional BBM/Tol).
 * [x] **Modul Penggajian & Rekapitulasi Honor Kru Freelance (`/crew-payroll`):** Rekapitulasi honor kru per event dan bulanan, cetak slip gaji A4, pelunasan massal, dan 1-klik bagikan slip via WhatsApp.
 * [x] **Work Order Perbaikan Internal (Workshop):** Manajemen tiket servis modul LED, karantina unit rusak, konsumsi sparepart, dan pemulihan saldo siap sewa.
-* [ ] **Dropdown Kode Negara Internasional Dinamis (Kru & Customer):** Dukungan multi-negara selain Indonesia (+62) pada form kontak.
+* [x] **Dropdown Kode Negara Internasional Dinamis (Kru & Customer):** Dukungan multi-negara selain Indonesia (+62) pada form kontak dengan format E.164 resmi.
+* [x] **Modul Invoicing & Penagihan Client Resmi (`/invoices`):** Faktur tagihan A4, pembayaran bertahap (DP & pelunasan), kuitansi pembayaran resmi, dan 1-klik kirim tagihan via WhatsApp.
+* [ ] **Dashboard Analisis Manajer Operasional:** Grafik utilisasi armada TRAGA 1/2/3, tren ukuran layar LED, performa crew, dan analisa laba bersih event.
+* [ ] **Portal Pelacakan Mandiri oleh Customer (Tracking Status LED Screen via Order Token):** Pelacakan live persiapan LED tanpa login untuk EO/klien.
 * [ ] **Demobilisasi & Rekonsiliasi Pasca-Event Otomatis:** Deteksi barang tertinggal atau modul rusak pasca-event ke tiket servis.
 * [ ] **Integrasi Barcode Scanner Fisik:** Penerapan scanner barcode/QR code fisik pasca alur SPK dan cargo list matang.
 
