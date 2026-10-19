@@ -378,10 +378,39 @@ Berdasarkan analisis 2 file Excel (`DATA TOOLS BOX .2` dan `DEV_STOCK OPNAME by 
 
 ---
 
+
+### Tahap 14: Penyempurnaan Ergonomi Form, Split Blueprint SPK HD & Fleksibilitas Finansial (Batch 1, 2, 3) (SELESAI ✅)
+- [x] **Batch 1: Form Ergonomics & Cetak 1 Lembar A4 Pas:**
+  - Pencegahan submit form tidak sengaja saat menekan tombol `Enter` pada input form pesanan (`orders/create.blade.php` & `orders/edit.blade.php`).
+  - Standarisasi label dimensi layar seragam: *Panjang Layar / Horizontal (Meter)* dan *Lebar / Tinggi Layar / Vertikal (Meter)*.
+  - Kalibrasi layout cetak Faktur (`invoices/print.blade.php`) dan Kuitansi (`invoices/receipt.blade.php`) agar 100% pas dalam 1 halaman kertas A4 tanpa lembar kedua kosong (`h-28` dan `h-24` signature box).
+- [x] **Batch 2: Aksi Massal Checklist SPK & Split Blueprint HD:**
+  - Penambahan toolbar aksi cepat massal pada Tab 2 & 3 SPK (`spk/show.blade.php`): *Centang Semua Keluar/Kembali*, *Kosongkan*, dan toggle per-kategori dengan indikator auto-save real-time.
+  - Endpoint AJAX baru `POST /spk/{assignment}/items/bulk-toggle` pada `SpkController::bulkToggleItems`.
+  - Pemisahan Blueprint SPK menjadi 2 halaman mandiri resolusi tinggi:
+    - **Halaman 4 (4A)**: *Blueprint Pemetaan Panel & Modul LED (Mapping & Resolusi VJ)* + tabel formasi layar.
+    - **Halaman 5 (4B)**: *Blueprint Elevasi Tampak Depan Panggung & Safety Rigging* + tabel safety & tanda tangan pengesahan.
+- [x] **Batch 3: Fleksibilitas Finansial, Multi-Armada, Kompresi QC & Lightbox Zoom:**
+  - Penambahan toggle **Mode Borongan (Lump-Sum Langsung)** pada form invoice baru (`invoices/create.blade.php`) beserta checkbox toggle untuk Diskon dan PPN (11%).
+  - Tampilan daftar multi-armada operasional terpadu pada kartu detail order (`orders/show.blade.php`) dengan shortcut kelola di SPK.
+  - Kompresi gambar client-side canvas otomatis (maksimal 1920px, ~400KB) pada laporan QC & BAST live kru (`spk/crew-live.blade.php`) dan peningkatan batas upload server menjadi 15MB.
+  - Fitur Click-to-Zoom Lightbox HD pada denah blueprint dan foto BAST di portal customer (`tracking/show.blade.php`).
+- [x] **Pembersihan Diagnostik & Static Analysis IDE (0 Problems):**
+  - Konfigurasi `.vscode/settings.json` mengecualikan direktori `vendor/` dan `.gitignore` dari scanner DevSense PHP.
+  - Penambahan type-hinting PHPDoc dan parsing Carbon eksplisit pada `EventOrderController.php`, `EventOrder.php`, dan `Invoice.php`.
+- [x] **Suite Pengujian Otomatis:** Total pengujian stabil di **115 Tests, 738 Assertions, 100% Lulus (Green)**.
+
+---
+
 ## 🔮 8. Roadmap & Rencana Sesi Berikutnya
+- [ ] **Role & Permission Matrix Configuration (Spatie RBAC):**
+  - Penerapan matriks hak akses resmi per role: Superuser, Owner, **Manager Operasional**, Admin LED, Warehouse, Teknisi/Kru, dan Finance.
+  - Penambahan peran **Manager Operasional** sebagai koordinator penugasan kru & armada antara Admin dan Kru Lapangan.
+  - Penyesuaian middleware route, otorisasi controller, dan visibilitas menu sidebar aplikasi.
 - [ ] **Dropdown Kode Negara Input Nomor Telepon Kru:** Input nomor telepon kru lapangan dengan pilihan kode negara internasional (+62 Indonesia default, +60 Malaysia, +65 Singapura, dsb).
 - [ ] **Dashboard Analitik Manajer & Laba-Rugi Operasional:** Statistik omset vs realisasi biaya kru & logistik armada, grafik utilisasi TRAGA, dan ranking jam terbang kru.
 - [ ] **Fitur Ekspor Laporan Bulanan (Excel/PDF):** Rekapitulasi penggajian kru bulanan dan pengeluaran operasional event.
+- [ ] **Demobilisasi & Rekonsiliasi Pasca-Event Otomatis ke Stok Gudang.**
 - [ ] **Integrasi Barcode / QR Code Fisik Scanner:** Penerapan scanner barcode/QR code fisik pasca alur SPK dan cargo list rampung.
 - [ ] **Notifikasi Discrepancy Otomatis via WhatsApp / Email:** Alert selisih fisik saat ada barang tertinggal pasca-event.
 
