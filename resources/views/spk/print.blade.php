@@ -231,8 +231,8 @@
         <span style="font-size: 13px; font-weight: 600;">SPK &amp; Cargo List • {{ $assignment->spk_number }}</span>
     </div>
     <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-        <button type="button" onclick="printAllPages()" class="btn-print" title="Cetak Seluruh Lembar (1 s/d 4)">
-            🖨️ Cetak Semua (Hal 1-4)
+        <button type="button" onclick="printAllPages()" class="btn-print" title="Cetak Seluruh Lembar (1 s/d 5)">
+            🖨️ Cetak Semua (Hal 1-5)
         </button>
         <button type="button" onclick="printSinglePage(1)" class="btn-sub-print" title="Cetak Lembar Serah Terima & Surat Jalan Saja">
             📄 Hal 1 (Surat Jalan)
@@ -240,8 +240,8 @@
         <button type="button" onclick="printChecklistPages()" class="btn-sub-print" title="Cetak Lembar Checklist Muatan Gudang (Hal 2 & 3)">
             📦 Hal 2-3 (Checklist)
         </button>
-        <button type="button" onclick="printSinglePage(4)" class="btn-sub-print" title="Cetak Lembar Blueprint Teknis Panggung">
-            📐 Hal 4 (Blueprint Teknis)
+        <button type="button" onclick="printBlueprintPages()" class="btn-sub-print" title="Cetak Lembar Blueprint Teknis Panggung (Hal 4 & 5)">
+            📐 Hal 4-5 (Blueprint HD)
         </button>
         <a href="{{ route('orders.show', $assignment->eventOrder) }}" class="btn-sub-print" style="text-decoration: none; display: inline-flex; align-items: center;">
             ✕ Tutup
@@ -532,15 +532,16 @@
     <!-- HALAMAN 4: BLUEPRINT TEKNIS PANGGUNG & LED (A4 PORTRAIT ATAS-BAWAH)       -->
     <!-- Diagrams stacked vertically (Atas - Bawah) for maximum wide visual scope   -->
     <!-- ========================================================================= -->
+    <!-- PAGE 4: BLUEPRINT 1 - PEMETAAN PANEL & KABINET LED (MAPPING BLUEPRINT) -->
     <div class="page" id="page-4">
         <!-- Title & Event Header -->
         <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #000; padding-bottom: 4px; margin-bottom: 6px;">
             <div>
-                <div style="font-size: 15px; font-weight: bold; text-transform: uppercase;">
-                    4 BLUEPRINT TEKNIS: TATA LETAK PANGGUNG &amp; FORMASI LAYAR LED
+                <div style="font-size: 14px; font-weight: bold; text-transform: uppercase;">
+                    4A BLUEPRINT: PEMETAAN PANEL &amp; KABINET LED (MAPPING &amp; RESOLUSI VJ)
                 </div>
                 <div style="font-size: 10px; color: #334155; font-weight: bold;">
-                    Engineering Stage Plot &amp; LED Screen Rigging Blueprint • Omahvisual LED
+                    Nomor Urut Kabinet, Resolusi Piksel Konten &amp; Rute Kabel • Omahvisual LED
                 </div>
             </div>
             <div style="font-size: 10px; text-align: right;">
@@ -563,41 +564,107 @@
             </tr>
         </table>
 
-        <!-- DIAGRAM 1: PEMETAAN PANEL & KABINET LED (RESOLUME & VJ MAPPING) - ATAS -->
-        <div style="border: 1.5px solid #000; background: #fff; margin-bottom: 5px;">
-            <div style="background: #1e293b; color: #fff; padding: 3px 8px; font-size: 10.5px; font-weight: bold; display: flex; justify-content: space-between; align-items: center;">
-                <span>🔲 1. PEMETAAN PANEL &amp; KABINET LED — NOMOR KABINET &amp; RESOLUSI KONTEN</span>
-                <span style="font-size: 9.5px; color: #38bdf8;">Panduan Teknisi &amp; VJ Konten</span>
+        <!-- DIAGRAM 1: PEMETAAN PANEL & KABINET LED (RESOLUME & VJ MAPPING) -->
+        <div style="border: 1.5px solid #000; background: #fff; margin-bottom: 8px;">
+            <div style="background: #1e293b; color: #fff; padding: 4px 10px; font-size: 11px; font-weight: bold; display: flex; justify-content: space-between; align-items: center;">
+                <span>🔲 DIAGRAM PEMETAAN PANEL &amp; NOMOR KABINET LED</span>
+                <span style="font-size: 10px; color: #38bdf8;">Panduan Teknisi Lapangan &amp; Operator VJ</span>
             </div>
-            <div style="padding: 0; text-align: center; background: #0a0f1d; overflow: hidden;">
+            <div style="padding: 0; text-align: center; background: #070b14; overflow: hidden;">
                 @if($assignment->eventOrder->stage_layout_image)
-                    <img id="printBlueprintTopImg" src="{{ $assignment->eventOrder->stage_layout_image }}" style="width: 100%; max-height: 94mm; object-fit: contain; display: block; margin: 0 auto;">
+                    <img id="printBlueprintTopImg" src="{{ $assignment->eventOrder->stage_layout_image }}" style="width: 100%; max-height: 140mm; object-fit: contain; display: block; margin: 0 auto;">
                 @else
-                    <img id="printBlueprintTopImg" src="" style="width: 100%; max-height: 94mm; object-fit: contain; display: none; margin: 0 auto;">
-                    <div id="printBlueprintTopFallback" style="height: 80mm; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #94a3b8; font-size: 13px;">
-                        <span style="font-size: 15px; font-weight: bold; color: #e2e8f0; margin-bottom: 4px;">Diagram Pemetaan Panel &amp; Kabinet LED</span>
+                    <img id="printBlueprintTopImg" src="" style="width: 100%; max-height: 140mm; object-fit: contain; display: none; margin: 0 auto;">
+                    <div id="printBlueprintTopFallback" style="height: 120mm; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #94a3b8; font-size: 13px;">
+                        <span style="font-size: 16px; font-weight: bold; color: #e2e8f0; margin-bottom: 6px;">Diagram Pemetaan Panel &amp; Kabinet LED</span>
                         <span style="font-size: 14px; color: #38bdf8; font-weight: bold;">{{ $assignment->eventOrder->screens->map(fn($s) => $s->screen_name . ' (' . $s->width_m . 'x' . $s->height_m . 'm - ' . $s->total_cabinets . ' Kabinet)')->implode(' • ') }}</span>
-                        <span style="margin-top: 6px; color: #facc15; font-weight: bold; font-size: 13px;">PANDUAN SUSUNAN MODUL TEKNISI &amp; RESOLUSI PIKSEL VJ</span>
+                        <span style="margin-top: 8px; color: #facc15; font-weight: bold; font-size: 13px;">PANDUAN SUSUNAN MODUL TEKNISI &amp; RESOLUSI PIKSEL VJ</span>
                     </div>
                 @endif
             </div>
         </div>
 
-        <!-- DIAGRAM 2: TAMPAK DEPAN (FRONT ELEVATION / PERSPEKTIF PENONTON) - BAWAH -->
-        <div style="border: 1.5px solid #000; background: #fff; margin-bottom: 5px;">
-            <div style="background: #1e293b; color: #fff; padding: 3px 8px; font-size: 10.5px; font-weight: bold; display: flex; justify-content: space-between; align-items: center;">
-                <span>🎭 2. TAMPAK DEPAN (FRONT ELEVATION) — LEVEL TINGGI PANGGUNG &amp; TRUSS GANTUNG</span>
-                <span style="font-size: 9.5px; color: #facc15;">Perspektif Penonton</span>
+        <!-- Tabel Rincian Formasi Layar LED -->
+        <table class="data-table" style="margin-bottom: 0;">
+            <thead>
+                <tr>
+                    <th style="width: 30px;">NO</th>
+                    <th>Nama Posisi Layar</th>
+                    <th style="width: 85px;">Panjang × Lebar</th>
+                    <th style="width: 65px;">Luas (m²)</th>
+                    <th style="width: 95px;">Total Kabinet</th>
+                    <th style="width: 85px;">Hardcase</th>
+                    <th style="width: 130px;">Prosesor Video</th>
+                    <th>Spesifikasi Panggung / Catatan</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($assignment->eventOrder->screens as $idx => $sc)
+                    <tr>
+                        <td style="text-align: center; font-weight: bold;">{{ $idx + 1 }}</td>
+                        <td style="font-weight: bold;">{{ $sc->screen_name }}</td>
+                        <td style="text-align: center;">{{ $sc->width_m }}m × {{ $sc->height_m }}m</td>
+                        <td style="text-align: center; font-weight: bold; color: #1e40af;">{{ $sc->total_sqm }} m²</td>
+                        <td style="text-align: center;">{{ $sc->total_cabinets }} Kabinet ({{ $sc->cabinets_1m ?? $sc->total_cabinets }}x 1m, {{ $sc->cabinets_50cm ?? 0 }}x 50cm)</td>
+                        <td style="text-align: center;">{{ $sc->total_hardcases }} Flightcase</td>
+                        <td style="font-size: 9px; font-weight: 600;">{{ $sc->processor_model }}</td>
+                        <td style="font-size: 9px;">{{ $sc->stage_specification ?? 'Standar panggung Omah Visual' }}</td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+        <div style="font-size: 8.5px; color: #64748b; margin-top: 4px;">
+            *Alur nomor kabinet: kiri-ke-kanan, atas-ke-bawah (standar NovaStar). Pastikan kabel power dan LAN jumper mengikuti urutan nomor kabinet di atas.
+        </div>
+    </div>
+
+    <!-- PAGE 5: BLUEPRINT 2 - ELEVASI TAMPAK DEPAN & SAFETY RIGGING -->
+    <div class="page" id="page-5">
+        <!-- Title & Event Header -->
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #000; padding-bottom: 4px; margin-bottom: 6px;">
+            <div>
+                <div style="font-size: 14px; font-weight: bold; text-transform: uppercase;">
+                    4B BLUEPRINT: ELEVASI TAMPAK DEPAN PANGGUNG &amp; SAFETY RIGGING
+                </div>
+                <div style="font-size: 10px; color: #334155; font-weight: bold;">
+                    Perspektif Penonton, Level Tinggi Panggung, &amp; Sign-Off Keselamatan • Omahvisual LED
+                </div>
             </div>
-            <div style="padding: 0; text-align: center; background: #0a0f1d; overflow: hidden;">
+            <div style="font-size: 10px; text-align: right;">
+                <strong>No. SPK:</strong> {{ $assignment->spk_number }}<br>
+                <strong>No. Event:</strong> {{ $assignment->eventOrder->order_number }}
+            </div>
+        </div>
+
+        <!-- Project Meta Strip -->
+        <table style="width: 100%; border-collapse: collapse; font-size: 10px; margin-bottom: 6px; background: #f8fafc; border: 1px solid #cbd5e1;">
+            <tr>
+                <td style="padding: 3px 6px; width: 33%;"><strong>Client:</strong> {{ $assignment->eventOrder->customer->name }}</td>
+                <td style="padding: 3px 6px; width: 33%;"><strong>Venue:</strong> {{ $assignment->eventOrder->venue_name }}</td>
+                <td style="padding: 3px 6px; width: 34%;"><strong>Tgl Event:</strong> {{ $assignment->eventOrder->event_start_date->format('d/m/Y') }}</td>
+            </tr>
+            <tr>
+                <td style="padding: 3px 6px;"><strong>Ukuran Panggung:</strong> {{ $assignment->eventOrder->stage_width_m ?? 10 }}m × {{ $assignment->eventOrder->stage_depth_m ?? 6 }}m (Level +{{ $assignment->eventOrder->stage_height_m ?? 0.6 }}m)</td>
+                <td style="padding: 3px 6px;"><strong>Kelistrikan:</strong> {{ $assignment->eventOrder->kelistrikan ?? 'Genset' }} ({{ $assignment->eventOrder->kelistrikan_keterangan ?? '-' }})</td>
+                <td style="padding: 3px 6px;"><strong>PIC Rigging:</strong> {{ $assignment->crew_pic_event_name ?? '-' }}</td>
+            </tr>
+        </table>
+
+        <!-- DIAGRAM 2: TAMPAK DEPAN (FRONT ELEVATION / PERSPEKTIF PENONTON) -->
+        <div style="border: 1.5px solid #000; background: #fff; margin-bottom: 8px;">
+            <div style="background: #1e293b; color: #fff; padding: 4px 10px; font-size: 11px; font-weight: bold; display: flex; justify-content: space-between; align-items: center;">
+                <span>🎭 DIAGRAM ELEVASI TAMPAK DEPAN (PERSPEKTIF PENONTON &amp; PANGGUNG)</span>
+                <span style="font-size: 10px; color: #facc15;">Tinggi Level Panggung &amp; Truss Rigging</span>
+            </div>
+            <div style="padding: 0; text-align: center; background: #070b14; overflow: hidden;">
                 @if($assignment->eventOrder->stage_layout_front_image)
-                    <img id="printBlueprintFrontImg" src="{{ $assignment->eventOrder->stage_layout_front_image }}" style="width: 100%; max-height: 94mm; object-fit: contain; display: block; margin: 0 auto;">
+                    <img id="printBlueprintFrontImg" src="{{ $assignment->eventOrder->stage_layout_front_image }}" style="width: 100%; max-height: 140mm; object-fit: contain; display: block; margin: 0 auto;">
                 @else
-                    <img id="printBlueprintFrontImg" src="" style="width: 100%; max-height: 94mm; object-fit: contain; display: none; margin: 0 auto;">
-                    <div id="printBlueprintFrontFallback" style="height: 80mm; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #94a3b8; font-size: 13px;">
-                        <span style="font-size: 15px; font-weight: bold; color: #e2e8f0; margin-bottom: 4px;">Elevasi Panggung: Level +{{ $assignment->eventOrder->stage_height_m ?? 0.6 }}m</span>
+                    <img id="printBlueprintFrontImg" src="" style="width: 100%; max-height: 140mm; object-fit: contain; display: none; margin: 0 auto;">
+                    <div id="printBlueprintFrontFallback" style="height: 120mm; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #94a3b8; font-size: 13px;">
+                        <span style="font-size: 16px; font-weight: bold; color: #e2e8f0; margin-bottom: 6px;">Elevasi Panggung: Level +{{ $assignment->eventOrder->stage_height_m ?? 0.6 }}m</span>
                         <span style="font-size: 14px; color: #38bdf8; font-weight: bold;">Ground Stack / Rigging Truss Gantung</span>
-                        <span style="margin-top: 6px; color: #94a3b8; font-size: 12px;">(Render blueprint elevasi otomatis saat simpan layout)</span>
+                        <span style="margin-top: 8px; color: #94a3b8; font-size: 12px;">(Render blueprint elevasi otomatis saat simpan layout)</span>
                     </div>
                 @endif
             </div>
@@ -605,8 +672,8 @@
 
         <!-- BOTTOM SECTION: RIGGING TABLE & SAFETY SIGN-OFF (SIDE-BY-SIDE) -->
         <div style="display: flex; gap: 8px; align-items: stretch;">
-            <!-- Left 62%: Tabel Spesifikasi Teknik Pemasangan & Rigging -->
-            <div style="flex: 1.6;">
+            <!-- Left 60%: Tabel Spesifikasi Teknik Pemasangan & Rigging -->
+            <div style="flex: 1.5;">
                 <table class="data-table" style="margin-bottom: 0;">
                     <thead>
                         <tr>
@@ -614,7 +681,6 @@
                             <th>Nama Posisi Layar</th>
                             <th style="width: 75px;">Dimensi</th>
                             <th style="width: 55px;">Luas</th>
-                            <th style="width: 80px;">Total Kabinet</th>
                             <th style="width: 90px;">Metode Pasang</th>
                             <th style="width: 95px;">Prosesor &amp; Sinyal</th>
                             <th>Catatan Rigging &amp; Safety</th>
@@ -627,7 +693,6 @@
                                 <td style="font-weight: bold;">{{ $sc->screen_name }}</td>
                                 <td style="text-align: center;">{{ $sc->width_m }}m × {{ $sc->height_m }}m</td>
                                 <td style="text-align: center; font-weight: bold; color: #1e40af;">{{ $sc->total_sqm }} m²</td>
-                                <td style="text-align: center;">{{ $sc->total_cabinets }} Kabinet ({{ $sc->total_hardcases }} Box)</td>
                                 <td style="text-align: center; font-weight: bold;">
                                     {{ $sc->rigging_method === 'hanging' ? 'Truss Gantung' : 'Ground Stack' }}
                                 </td>
@@ -639,21 +704,21 @@
                 </table>
             </div>
 
-            <!-- Right 38%: Rigging Statement & Sign-off Box -->
-            <div style="flex: 1; border: 1px solid #000; padding: 4px 6px; background: #fff; display: flex; flex-direction: column; justify-content: space-between;">
+            <!-- Right 40%: Rigging Statement & Sign-off Box -->
+            <div style="flex: 1; border: 1px solid #000; padding: 6px 8px; background: #fff; display: flex; flex-direction: column; justify-content: space-between;">
                 <div>
-                    <div style="font-size: 9px; font-weight: bold; margin-bottom: 2px; text-transform: uppercase;">
+                    <div style="font-size: 9.5px; font-weight: bold; margin-bottom: 3px; text-transform: uppercase;">
                         Pernyataan Kelayakan Instalasi Rigging:
                     </div>
-                    <div style="font-size: 8px; color: #334155; line-height: 1.25;">
+                    <div style="font-size: 8.5px; color: #334155; line-height: 1.3;">
                         1. Kerataan lantai level panggung dicek waterpass sebelum kabinet dipasang.<br>
                         2. Quick-lock kabinet &amp; safety wire terpasang lengkap sesuai standar safety.<br>
                         3. Beban daya listrik dibagi merata dan grounding terpasang aman.
                     </div>
                 </div>
-                <table class="sign-table" style="margin-bottom: 0; margin-top: 4px;">
+                <table class="sign-table" style="margin-bottom: 0; margin-top: 6px;">
                     <tr>
-                        <td style="height: 28px; vertical-align: top; font-size: 8.5px; padding: 1px;">TTD PIC RIGGING</td>
+                        <td style="height: 35px; vertical-align: top; font-size: 8.5px; padding: 1px;">TTD PIC RIGGING</td>
                         <td style="vertical-align: top; font-size: 8.5px; padding: 1px;">TTD OPERATOR VISUAL</td>
                         <td style="vertical-align: top; font-size: 8.5px; padding: 1px;">TTD PIC EVENT</td>
                     </tr>
@@ -732,6 +797,20 @@
     function printChecklistPages() {
         document.querySelectorAll('.page').forEach((p, idx) => {
             if (idx + 1 === 2 || idx + 1 === 3) {
+                p.classList.remove('print-hide');
+            } else {
+                p.classList.add('print-hide');
+            }
+        });
+        window.print();
+        setTimeout(() => {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('print-hide'));
+        }, 500);
+    }
+
+    function printBlueprintPages() {
+        document.querySelectorAll('.page').forEach((p, idx) => {
+            if (idx + 1 === 4 || idx + 1 === 5) {
                 p.classList.remove('print-hide');
             } else {
                 p.classList.add('print-hide');

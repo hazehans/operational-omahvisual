@@ -334,11 +334,41 @@
             <!-- Crew Roster Card -->
             @if($order->spkAssignment)
                 <div class="bg-white dark:bg-slate-900/60 p-6 rounded-2xl border border-slate-200 dark:border-slate-800/80 shadow-xs space-y-3">
-                    <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Tim Lapangan & Armada</h3>
-                    <div class="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2">
-                        <span>🚐 {{ $order->spkAssignment->vehicle_name ?? 'TRAGA 1' }}</span>
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Tim Lapangan & Armada</h3>
+                        <a href="{{ route('spk.show', $order->spkAssignment) }}" class="text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">
+                            Kelola di SPK →
+                        </a>
                     </div>
-                    <div class="text-xs text-slate-500">
+
+                    @if($order->spkAssignment->assignedVehicles && $order->spkAssignment->assignedVehicles->count() > 0)
+                        <div class="space-y-1.5">
+                            <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Armada Operasional ({{ $order->spkAssignment->assignedVehicles->count() }} Kendaraan):</div>
+                            @foreach($order->spkAssignment->assignedVehicles as $veh)
+                                <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/60 flex items-center justify-between text-xs">
+                                    <div class="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
+                                        <span class="text-base">🚐</span>
+                                        <div>
+                                            <div>{{ $veh->vehicle_name }}</div>
+                                            @if($veh->plate_number)
+                                                <div class="text-[10px] text-slate-400 font-mono font-normal">{{ $veh->plate_number }}</div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="text-right text-[11px] text-slate-500">
+                                        <div>Driver: <strong class="text-slate-700 dark:text-slate-300">{{ $veh->driver_name ?? '-' }}</strong></div>
+                                        <div class="text-[10px] text-slate-400">Keluar: {{ $veh->departure_status ?? 'Menunggu' }}</div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+                            <span>🚐 {{ $order->spkAssignment->vehicle_name ?? 'TRAGA 1' }}</span>
+                        </div>
+                    @endif
+
+                    <div class="text-xs text-slate-500 pt-1 border-t border-slate-100 dark:border-slate-800">
                         PIC Event: <span class="font-bold text-slate-900 dark:text-white">{{ $order->spkAssignment->crew_pic_event_name ?? '-' }}</span>
                     </div>
 

@@ -280,6 +280,34 @@ class SpkController extends Controller
     }
 
     /**
+     * Bulk toggle checklist items for a page or category.
+     */
+    public function bulkToggleItems(Request $request, SpkAssignment $assignment): JsonResponse
+    {
+        $validated = $request->validate([
+            'page_number' => ['required', 'integer', 'in:2,3'],
+            'field' => ['required', 'in:checked_out,checked_in'],
+            'value' => ['required', 'boolean'],
+            'category' => ['nullable', 'string'],
+        ]);
+
+        $query = $assignment->checklistItems()->where('page_number', $validated['page_number']);
+
+        if (! empty($validated['category'])) {
+            $query->where('category', $validated['category']);
+        }
+
+        $query->update([
+            $validated['field'] => $validated['value'],
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Status checklist berhasil diperbarui.',
+        ]);
+    }
+
+    /**
      * Public temporary/live view for field crew via unique token (No login required).
      */
     public function liveTokenView(string $token): View
@@ -356,7 +384,7 @@ class SpkController extends Controller
             'qc_grounding_safe' => ['nullable', 'boolean'],
             'qc_video_signal_ok' => ['nullable', 'boolean'],
             'qc_notes' => ['nullable', 'string', 'max:1000'],
-            'qc_photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:10240'],
+            'qc_photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:15360'],
         ]);
 
         $photoPath = $assignment->qc_photo_path;
@@ -398,7 +426,7 @@ class SpkController extends Controller
             'qc_grounding_safe' => ['nullable', 'boolean'],
             'qc_video_signal_ok' => ['nullable', 'boolean'],
             'qc_notes' => ['nullable', 'string', 'max:1000'],
-            'qc_photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:10240'],
+            'qc_photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:15360'],
         ]);
 
         $photoPath = $assignment->qc_photo_path;

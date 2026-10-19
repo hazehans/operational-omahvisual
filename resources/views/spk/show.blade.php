@@ -770,6 +770,30 @@
                 </div>
             </div>
 
+            <!-- Quick Action Toolbar & Auto-save Indicator -->
+            <div class="flex flex-wrap items-center justify-between gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/60 mb-4 text-xs">
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="font-bold text-slate-700 dark:text-slate-300">Aksi Cepat Muatan:</span>
+                    <button type="button" onclick="bulkToggleChecklist({{ $assignment->id }}, 2, 'checked_out', true)" class="px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 font-semibold transition-colors flex items-center gap-1 shadow-xs border border-indigo-200 dark:border-indigo-800">
+                        <span>✓ Centang Semua Keluar</span>
+                    </button>
+                    <button type="button" onclick="bulkToggleChecklist({{ $assignment->id }}, 2, 'checked_out', false)" class="px-2 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 font-medium transition-colors border border-slate-300 dark:border-slate-700">
+                        <span>✗ Kosongkan Keluar</span>
+                    </button>
+                    <span class="text-slate-300 dark:text-slate-700 hidden sm:inline">|</span>
+                    <button type="button" onclick="bulkToggleChecklist({{ $assignment->id }}, 2, 'checked_in', true)" class="px-2.5 py-1 rounded-lg bg-rose-50 dark:bg-rose-900/40 text-rose-700 dark:text-rose-300 hover:bg-rose-100 dark:hover:bg-rose-900/60 font-semibold transition-colors flex items-center gap-1 shadow-xs border border-rose-200 dark:border-rose-800">
+                        <span>✓ Centang Semua Kembali</span>
+                    </button>
+                    <button type="button" onclick="bulkToggleChecklist({{ $assignment->id }}, 2, 'checked_in', false)" class="px-2 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 font-medium transition-colors border border-slate-300 dark:border-slate-700">
+                        <span>✗ Kosongkan Kembali</span>
+                    </button>
+                </div>
+                <div class="flex items-center gap-1.5 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400" id="checklistStatusPage2">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    <span>Tersimpan otomatis</span>
+                </div>
+            </div>
+
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-xs text-slate-700 dark:text-slate-300">
                     <thead class="bg-slate-100 dark:bg-slate-800/60 uppercase text-[10px] text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700">
@@ -789,9 +813,16 @@
                             @if($currentCat !== $item->category)
                                 @php $currentCat = $item->category; @endphp
                                 <tr class="bg-slate-50/80 dark:bg-slate-800/40 font-bold text-slate-900 dark:text-white">
-                                    <td colspan="7" class="px-3 py-2 tracking-wider text-[11px] uppercase text-indigo-600 dark:text-indigo-400">
+                                    <td colspan="4" class="px-3 py-2 tracking-wider text-[11px] uppercase text-indigo-600 dark:text-indigo-400">
                                         📌 {{ $currentCat }}
                                     </td>
+                                    <td class="px-2 py-1 text-center bg-indigo-50/40 dark:bg-indigo-950/30">
+                                        <button type="button" onclick="bulkToggleChecklist({{ $assignment->id }}, 2, 'checked_out', true, '{{ addslashes($currentCat) }}')" class="text-[10px] text-indigo-600 dark:text-indigo-400 hover:underline font-bold" title="Centang semua keluar untuk kategori ini">✓ Kategori</button>
+                                    </td>
+                                    <td class="px-2 py-1 text-center bg-rose-50/40 dark:bg-rose-950/30">
+                                        <button type="button" onclick="bulkToggleChecklist({{ $assignment->id }}, 2, 'checked_in', true, '{{ addslashes($currentCat) }}')" class="text-[10px] text-rose-600 dark:text-rose-400 hover:underline font-bold" title="Centang semua kembali untuk kategori ini">✓ Kategori</button>
+                                    </td>
+                                    <td></td>
                                 </tr>
                             @endif
                             <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30" :class="filterOnlyQty && {{ $item->quantity <= 0 ? 'true' : 'false' }} ? 'hidden' : ''">
@@ -810,10 +841,10 @@
                                     </span>
                                 </td>
                                 <td class="px-3 py-2 text-center bg-indigo-50/30 dark:bg-indigo-950/20">
-                                    <input type="checkbox" {{ $item->checked_out ? 'checked' : '' }} onchange="toggleChecklistItem({{ $item->id }}, 'checked_out', this.checked)" class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer">
+                                    <input type="checkbox" data-chk-page="2" data-chk-field="checked_out" data-chk-cat="{{ $item->category }}" {{ $item->checked_out ? 'checked' : '' }} onchange="toggleChecklistItem({{ $item->id }}, 'checked_out', this.checked, 2)" class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer">
                                 </td>
                                 <td class="px-3 py-2 text-center bg-rose-50/30 dark:bg-rose-950/20">
-                                    <input type="checkbox" {{ $item->checked_in ? 'checked' : '' }} onchange="toggleChecklistItem({{ $item->id }}, 'checked_in', this.checked)" class="w-4 h-4 rounded text-rose-600 focus:ring-rose-500 cursor-pointer">
+                                    <input type="checkbox" data-chk-page="2" data-chk-field="checked_in" data-chk-cat="{{ $item->category }}" {{ $item->checked_in ? 'checked' : '' }} onchange="toggleChecklistItem({{ $item->id }}, 'checked_in', this.checked, 2)" class="w-4 h-4 rounded text-rose-600 focus:ring-rose-500 cursor-pointer">
                                 </td>
                                 <td class="px-3 py-2 text-center">
                                     <div class="space-y-1">
@@ -884,6 +915,30 @@
                 </div>
             </div>
 
+            <!-- Quick Action Toolbar & Auto-save Indicator (Lembar 3) -->
+            <div class="flex flex-wrap items-center justify-between gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/60 mb-4 text-xs">
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="font-bold text-slate-700 dark:text-slate-300">Aksi Cepat PIC:</span>
+                    <button type="button" onclick="bulkToggleChecklist({{ $assignment->id }}, 3, 'checked_out', true)" class="px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 font-semibold transition-colors flex items-center gap-1 shadow-xs border border-indigo-200 dark:border-indigo-800">
+                        <span>✓ Centang Semua Keluar</span>
+                    </button>
+                    <button type="button" onclick="bulkToggleChecklist({{ $assignment->id }}, 3, 'checked_out', false)" class="px-2 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 font-medium transition-colors border border-slate-300 dark:border-slate-700">
+                        <span>✗ Kosongkan Keluar</span>
+                    </button>
+                    <span class="text-slate-300 dark:text-slate-700 hidden sm:inline">|</span>
+                    <button type="button" onclick="bulkToggleChecklist({{ $assignment->id }}, 3, 'checked_in', true)" class="px-2.5 py-1 rounded-lg bg-rose-50 dark:bg-rose-900/40 text-rose-700 dark:text-rose-300 hover:bg-rose-100 dark:hover:bg-rose-900/60 font-semibold transition-colors flex items-center gap-1 shadow-xs border border-rose-200 dark:border-rose-800">
+                        <span>✓ Centang Semua Kembali</span>
+                    </button>
+                    <button type="button" onclick="bulkToggleChecklist({{ $assignment->id }}, 3, 'checked_in', false)" class="px-2 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 font-medium transition-colors border border-slate-300 dark:border-slate-700">
+                        <span>✗ Kosongkan Kembali</span>
+                    </button>
+                </div>
+                <div class="flex items-center gap-1.5 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400" id="checklistStatusPage3">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    <span>Tersimpan otomatis</span>
+                </div>
+            </div>
+
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-xs text-slate-700 dark:text-slate-300">
                     <thead class="bg-slate-100 dark:bg-slate-800/60 uppercase text-[10px] text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700">
@@ -903,9 +958,16 @@
                             @if($currentCat !== $item->category)
                                 @php $currentCat = $item->category; @endphp
                                 <tr class="bg-slate-50/80 dark:bg-slate-800/40 font-bold text-slate-900 dark:text-white">
-                                    <td colspan="7" class="px-3 py-2 tracking-wider text-[11px] uppercase text-indigo-600 dark:text-indigo-400">
+                                    <td colspan="4" class="px-3 py-2 tracking-wider text-[11px] uppercase text-indigo-600 dark:text-indigo-400">
                                         📌 {{ $currentCat }}
                                     </td>
+                                    <td class="px-2 py-1 text-center bg-indigo-50/40 dark:bg-indigo-950/30">
+                                        <button type="button" onclick="bulkToggleChecklist({{ $assignment->id }}, 3, 'checked_out', true, '{{ addslashes($currentCat) }}')" class="text-[10px] text-indigo-600 dark:text-indigo-400 hover:underline font-bold" title="Centang semua keluar untuk kategori ini">✓ Kategori</button>
+                                    </td>
+                                    <td class="px-2 py-1 text-center bg-rose-50/40 dark:bg-rose-950/30">
+                                        <button type="button" onclick="bulkToggleChecklist({{ $assignment->id }}, 3, 'checked_in', true, '{{ addslashes($currentCat) }}')" class="text-[10px] text-rose-600 dark:text-rose-400 hover:underline font-bold" title="Centang semua kembali untuk kategori ini">✓ Kategori</button>
+                                    </td>
+                                    <td></td>
                                 </tr>
                             @endif
                             <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30" :class="filterOnlyQty && {{ $item->quantity <= 0 ? 'true' : 'false' }} ? 'hidden' : ''">
@@ -924,10 +986,10 @@
                                     </span>
                                 </td>
                                 <td class="px-3 py-2 text-center bg-indigo-50/30 dark:bg-indigo-950/20">
-                                    <input type="checkbox" {{ $item->checked_out ? 'checked' : '' }} onchange="toggleChecklistItem({{ $item->id }}, 'checked_out', this.checked)" class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer">
+                                    <input type="checkbox" data-chk-page="3" data-chk-field="checked_out" data-chk-cat="{{ $item->category }}" {{ $item->checked_out ? 'checked' : '' }} onchange="toggleChecklistItem({{ $item->id }}, 'checked_out', this.checked, 3)" class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer">
                                 </td>
                                 <td class="px-3 py-2 text-center bg-rose-50/30 dark:bg-rose-950/20">
-                                    <input type="checkbox" {{ $item->checked_in ? 'checked' : '' }} onchange="toggleChecklistItem({{ $item->id }}, 'checked_in', this.checked)" class="w-4 h-4 rounded text-rose-600 focus:ring-rose-500 cursor-pointer">
+                                    <input type="checkbox" data-chk-page="3" data-chk-field="checked_in" data-chk-cat="{{ $item->category }}" {{ $item->checked_in ? 'checked' : '' }} onchange="toggleChecklistItem({{ $item->id }}, 'checked_in', this.checked, 3)" class="w-4 h-4 rounded text-rose-600 focus:ring-rose-500 cursor-pointer">
                                 </td>
                                 <td class="px-3 py-2 text-center">
                                     <div class="space-y-1">
@@ -1794,7 +1856,24 @@
 </div>
 
 <script>
-function toggleChecklistItem(itemId, field, value) {
+function showSaveIndicator(pageNumber, text = '✓ Tersimpan otomatis') {
+    const el = document.getElementById(`checklistStatusPage${pageNumber}`);
+    if (el) {
+        el.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500"></span><span>${text}</span>`;
+        el.className = 'flex items-center gap-1.5 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 transition-all';
+    }
+}
+
+function showSavingIndicator(pageNumber, text = '💾 Menyimpan...') {
+    const el = document.getElementById(`checklistStatusPage${pageNumber}`);
+    if (el) {
+        el.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span><span>${text}</span>`;
+        el.className = 'flex items-center gap-1.5 text-[11px] font-semibold text-amber-600 dark:text-amber-400 transition-all';
+    }
+}
+
+function toggleChecklistItem(itemId, field, value, pageNumber = 2) {
+    showSavingIndicator(pageNumber);
     fetch(`/spk/items/${itemId}/toggle`, {
         method: 'POST',
         headers: {
@@ -1805,6 +1884,7 @@ function toggleChecklistItem(itemId, field, value) {
     })
     .then(res => res.json())
     .then(data => {
+        showSaveIndicator(pageNumber, '✓ Item tersimpan');
         if (field === 'condition_notes') {
             const noteContainer = document.getElementById(`item-note-${itemId}`);
             if (noteContainer) {
@@ -1820,7 +1900,41 @@ function toggleChecklistItem(itemId, field, value) {
     })
     .catch(err => {
         console.error('Failed to toggle item', err);
+        showSaveIndicator(pageNumber, '❌ Gagal menyimpan');
         alert('Gagal mengupdate checklist.');
+    });
+}
+
+function bulkToggleChecklist(assignmentId, pageNumber, field, value, category = null) {
+    showSavingIndicator(pageNumber, '💾 Memperbarui checklist...');
+
+    // Optimistically update checkboxes in DOM
+    const selector = category 
+        ? `input[data-chk-page="${pageNumber}"][data-chk-field="${field}"][data-chk-cat="${category}"]`
+        : `input[data-chk-page="${pageNumber}"][data-chk-field="${field}"]`;
+    document.querySelectorAll(selector).forEach(cb => cb.checked = value);
+
+    fetch(`/spk/${assignmentId}/items/bulk-toggle`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify({
+            page_number: pageNumber,
+            field: field,
+            value: value,
+            category: category
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        showSaveIndicator(pageNumber, value ? '✓ Semua tercentang & tersimpan' : '✓ Dikosongkan & tersimpan');
+    })
+    .catch(err => {
+        console.error('Failed bulk toggle', err);
+        showSaveIndicator(pageNumber, '❌ Gagal update massal');
+        alert('Gagal memperbarui checklist massal.');
     });
 }
 

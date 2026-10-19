@@ -250,7 +250,7 @@ class EventOrderController extends Controller
      */
     public function show(EventOrder $order): View
     {
-        $order->load(['customer', 'screens', 'spkAssignment.checklistItems']);
+        $order->load(['customer', 'screens', 'spkAssignment.checklistItems', 'spkAssignment.assignedVehicles']);
 
         return view('orders.show', compact('order'));
     }
@@ -387,6 +387,7 @@ class EventOrderController extends Controller
                     continue;
                 }
 
+                /** @var OrderLedScreen|null $screen */
                 $screen = $order->screens()->skip($idx)->first();
                 $calc = $this->calculationService->calculateScreen(
                     (float) $screenData['width_m'],

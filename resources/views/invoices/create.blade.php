@@ -161,10 +161,16 @@
 
         <!-- Card 2: Rincian Item Tagihan (Line Items) -->
         <div class="p-6 rounded-2xl bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 shadow-xs space-y-4">
-            <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-                <h2 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                    <span>2. Rincian Item Tagihan</span>
-                </h2>
+            <div class="flex flex-wrap items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3 gap-3">
+                <div class="flex flex-wrap items-center gap-3">
+                    <h2 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                        <span>2. Rincian Item Tagihan</span>
+                    </h2>
+                    <label class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 text-xs font-semibold cursor-pointer border border-indigo-200 dark:border-indigo-800">
+                        <input type="checkbox" x-model="isLumpSum" @change="onToggleLumpSum()" class="rounded text-indigo-600 focus:ring-indigo-500">
+                        <span>Mode Borongan (Lump-Sum Langsung)</span>
+                    </label>
+                </div>
                 <button type="button" @click="addItem()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 text-xs font-semibold hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors">
                     <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -178,11 +184,11 @@
                 <table class="w-full text-left text-xs">
                     <thead class="bg-slate-50 dark:bg-slate-800/50 uppercase text-slate-400 border-b border-slate-200 dark:border-slate-800">
                         <tr>
-                            <th class="px-3 py-2.5 font-bold w-1/2">Deskripsi Layanan / Barang</th>
-                            <th class="px-3 py-2.5 font-bold w-24">Kuantitas</th>
-                            <th class="px-3 py-2.5 font-bold w-20">Satuan</th>
-                            <th class="px-3 py-2.5 font-bold w-36">Harga Satuan (Rp)</th>
-                            <th class="px-3 py-2.5 font-bold text-right w-36">Total (Rp)</th>
+                            <th class="px-3 py-2.5 font-bold" :class="isLumpSum ? 'w-3/4' : 'w-1/2'">Deskripsi Layanan / Paket</th>
+                            <th x-show="!isLumpSum" class="px-3 py-2.5 font-bold w-24">Kuantitas</th>
+                            <th x-show="!isLumpSum" class="px-3 py-2.5 font-bold w-20">Satuan</th>
+                            <th class="px-3 py-2.5 font-bold w-40 text-right"><span x-text="isLumpSum ? 'Total Harga Paket (Rp)' : 'Harga Satuan (Rp)'"></span></th>
+                            <th x-show="!isLumpSum" class="px-3 py-2.5 font-bold text-right w-36">Total (Rp)</th>
                             <th class="px-2 py-2.5 w-10 text-center"></th>
                         </tr>
                     </thead>
@@ -192,20 +198,22 @@
                                 <td class="px-3 py-2">
                                     <input type="text" :name="'items[' + index + '][item_description]'" x-model="item.item_description" required placeholder="Nama item..."
                                         class="w-full px-2.5 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-900 dark:text-white">
+                                    <input type="hidden" :name="'items[' + index + '][quantity]'" value="1" :disabled="!isLumpSum">
+                                    <input type="hidden" :name="'items[' + index + '][unit_name]'" value="paket" :disabled="!isLumpSum">
                                 </td>
-                                <td class="px-3 py-2">
-                                    <input type="number" step="0.01" min="0.01" :name="'items[' + index + '][quantity]'" x-model.number="item.quantity" required
+                                <td class="px-3 py-2" x-show="!isLumpSum">
+                                    <input type="number" step="0.01" min="0.01" :name="'items[' + index + '][quantity]'" x-model.number="item.quantity" :required="!isLumpSum" :disabled="isLumpSum"
                                         class="w-full px-2.5 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-900 dark:text-white text-right">
                                 </td>
-                                <td class="px-3 py-2">
-                                    <input type="text" :name="'items[' + index + '][unit_name]'" x-model="item.unit_name" required placeholder="m²/unit"
+                                <td class="px-3 py-2" x-show="!isLumpSum">
+                                    <input type="text" :name="'items[' + index + '][unit_name]'" x-model="item.unit_name" :required="!isLumpSum" :disabled="isLumpSum" placeholder="m²/unit"
                                         class="w-full px-2.5 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-900 dark:text-white">
                                 </td>
                                 <td class="px-3 py-2">
                                     <input type="number" min="0" step="1000" :name="'items[' + index + '][unit_price]'" x-model.number="item.unit_price" required
-                                        class="w-full px-2.5 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-900 dark:text-white text-right">
+                                        class="w-full px-2.5 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-900 dark:text-white text-right font-bold">
                                 </td>
-                                <td class="px-3 py-2 text-right font-bold text-slate-900 dark:text-white">
+                                <td class="px-3 py-2 text-right font-bold text-slate-900 dark:text-white" x-show="!isLumpSum">
                                     <span x-text="formatNumber(item.quantity * item.unit_price)"></span>
                                 </td>
                                 <td class="px-2 py-2 text-center">
@@ -224,7 +232,7 @@
             <!-- Subtotal, Diskon, Pajak & Grand Total -->
             <div class="pt-4 border-t border-slate-100 dark:border-slate-800 flex flex-col md:flex-row justify-between items-start gap-6">
                 <div class="text-xs text-slate-500 space-y-1">
-                    <div>💡 <em>Tip: Klik "+ Tambah Baris" untuk menambahkan rincian sewa tv, sound, atau rigging.</em></div>
+                    <div>💡 <em>Tip: Centang "Mode Borongan" jika ingin memasukkan harga total paket langsung tanpa perhitungan m² / unit.</em></div>
                 </div>
 
                 <div class="w-full md:w-80 space-y-2.5 text-xs">
@@ -234,25 +242,33 @@
                         <span class="font-bold text-slate-900 dark:text-white" x-text="'Rp ' + formatNumber(subtotal)"></span>
                     </div>
 
-                    <!-- Diskon (Rp) -->
+                    <!-- Diskon (Rp) with Checkbox Toggle -->
                     <div class="flex items-center justify-between gap-3">
-                        <span class="text-slate-600 dark:text-slate-400">Diskon (Rp):</span>
-                        <input type="number" name="discount" x-model.number="discount" min="0" step="5000"
-                            class="w-36 px-2.5 py-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-right font-semibold text-slate-900 dark:text-white">
+                        <label class="flex items-center gap-1.5 cursor-pointer text-slate-600 dark:text-slate-400">
+                            <input type="checkbox" x-model="enableDiscount" @change="if(!enableDiscount) discount = 0" class="rounded text-indigo-600 focus:ring-indigo-500">
+                            <span>Potongan Diskon:</span>
+                        </label>
+                        <input type="number" name="discount" x-model.number="discount" :disabled="!enableDiscount" min="0" step="5000"
+                            :class="enableDiscount ? 'bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white' : 'bg-slate-100 dark:bg-slate-900 text-slate-400 cursor-not-allowed'"
+                            class="w-36 px-2.5 py-1 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-right font-semibold">
                     </div>
 
-                    <!-- PPN (%) -->
+                    <!-- PPN (%) with Checkbox Toggle -->
                     <div class="flex items-center justify-between gap-3">
-                        <span class="text-slate-600 dark:text-slate-400">Pajak PPN (%):</span>
+                        <label class="flex items-center gap-1.5 cursor-pointer text-slate-600 dark:text-slate-400">
+                            <input type="checkbox" x-model="enableTax" @change="if(!enableTax) { taxPercent = 0 } else if(taxPercent == 0) { taxPercent = 11 }" class="rounded text-indigo-600 focus:ring-indigo-500">
+                            <span>Kenakan PPN:</span>
+                        </label>
                         <div class="flex items-center gap-1.5">
-                            <input type="number" name="tax_percent" x-model.number="taxPercent" min="0" max="100" step="0.5"
-                                class="w-20 px-2.5 py-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-right font-semibold text-slate-900 dark:text-white">
+                            <input type="number" name="tax_percent" x-model.number="taxPercent" :disabled="!enableTax" min="0" max="100" step="0.5"
+                                :class="enableTax ? 'bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white' : 'bg-slate-100 dark:bg-slate-900 text-slate-400 cursor-not-allowed'"
+                                class="w-20 px-2.5 py-1 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-right font-semibold">
                             <span class="text-slate-400">%</span>
                         </div>
                     </div>
 
                     <!-- Pajak Terhitung -->
-                    <div class="flex items-center justify-between text-slate-600 dark:text-slate-400" x-show="taxPercent > 0">
+                    <div class="flex items-center justify-between text-slate-600 dark:text-slate-400" x-show="enableTax && taxPercent > 0">
                         <span>Nominal PPN:</span>
                         <span class="font-semibold text-slate-800 dark:text-slate-200" x-text="'Rp ' + formatNumber(taxAmount)"></span>
                     </div>
@@ -313,9 +329,17 @@ function invoiceForm(config) {
         invoiceType: config.initialType || 'full',
         dueDate: '{{ old('due_date', now()->addDays(7)->format('Y-m-d')) }}',
         invoiceTitle: '{{ old('title', '') }}',
+        isLumpSum: false,
+        enableDiscount: (parseFloat(config.initialDiscount) || 0) > 0,
+        enableTax: (parseFloat(config.initialTaxPercent) || 0) > 0,
         discount: config.initialDiscount || 0,
         taxPercent: config.initialTaxPercent || 0,
-        items: config.initialItems || [],
+        items: (config.initialItems || []).map(item => ({
+            item_description: item.item_description || '',
+            quantity: parseFloat(item.quantity) || 1,
+            unit_name: item.unit_name || 'paket',
+            unit_price: parseFloat(item.unit_price) || 0
+        })),
 
         get subtotal() {
             return this.items.reduce((sum, item) => sum + ((parseFloat(item.quantity) || 0) * (parseFloat(item.unit_price) || 0)), 0);
@@ -337,11 +361,42 @@ function invoiceForm(config) {
             return Math.round(val || 0).toLocaleString('id-ID');
         },
 
+        onToggleLumpSum() {
+            if (this.isLumpSum) {
+                const order = this.orders.find(o => String(o.id) === String(this.selectedOrderId));
+                if (order && this.items.length > 1) {
+                    this.items = [{
+                        item_description: `Paket Sewa LED Screen & Multimedia - ${order.event_name}`,
+                        quantity: 1,
+                        unit_name: 'paket',
+                        unit_price: order.total_price
+                    }];
+                } else {
+                    this.items.forEach(item => {
+                        item.quantity = 1;
+                        item.unit_name = 'paket';
+                    });
+                }
+            } else {
+                const order = this.orders.find(o => String(o.id) === String(this.selectedOrderId));
+                if (order && order.screens && order.screens.length > 0) {
+                    const totalSqm = order.screens.reduce((s, scr) => s + scr.sqm, 0);
+                    const unitPrice = totalSqm > 0 ? Math.round(order.total_price / totalSqm) : 0;
+                    this.items = order.screens.map(scr => ({
+                        item_description: scr.desc,
+                        quantity: scr.sqm,
+                        unit_name: 'm²',
+                        unit_price: unitPrice
+                    }));
+                }
+            }
+        },
+
         addItem() {
             this.items.push({
                 item_description: '',
                 quantity: 1,
-                unit_name: 'unit',
+                unit_name: this.isLumpSum ? 'paket' : 'unit',
                 unit_price: 0
             });
         },
@@ -368,8 +423,8 @@ function invoiceForm(config) {
                 this.dueDate = order.event_date;
             }
 
-            // Auto-populate line items from screens if available
-            if (order.screens && order.screens.length > 0) {
+            // Auto-populate line items from screens if available and NOT lump sum
+            if (!this.isLumpSum && order.screens && order.screens.length > 0) {
                 const totalSqm = order.screens.reduce((s, scr) => s + scr.sqm, 0);
                 const unitPrice = totalSqm > 0 ? Math.round(order.total_price / totalSqm) : 0;
 

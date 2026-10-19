@@ -348,17 +348,18 @@
                     <div class="text-xs font-bold text-slate-300 flex items-center justify-between">
                         <span>Foto Dokumentasi Hasil Instalasi Panggung (BAST):</span>
                         @if($spk?->qc_photo_path)
-                            <a href="{{ asset('storage/' . $spk->qc_photo_path) }}" target="_blank" class="text-cyan-400 hover:text-cyan-300 text-[11px] font-semibold flex items-center gap-1">
+                            <button type="button" onclick="openLightbox('{{ asset('storage/' . $spk->qc_photo_path) }}', 'Dokumentasi Visual BAST Layar Panggung')" class="text-cyan-400 hover:text-cyan-300 text-[11px] font-semibold flex items-center gap-1 cursor-pointer">
                                 <span>Perbesar Gambar</span>
                                 <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                                 </svg>
-                            </a>
+                            </button>
                         @endif
                     </div>
 
                     @if($spk?->qc_photo_path)
-                        <div class="group relative rounded-2xl overflow-hidden border border-slate-700 bg-slate-900 shadow-md">
+                        <div class="group relative rounded-2xl overflow-hidden border border-slate-700 bg-slate-900 shadow-md cursor-zoom-in"
+                             onclick="openLightbox('{{ asset('storage/' . $spk->qc_photo_path) }}', 'Dokumentasi Visual BAST Layar Panggung')">
                             <img src="{{ asset('storage/' . $spk->qc_photo_path) }}" 
                                 alt="Dokumentasi BAST Panggung {{ $order->event_name }}" 
                                 class="w-full h-64 object-cover object-center group-hover:scale-102 transition-transform duration-300">
@@ -368,7 +369,7 @@
                                         <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
                                         <span>Dokumentasi Resmi Panggung Terpasang</span>
                                     </div>
-                                    <div class="text-[10px] text-slate-300 mt-0.5">Diverifikasi oleh {{ $spk->qc_technician_name ?? 'Teknisi' }}</div>
+                                    <div class="text-[10px] text-slate-300 mt-0.5">Diverifikasi oleh {{ $spk->qc_technician_name ?? 'Teknisi' }} (Klik untuk perbesar HD)</div>
                                 </div>
                             </div>
                         </div>
@@ -460,26 +461,45 @@
             <!-- Optional Blueprint Stage Layout Images -->
             @if($order->stage_layout_front_image || $order->stage_layout_image)
                 <div class="pt-4 border-t border-slate-800 space-y-3">
-                    <div class="text-xs font-bold text-slate-300 flex items-center gap-2">
-                        <span>📐 Visualisasi Blueprint Formasi Panggung:</span>
+                    <div class="text-xs font-bold text-slate-300 flex items-center justify-between">
+                        <span class="flex items-center gap-2">📐 Visualisasi Blueprint Formasi Panggung:</span>
+                        <span class="text-[11px] text-cyan-400 font-normal">💡 Klik gambar untuk perbesar HD</span>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         @if($order->stage_layout_front_image)
-                            <div class="p-3 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-2">
-                                <div class="text-[11px] font-bold text-slate-400 uppercase">Tampak Depan (Front View)</div>
-                                <img src="{{ str_starts_with($order->stage_layout_front_image, 'data:image') ? $order->stage_layout_front_image : asset('storage/' . $order->stage_layout_front_image) }}" 
-                                     alt="Tampak Depan Layar" 
-                                     class="w-full h-44 object-contain rounded-xl bg-slate-950 p-2 border border-slate-800">
+                            @php
+                                $frontSrc = str_starts_with($order->stage_layout_front_image, 'data:image') ? $order->stage_layout_front_image : asset('storage/' . $order->stage_layout_front_image);
+                            @endphp
+                            <div class="group p-3 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-2 hover:border-cyan-500/50 transition-all cursor-zoom-in"
+                                 onclick="openLightbox('{{ $frontSrc }}', 'Blueprint Tampak Depan Layar & Stage (Front View)')">
+                                <div class="flex items-center justify-between text-[11px] font-bold text-slate-400 uppercase">
+                                    <span>Tampak Depan (Front View)</span>
+                                    <span class="text-cyan-400 group-hover:underline font-semibold text-[10px]">🔍 Perbesar HD</span>
+                                </div>
+                                <div class="relative overflow-hidden rounded-xl bg-slate-950 border border-slate-800">
+                                    <img src="{{ $frontSrc }}" 
+                                         alt="Tampak Depan Layar" 
+                                         class="w-full h-44 object-contain p-2 group-hover:scale-102 transition-transform">
+                                </div>
                             </div>
                         @endif
 
                         @if($order->stage_layout_image)
-                            <div class="p-3 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-2">
-                                <div class="text-[11px] font-bold text-slate-400 uppercase">Pemetaan Panel &amp; Kabinet LED (Grid Modul &amp; Resolusi VJ)</div>
-                                <img src="{{ str_starts_with($order->stage_layout_image, 'data:image') ? $order->stage_layout_image : asset('storage/' . $order->stage_layout_image) }}" 
-                                     alt="Pemetaan Panel &amp; Kabinet LED" 
-                                     class="w-full h-44 object-contain rounded-xl bg-slate-950 p-2 border border-slate-800">
+                            @php
+                                $panelSrc = str_starts_with($order->stage_layout_image, 'data:image') ? $order->stage_layout_image : asset('storage/' . $order->stage_layout_image);
+                            @endphp
+                            <div class="group p-3 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-2 hover:border-cyan-500/50 transition-all cursor-zoom-in"
+                                 onclick="openLightbox('{{ $panelSrc }}', 'Blueprint Pemetaan Panel & Kabinet LED (Grid Modul & Resolusi VJ)')">
+                                <div class="flex items-center justify-between text-[11px] font-bold text-slate-400 uppercase">
+                                    <span>Pemetaan Panel &amp; Kabinet LED</span>
+                                    <span class="text-cyan-400 group-hover:underline font-semibold text-[10px]">🔍 Perbesar HD</span>
+                                </div>
+                                <div class="relative overflow-hidden rounded-xl bg-slate-950 border border-slate-800">
+                                    <img src="{{ $panelSrc }}" 
+                                         alt="Pemetaan Panel &amp; Kabinet LED" 
+                                         class="w-full h-44 object-contain p-2 group-hover:scale-102 transition-transform">
+                                </div>
                             </div>
                         @endif
                     </div>
@@ -598,12 +618,64 @@
 
     </main>
 
-    <!-- Footer -->
-    <footer class="max-w-5xl mx-auto px-4 sm:px-6 mt-12 pt-6 border-t border-slate-900 text-center text-xs text-slate-400">
-        <p>&copy; {{ date('Y') }} <strong>Omah Visual LED</strong>. Seluruh hak cipta dilindungi.</p>
-        <p class="text-[11px] text-slate-400 mt-1">Portal Pelacakan Pesanan Real-time • Powered by Omah Visual ERP</p>
-    </footer>
+    <!-- Lightbox Zoom Modal -->
+    <div id="imageLightboxModal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden flex-col items-center justify-center p-4 transition-opacity duration-200" onclick="closeLightbox(event)">
+        <div class="w-full max-w-5xl flex items-center justify-between text-white pb-3 px-2" onclick="event.stopPropagation()">
+            <div class="text-sm sm:text-base font-bold text-slate-200 truncate pr-4" id="lightboxTitle">Pratinjau Gambar HD</div>
+            <div class="flex items-center gap-2 shrink-0">
+                <a id="lightboxDownloadBtn" href="#" download="blueprint-omahvisual.png" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 transition-colors flex items-center gap-1.5 border border-slate-700">
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                    <span>Unduh HD</span>
+                </a>
+                <button type="button" onclick="closeLightbox()" class="p-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors border border-slate-700" title="Tutup (ESC)">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div class="relative max-w-5xl max-h-[85vh] w-full flex items-center justify-center p-1" onclick="event.stopPropagation()">
+            <img id="lightboxImage" src="" alt="HD Preview" class="max-w-full max-h-[82vh] object-contain rounded-2xl shadow-2xl border border-slate-800 bg-slate-950">
+        </div>
+        <div class="text-[11px] text-slate-400 pt-2 text-center">
+            Tekan <kbd class="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-300 font-mono">ESC</kbd> atau klik di luar area gambar untuk menutup
+        </div>
+    </div>
 
+    <script>
+    function openLightbox(src, title) {
+        const modal = document.getElementById('imageLightboxModal');
+        const img = document.getElementById('lightboxImage');
+        const titleEl = document.getElementById('lightboxTitle');
+        const dlBtn = document.getElementById('lightboxDownloadBtn');
+        if (!modal || !img) return;
+
+        img.src = src;
+        if (titleEl) titleEl.textContent = title || 'Pratinjau Gambar HD';
+        if (dlBtn) dlBtn.href = src;
+
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox(e) {
+        if (e && e.target && e.target.closest('#lightboxImage')) return;
+        const modal = document.getElementById('imageLightboxModal');
+        if (!modal) return;
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        document.body.style.overflow = '';
+    }
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeLightbox();
+        }
+    });
+    </script>
 </body>
 </html>
 

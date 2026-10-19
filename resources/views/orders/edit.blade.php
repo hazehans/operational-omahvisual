@@ -232,7 +232,7 @@
                 <!-- Width and Height Inputs with Live Calculation -->
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 items-end">
                     <div>
-                        <label class="block text-xs font-bold text-indigo-600 dark:text-indigo-400 mb-1">Lebar Layar (Meter) *</label>
+                        <label class="block text-xs font-bold text-indigo-600 dark:text-indigo-400 mb-1">Panjang Layar / Horizontal (Meter) *</label>
                         <div class="relative">
                             <input type="number" step="0.5" min="0.5" name="screens[0][width_m]" id="calcWidth" value="{{ old('screens.0.width_m', $primaryScreen?->width_m ?? 6.0) }}" required
                                 class="w-full pl-3 pr-8 py-2 rounded-xl bg-white dark:bg-slate-900 border-2 border-indigo-500/40 focus:border-indigo-600 text-sm font-bold text-slate-900 dark:text-white">
@@ -241,7 +241,7 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-indigo-600 dark:text-indigo-400 mb-1">Tinggi Layar (Meter) *</label>
+                        <label class="block text-xs font-bold text-indigo-600 dark:text-indigo-400 mb-1">Lebar / Tinggi Layar / Vertikal (Meter) *</label>
                         <div class="relative">
                             <input type="number" step="0.5" min="0.5" name="screens[0][height_m]" id="calcHeight" value="{{ old('screens.0.height_m', $primaryScreen?->height_m ?? 3.0) }}" required
                                 class="w-full pl-3 pr-8 py-2 rounded-xl bg-white dark:bg-slate-900 border-2 border-indigo-500/40 focus:border-indigo-600 text-sm font-bold text-slate-900 dark:text-white">
@@ -567,6 +567,17 @@ document.addEventListener('DOMContentLoaded', function () {
     heightInput.addEventListener('input', () => updateCalculations(false));
     brandInput.addEventListener('change', () => updateCalculations(false));
     pitchInput.addEventListener('change', () => updateCalculations(false));
+
+    // Prevent Enter key on input fields from submitting the form unintentionally
+    const orderEditForm = document.getElementById('orderEditForm');
+    if (orderEditForm) {
+        orderEditForm.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && e.target.nodeName !== 'TEXTAREA' && e.target.type !== 'submit') {
+                e.preventDefault();
+                return false;
+            }
+        });
+    }
 });
 </script>
 @endsection

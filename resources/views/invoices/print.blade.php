@@ -7,21 +7,29 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @media print {
-            body {
+            html, body {
                 background: white !important;
                 color: black !important;
-                font-size: 11pt;
+                font-size: 9pt !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
             }
             .no-print {
                 display: none !important;
             }
             .print-shadow-none {
                 box-shadow: none !important;
-                border: 1px solid #e2e8f0 !important;
+                border: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                max-width: 100% !important;
+                width: 100% !important;
             }
             @page {
                 size: A4 portrait;
-                margin: 12mm 15mm 15mm 15mm;
+                margin: 10mm 12mm 10mm 12mm;
             }
         }
     </style>
@@ -66,27 +74,27 @@
         @endif
 
         <!-- Header Kop Surat -->
-        <div class="flex justify-between items-start border-b-2 border-slate-900 pb-6">
+        <div class="flex justify-between items-start border-b-2 border-slate-900 pb-3">
             <div class="space-y-1">
-                <div class="text-2xl font-black tracking-tight text-slate-900 uppercase">
+                <div class="text-xl font-black tracking-tight text-slate-900 uppercase">
                     OMAH VISUAL LED
                 </div>
                 <div class="text-xs font-bold text-indigo-700 uppercase tracking-wider">
                     CV HAN MEDIA TEKINDO
                 </div>
-                <div class="text-xs text-slate-600 max-w-sm mt-1">
+                <div class="text-[11px] text-slate-600 max-w-sm mt-0.5">
                     Gedung Utama Omah Visual LED • Jl. Raya Tlogomas No. 12, Kota Malang, Jawa Timur<br>
                     WhatsApp: +62 812-3456-7890 • Email: finance@omahvisual.com
                 </div>
             </div>
 
             <div class="text-right">
-                <h1 class="text-2xl font-black text-slate-900 uppercase tracking-wider">FAKTUR TAGIHAN</h1>
-                <div class="text-xs font-mono font-bold text-indigo-600 mt-1">{{ $invoice->invoice_number }}</div>
-                <div class="mt-2 text-xs space-y-0.5 text-slate-600">
+                <h1 class="text-xl font-black text-slate-900 uppercase tracking-wider">FAKTUR TAGIHAN</h1>
+                <div class="text-xs font-mono font-bold text-indigo-600 mt-0.5">{{ $invoice->invoice_number }}</div>
+                <div class="mt-1 text-xs space-y-0.5 text-slate-600">
                     <div>Tanggal: <span class="font-semibold text-slate-900">{{ $invoice->invoice_date->translatedFormat('d F Y') }}</span></div>
                     <div>Jatuh Tempo: <span class="font-bold text-slate-900">{{ $invoice->due_date->translatedFormat('d F Y') }}</span></div>
-                    <div class="uppercase text-[10px] font-bold text-slate-500 mt-1">
+                    <div class="uppercase text-[10px] font-bold text-slate-500 mt-0.5">
                         Tipe: {{ str_replace('_', ' ', $invoice->invoice_type) }}
                     </div>
                 </div>
@@ -94,13 +102,13 @@
         </div>
 
         <!-- Bill To & Event Reference -->
-        <div class="grid grid-cols-2 gap-8 my-6 py-4 border-b border-slate-200 text-xs">
+        <div class="grid grid-cols-2 gap-6 my-3 py-2 border-b border-slate-200 text-xs">
             <!-- Ditagihkan Kepada -->
             <div>
                 <span class="font-bold text-[10px] uppercase tracking-wider text-slate-400">DITAGIHKAN KEPADA:</span>
-                <div class="text-base font-bold text-slate-900 mt-1">{{ $invoice->customer->name }}</div>
+                <div class="text-sm font-bold text-slate-900 mt-0.5">{{ $invoice->customer->name }}</div>
                 <div class="font-semibold text-slate-700">{{ $invoice->customer->organization ?? 'Event Organizer / Client' }}</div>
-                <div class="text-slate-600 mt-1 space-y-0.5">
+                <div class="text-slate-600 mt-0.5 space-y-0.5">
                     <div>Telepon: {{ $invoice->customer->phone }}</div>
                     @if($invoice->customer->email)
                         <div>Email: {{ $invoice->customer->email }}</div>
@@ -115,8 +123,8 @@
             <div>
                 <span class="font-bold text-[10px] uppercase tracking-wider text-slate-400">DETAIL ACARA / EVENT:</span>
                 @if($invoice->eventOrder)
-                    <div class="text-base font-bold text-slate-900 mt-1">{{ $invoice->eventOrder->event_name }}</div>
-                    <div class="text-slate-700 mt-1 space-y-0.5">
+                    <div class="text-sm font-bold text-slate-900 mt-0.5">{{ $invoice->eventOrder->event_name }}</div>
+                    <div class="text-slate-700 mt-0.5 space-y-0.5">
                         <div>No. Pesanan: <span class="font-mono font-bold">{{ $invoice->eventOrder->order_number }}</span></div>
                         <div>Tanggal Acara: <span class="font-semibold">{{ $invoice->eventOrder->event_start_date->translatedFormat('d F Y') }}</span></div>
                         <div>Lokasi Venue: {{ $invoice->eventOrder->venue_name }} {{ $invoice->eventOrder->kabupaten ? '('.$invoice->eventOrder->kabupaten.')' : '' }}</div>
@@ -129,27 +137,27 @@
         </div>
 
         <!-- Line Items Table -->
-        <div class="my-6">
+        <div class="my-3">
             <table class="w-full text-left text-xs border border-slate-200">
                 <thead class="bg-slate-100 uppercase text-slate-700 border-b border-slate-200">
                     <tr>
-                        <th class="px-3 py-2.5 font-bold w-8 text-center border-r border-slate-200">No</th>
-                        <th class="px-4 py-2.5 font-bold border-r border-slate-200">Deskripsi Layanan & Spesifikasi</th>
-                        <th class="px-3 py-2.5 font-bold text-center w-20 border-r border-slate-200">Qty</th>
-                        <th class="px-3 py-2.5 font-bold text-center w-16 border-r border-slate-200">Satuan</th>
-                        <th class="px-3 py-2.5 font-bold text-right w-28 border-r border-slate-200">Harga Satuan (Rp)</th>
-                        <th class="px-4 py-2.5 font-bold text-right w-36">Total (Rp)</th>
+                        <th class="px-3 py-2 font-bold w-8 text-center border-r border-slate-200">No</th>
+                        <th class="px-3 py-2 font-bold border-r border-slate-200">Deskripsi Layanan & Spesifikasi</th>
+                        <th class="px-2 py-2 font-bold text-center w-16 border-r border-slate-200">Qty</th>
+                        <th class="px-2 py-2 font-bold text-center w-16 border-r border-slate-200">Satuan</th>
+                        <th class="px-3 py-2 font-bold text-right w-28 border-r border-slate-200">Harga Satuan (Rp)</th>
+                        <th class="px-3 py-2 font-bold text-right w-32">Total (Rp)</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-200">
                     @foreach($invoice->items as $idx => $item)
                         <tr>
-                            <td class="px-3 py-2.5 text-center text-slate-500 border-r border-slate-200">{{ $idx + 1 }}</td>
-                            <td class="px-4 py-2.5 font-medium text-slate-900 border-r border-slate-200">{{ $item->item_description }}</td>
-                            <td class="px-3 py-2.5 text-center font-semibold border-r border-slate-200">{{ number_format($item->quantity, 2) }}</td>
-                            <td class="px-3 py-2.5 text-center text-slate-600 uppercase border-r border-slate-200">{{ $item->unit_name }}</td>
-                            <td class="px-3 py-2.5 text-right border-r border-slate-200">{{ number_format($item->unit_price, 0, ',', '.') }}</td>
-                            <td class="px-4 py-2.5 text-right font-bold text-slate-900">{{ number_format($item->total_price, 0, ',', '.') }}</td>
+                            <td class="px-3 py-1.5 text-center text-slate-500 border-r border-slate-200">{{ $idx + 1 }}</td>
+                            <td class="px-3 py-1.5 font-medium text-slate-900 border-r border-slate-200">{{ $item->item_description }}</td>
+                            <td class="px-2 py-1.5 text-center font-semibold border-r border-slate-200">{{ number_format($item->quantity, 2) }}</td>
+                            <td class="px-2 py-1.5 text-center text-slate-600 uppercase border-r border-slate-200">{{ $item->unit_name }}</td>
+                            <td class="px-3 py-1.5 text-right border-r border-slate-200">{{ number_format($item->unit_price, 0, ',', '.') }}</td>
+                            <td class="px-3 py-1.5 text-right font-bold text-slate-900">{{ number_format($item->total_price, 0, ',', '.') }}</td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -157,17 +165,17 @@
         </div>
 
         <!-- Calculation & Terbilang -->
-        <div class="flex justify-between items-start gap-8 my-6 text-xs">
-            <div class="w-1/2 space-y-3">
-                <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+        <div class="flex justify-between items-start gap-6 my-3 text-xs">
+            <div class="w-1/2 space-y-2">
+                <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
                     <span class="font-bold text-[10px] uppercase tracking-wider text-slate-500">TERBILANG:</span>
-                    <div class="italic font-bold text-slate-800 mt-1">
+                    <div class="italic font-bold text-slate-800 mt-0.5">
                         # {{ App\Models\Invoice::terbilang($invoice->total_amount) }} Rupiah #
                     </div>
                 </div>
 
                 @if($invoice->payments->count() > 0)
-                    <div class="bg-emerald-50/60 p-3 rounded-xl border border-emerald-200 text-[11px] space-y-1">
+                    <div class="bg-emerald-50/60 p-2.5 rounded-xl border border-emerald-200 text-[11px] space-y-1">
                         <div class="font-bold text-emerald-800 uppercase tracking-wider text-[10px]">RIWAYAT PEMBAYARAN:</div>
                         @foreach($invoice->payments as $p)
                             <div class="flex justify-between text-slate-700">
@@ -185,7 +193,7 @@
                 @endif
             </div>
 
-            <div class="w-1/2 max-w-xs space-y-2 border border-slate-200 p-4 rounded-xl bg-slate-50/50">
+            <div class="w-1/2 max-w-xs space-y-1.5 border border-slate-200 p-3 rounded-xl bg-slate-50/50">
                 <div class="flex justify-between text-slate-600">
                     <span>Subtotal:</span>
                     <span class="font-semibold text-slate-900">Rp {{ number_format($invoice->subtotal, 0, ',', '.') }}</span>
@@ -205,7 +213,7 @@
                     </div>
                 @endif
 
-                <div class="border-t-2 border-slate-900 pt-2 flex justify-between text-base font-black text-slate-900">
+                <div class="border-t-2 border-slate-900 pt-1.5 flex justify-between text-sm font-black text-slate-900">
                     <span>TOTAL:</span>
                     <span class="text-indigo-700">Rp {{ number_format($invoice->total_amount, 0, ',', '.') }}</span>
                 </div>
@@ -213,16 +221,16 @@
         </div>
 
         <!-- Bank Info & Signatures -->
-        <div class="grid grid-cols-2 gap-8 pt-6 border-t border-slate-200 text-xs">
-            <div class="space-y-2">
+        <div class="grid grid-cols-2 gap-6 pt-3 border-t border-slate-200 text-xs">
+            <div class="space-y-1.5">
                 <div class="font-bold text-[10px] uppercase tracking-wider text-slate-500">REKENING PEMBAYARAN RESMI:</div>
-                <div class="font-mono text-[11px] text-slate-800 bg-slate-50 p-3 rounded-xl border border-slate-200 leading-relaxed whitespace-pre-line">{{ $invoice->bank_info }}</div>
-                <div class="text-[10px] text-slate-500 italic mt-1">
+                <div class="font-mono text-[10px] text-slate-800 bg-slate-50 p-2.5 rounded-xl border border-slate-200 leading-relaxed whitespace-pre-line">{{ $invoice->bank_info }}</div>
+                <div class="text-[10px] text-slate-500 italic mt-0.5">
                     *Harap mencantumkan nomor invoice pada berita transfer bank.
                 </div>
             </div>
 
-            <div class="text-center flex flex-col justify-between items-center h-40">
+            <div class="text-center flex flex-col justify-between items-center h-28">
                 <div class="text-slate-700">
                     Malang, {{ $invoice->invoice_date->translatedFormat('d F Y') }}<br>
                     <strong>Hormat Kami, Finance Omah Visual LED</strong>

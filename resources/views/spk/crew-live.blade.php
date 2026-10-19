@@ -327,9 +327,10 @@
                         </div>
 
                         <input type="file" name="qc_photo" id="live_qc_photo_input" accept="image/*" capture="environment" class="w-full text-xs text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-700 file:text-slate-200 cursor-pointer">
+                        <div id="compress_notice" class="hidden text-[10px] text-emerald-400 font-semibold pt-0.5"></div>
 
                         <div class="flex items-center justify-between pt-1">
-                            <span class="text-[10px] text-slate-500">Kamera atau Galeri HP</span>
+                            <span class="text-[10px] text-slate-500">Kamera atau Galeri HP (Maks 15MB)</span>
                             <div class="flex items-center gap-2">
                                 <button type="button" id="btn_delete_live_qc_photo" class="{{ $order->spkAssignment->qc_photo_path ? '' : 'hidden' }} text-[11px] font-bold text-rose-400 hover:text-rose-300 hover:underline">🗑️ Hapus Foto</button>
                                 <button type="button" id="btn_undo_live_qc_photo" class="hidden text-[11px] font-bold text-amber-400 hover:underline">↩️ Batal Hapus</button>
@@ -365,17 +366,68 @@ document.addEventListener('DOMContentLoaded', function() {
     const btnUndo = document.getElementById('btn_undo_live_qc_photo');
     const originalSrc = "{{ $order->spkAssignment->qc_photo_path ? asset('storage/' . $order->spkAssignment->qc_photo_path) : '' }}";
 
+    const compressNotice = document.getElementById('compress_notice');
+
     fileInp?.addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (file) {
+            if (compressNotice) {
+                compressNotice.textContent = 'Memproses & mengompresi foto...';
+                compressNotice.classList.remove('hidden');
+            }
+
             const reader = new FileReader();
             reader.onload = function(evt) {
-                preview.src = evt.target.result;
-                preview.classList.remove('hidden');
-                placeholder.classList.add('hidden');
-                if (removeInp) removeInp.value = '0';
-                btnDelete?.classList.remove('hidden');
-                btnUndo?.classList.add('hidden');
+                const img = new Image();
+                img.onload = function() {
+                    const maxDim = 1920;
+                    let w = img.width;
+                    let h = img.height;
+
+                    if (w > maxDim || h > maxDim) {
+                        if (w > h) {
+                            h = Math.round((h * maxDim) / w);
+                            w = maxDim;
+                        } else {
+                            w = Math.round((w * maxDim) / h);
+                            h = maxDim;
+                        }
+                    }
+
+                    const canvas = document.createElement('canvas');
+                    canvas.width = w;
+                    canvas.height = h;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, w, h);
+
+                    canvas.toBlob(function(blob) {
+                        if (blob) {
+                            try {
+                                const dt = new DataTransfer();
+                                const compressedFile = new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' });
+                                dt.items.add(compressedFile);
+                                fileInp.files = dt.files;
+
+                                const originalMB = (file.size / (1024 * 1024)).toFixed(1);
+                                const compressedKB = Math.round(blob.size / 1024);
+                                if (compressNotice) {
+                                    compressNotice.textContent = `✓ Foto dikompres: ${originalMB}MB → ${compressedKB}KB (HD Siap Upload)`;
+                                    compressNotice.classList.remove('hidden');
+                                }
+                            } catch (err) {
+                                console.warn('DataTransfer File replacement not supported, using original file', err);
+                            }
+                        }
+
+                        preview.src = canvas.toDataURL('image/jpeg', 0.85);
+                        preview.classList.remove('hidden');
+                        placeholder.classList.add('hidden');
+                        if (removeInp) removeInp.value = '0';
+                        btnDelete?.classList.remove('hidden');
+                        btnUndo?.classList.add('hidden');
+                    }, 'image/jpeg', 0.85);
+                };
+                img.src = evt.target.result;
             };
             reader.readAsDataURL(file);
         }
@@ -390,6 +442,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (fileInp) fileInp.value = '';
         if (removeInp) removeInp.value = '1';
         btnDelete?.classList.add('hidden');
+        compressNotice?.classList.add('hidden');
         if (originalSrc && btnUndo) {
             btnUndo.classList.remove('hidden');
         }
@@ -405,6 +458,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (removeInp) removeInp.value = '0';
             btnDelete?.classList.remove('hidden');
             btnUndo?.classList.add('hidden');
+            compressNotice?.classList.add('hidden');
         }
     });
 });

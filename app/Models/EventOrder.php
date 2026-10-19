@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
 class EventOrder extends Model
@@ -195,7 +196,7 @@ class EventOrder extends Model
         $customerName = $this->customer->name ?? 'Pelanggan';
         $eventName = $this->event_name;
         $venue = $this->venue_name;
-        $loadingDate = $this->loading_date ? $this->loading_date->translatedFormat('d F Y') : '-';
+        $loadingDate = $this->loading_date ? Carbon::parse($this->loading_date)->translatedFormat('d F Y') : '-';
         $loadingTime = $this->loading_time ?? '-';
         $totalSqm = number_format((float) $this->total_sqm, 2);
         $screenCount = $this->screens->count();

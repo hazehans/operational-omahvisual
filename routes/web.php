@@ -119,6 +119,7 @@ Route::middleware('auth')->group(function () {
     Route::put('/spk/items/{item}', [SpkController::class, 'updateChecklistItem'])->name('spk.items.update');
     Route::delete('/spk/items/{item}', [SpkController::class, 'deleteChecklistItem'])->name('spk.items.destroy');
     Route::post('/spk/items/{item}/toggle', [SpkController::class, 'toggleItem'])->name('spk.toggle-item');
+    Route::post('/spk/{assignment}/items/bulk-toggle', [SpkController::class, 'bulkToggleItems'])->name('spk.items.bulk-toggle');
 
     // SPK Multi-Vehicle, Crew Assignments, & Operational Costs
     Route::post('/spk/{assignment}/crews', [SpkController::class, 'addCrewAssignment'])->name('spk.crews.store');

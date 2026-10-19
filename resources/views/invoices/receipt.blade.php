@@ -7,16 +7,29 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @media print {
-            body {
+            html, body {
                 background: white !important;
                 color: black !important;
+                font-size: 9.5pt !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
             }
             .no-print {
                 display: none !important;
             }
+            .print-shadow-none {
+                box-shadow: none !important;
+                border: 2px solid #0f172a !important;
+                padding: 1.5rem !important;
+                margin: 0 !important;
+                max-width: 100% !important;
+                width: 100% !important;
+            }
             @page {
                 size: A4 portrait;
-                margin: 20mm;
+                margin: 12mm 15mm;
             }
         }
     </style>
@@ -44,7 +57,7 @@
     </div>
 
     <!-- Official Kuitansi Container -->
-    <div class="max-w-3xl mx-auto bg-white p-8 sm:p-12 rounded-2xl shadow-md border-2 border-slate-900 relative">
+    <div class="max-w-3xl mx-auto bg-white p-8 sm:p-12 rounded-2xl shadow-md border-2 border-slate-900 print-shadow-none relative">
         <!-- Watermark / Stamp -->
         <div class="absolute right-12 top-28 pointer-events-none transform rotate-[-8deg] opacity-75 border-4 border-emerald-600 rounded-2xl px-6 py-2 text-center">
             <span class="text-3xl font-black text-emerald-600 uppercase tracking-widest">LUNAS / DITERIMA</span>
@@ -73,8 +86,8 @@
         </div>
 
         <!-- Kuitansi Body -->
-        <div class="my-8 space-y-4 text-xs sm:text-sm">
-            <div class="grid grid-cols-4 gap-2 items-baseline py-2 border-b border-slate-100">
+        <div class="my-4 space-y-3 text-xs sm:text-sm">
+            <div class="grid grid-cols-4 gap-2 items-baseline py-1.5 border-b border-slate-100">
                 <span class="text-slate-500 font-semibold">Telah Diterima Dari:</span>
                 <span class="col-span-3 font-bold text-slate-900 text-base">
                     {{ $payment->invoice->customer->name }}
@@ -84,29 +97,29 @@
                 </span>
             </div>
 
-            <div class="grid grid-cols-4 gap-2 items-baseline py-2 border-b border-slate-100">
+            <div class="grid grid-cols-4 gap-2 items-baseline py-1.5 border-b border-slate-100">
                 <span class="text-slate-500 font-semibold">Uang Sejumlah:</span>
-                <span class="col-span-3 text-lg font-black text-indigo-700">
+                <span class="col-span-3 text-base font-black text-indigo-700">
                     Rp {{ number_format($payment->amount, 0, ',', '.') }}
                 </span>
             </div>
 
-            <div class="grid grid-cols-4 gap-2 items-baseline py-2 border-b border-slate-100">
+            <div class="grid grid-cols-4 gap-2 items-baseline py-1.5 border-b border-slate-100">
                 <span class="text-slate-500 font-semibold">Terbilang:</span>
-                <span class="col-span-3 italic font-bold text-slate-800 bg-slate-50 p-2.5 rounded-lg border border-slate-200">
+                <span class="col-span-3 italic font-bold text-slate-800 bg-slate-50 p-2 rounded-lg border border-slate-200 text-xs">
                     # {{ App\Models\Invoice::terbilang($payment->amount) }} Rupiah #
                 </span>
             </div>
 
-            <div class="grid grid-cols-4 gap-2 items-baseline py-2 border-b border-slate-100">
+            <div class="grid grid-cols-4 gap-2 items-baseline py-1.5 border-b border-slate-100">
                 <span class="text-slate-500 font-semibold">Untuk Pembayaran:</span>
-                <span class="col-span-3 text-slate-800 font-medium space-y-1">
+                <span class="col-span-3 text-slate-800 font-medium space-y-0.5">
                     <div>
                         Pembayaran Invoice <span class="font-mono font-bold text-indigo-600">{{ $payment->invoice->invoice_number }}</span>
                         ({{ ucfirst(str_replace('_', ' ', $payment->invoice->invoice_type)) }})
                     </div>
                     @if($payment->eventOrder)
-                        <div class="text-slate-600">
+                        <div class="text-slate-600 text-xs">
                             Acara: <strong>{{ $payment->eventOrder->event_name }}</strong> ({{ $payment->eventOrder->event_start_date->format('d M Y') }})
                         </div>
                     @endif
@@ -116,7 +129,7 @@
                 </span>
             </div>
 
-            <div class="grid grid-cols-4 gap-2 items-baseline py-2 border-b border-slate-100">
+            <div class="grid grid-cols-4 gap-2 items-baseline py-1.5 border-b border-slate-100">
                 <span class="text-slate-500 font-semibold">Metode & Referensi:</span>
                 <span class="col-span-3 text-slate-800 font-medium">
                     <span class="font-bold">{{ $payment->method_label }}</span>
@@ -128,7 +141,7 @@
         </div>
 
         <!-- Footer & Signatures -->
-        <div class="grid grid-cols-2 gap-8 pt-6 border-t-2 border-slate-900 text-xs mt-8">
+        <div class="grid grid-cols-2 gap-8 pt-4 border-t-2 border-slate-900 text-xs mt-4">
             <div class="space-y-1">
                 <div class="text-[11px] text-slate-500 font-mono">
                     Total Tagihan Invoice: Rp {{ number_format($payment->invoice->total_amount, 0, ',', '.') }}<br>
@@ -137,7 +150,7 @@
                 </div>
             </div>
 
-            <div class="text-center flex flex-col justify-between items-center h-32">
+            <div class="text-center flex flex-col justify-between items-center h-24">
                 <div class="text-slate-700">
                     Malang, {{ $payment->payment_date->translatedFormat('d F Y') }}<br>
                     <strong>Penerima Pembayaran,</strong>

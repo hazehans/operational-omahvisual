@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
 class Invoice extends Model
 {
@@ -144,7 +145,7 @@ class Invoice extends Model
         $customerName = $this->customer->name ?? 'Pelanggan';
         $eventName = $this->eventOrder?->event_name ?? $this->title ?? 'Sewa LED Screen';
         $invoiceNum = $this->invoice_number;
-        $dueDate = $this->due_date ? $this->due_date->translatedFormat('d F Y') : '-';
+        $dueDate = $this->due_date ? Carbon::parse($this->due_date)->translatedFormat('d F Y') : '-';
         $total = 'Rp '.number_format((float) $this->total_amount, 0, ',', '.');
         $paid = 'Rp '.number_format((float) $this->paid_amount, 0, ',', '.');
         $balance = 'Rp '.number_format((float) $this->balance_due, 0, ',', '.');

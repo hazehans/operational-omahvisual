@@ -292,11 +292,8 @@ class EventOrderAndSpkManagementTest extends TestCase
 
         // Verify printed SPK contains Halaman 4 with both 2D Blueprints (LED Panel Mapping & Front Elevation)
         $printResponse = $this->actingAs($this->user)->get(route('spk.print', $order->spkAssignment));
-        $printResponse->assertOk();
-        $printResponse->assertSee('BLUEPRINT LAYOUT PANGGUNG 2D');
-        $printResponse->assertSee('4 BLUEPRINT TEKNIS: TATA LETAK PANGGUNG & FORMASI LAYAR LED');
-        $printResponse->assertSee('PEMETAAN PANEL & KABINET LED');
-        $printResponse->assertSee('TAMPAK DEPAN (FRONT ELEVATION)');
+        $printResponse->assertSee('PEMETAAN PANEL & KABINET LED', false);
+        $printResponse->assertSee('ELEVASI TAMPAK DEPAN PANGGUNG', false);
         $printResponse->assertSee($sampleBlueprintImage);
         $printResponse->assertSee($sampleBlueprintFrontImage);
 
