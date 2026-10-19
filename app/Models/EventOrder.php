@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\WhatsAppHelper;
 use Database\Factories\EventOrderFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -171,5 +172,48 @@ class EventOrder extends Model
     public function getRemainingBalanceAttribute(): float
     {
         return max(0, (float) $this->total_price - (float) $this->paid_amount);
+    }
+
+    /**
+     * Get the public customer tracking URL.
+     */
+    public function getTrackingUrlAttribute(): string
+    {
+        return route('orders.track', $this->public_token);
+    }
+
+    /**
+     * Build WhatsApp Click to Chat URL with full event tracking info for customer.
+     */
+    public function getTrackingWhatsappUrlAttribute(): string
+    {
+        $phone = $this->customer?->phone;
+        if (! $phone) {
+            return '#';
+        }
+
+        $customerName = $this->customer->name ?? 'Pelanggan';
+        $eventName = $this->event_name;
+        $venue = $this->venue_name;
+        $loadingDate = $this->loading_date ? $this->loading_date->translatedFormat('d F Y') : '-';
+        $loadingTime = $this->loading_time ?? '-';
+        $totalSqm = number_format((float) $this->total_sqm, 2);
+        $screenCount = $this->screens->count();
+        $trackingUrl = $this->tracking_url;
+
+        $message = "Halo {$customerName},\n\n";
+        $message .= "Berikut tautan Portal Pelacakan Resmi untuk pesanan LED Screen Anda bersama *Omah Visual*:\n";
+        $message .= "━━━━━━━━━━━━━━━━━━━━\n";
+        $message .= "🎭 *Acara:* {$eventName}\n";
+        $message .= "📍 *Lokasi Venue:* {$venue}\n";
+        $message .= "📅 *Jadwal Loading:* {$loadingDate} ({$loadingTime})\n";
+        $message .= "🖥️ *Total Layar:* {$totalSqm} m² ({$screenCount} Formasi Layar)\n";
+        $message .= "━━━━━━━━━━━━━━━━━━━━\n\n";
+        $message .= "Anda dapat memantau status persiapan di gudang, armada logistik, uji kelayakan teknis (QC), foto dokumentasi panggung, hingga rincian teknis konten LED secara real-time melalui tautan berikut:\n";
+        $message .= "🔗 {$trackingUrl}\n\n";
+        $message .= "Jika ada pertanyaan atau koordinasi teknis lebih lanjut, silakan hubungi tim kami.\n";
+        $message .= 'Terima kasih atas kepercayaannya kepada *Omah Visual LED*! 🙏✨';
+
+        return WhatsAppHelper::buildUrl($phone, $message);
     }
 }

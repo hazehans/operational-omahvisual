@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CrewController;
 use App\Http\Controllers\CrewPayrollController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\CustomerTrackingController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EventOrderController;
 use App\Http\Controllers\InitialCountController;
@@ -21,6 +22,9 @@ use App\Http\Controllers\SuperuserDatabaseController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VehicleController;
 use Illuminate\Support\Facades\Route;
+
+// Public Customer Self-Service Order Tracking Portal (No login required)
+Route::get('/track/{token}', [CustomerTrackingController::class, 'show'])->name('orders.track');
 
 // Public Live Token Route for Crew Lapangan (No login required)
 Route::get('/spk/live/{token}', [SpkController::class, 'liveTokenView'])->name('spk.live');

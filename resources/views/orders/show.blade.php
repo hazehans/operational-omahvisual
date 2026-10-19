@@ -91,36 +91,84 @@
         </div>
     </div>
 
-    <!-- Live Token Bar for Crew Mobile Access -->
-    <div class="p-4 rounded-2xl bg-linear-to-r from-emerald-500/10 via-teal-500/10 to-indigo-500/10 border border-emerald-500/20 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div class="flex items-center gap-3">
-            <span class="p-2 rounded-xl bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 shrink-0">
-                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v16a2 2 0 002 2z" />
-                </svg>
-            </span>
-            <div>
-                <div class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                    <span>📱 Link Live Crew Lapangan (Tanpa Perlu Login)</span>
-                    <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-600 font-bold">Token Aktif</span>
+    <!-- Dual Access Link Bars: Crew Field Live & Customer Self-Service Tracking Portal -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <!-- 1. Live Token Bar for Crew Mobile Access -->
+        <div class="p-4 rounded-2xl bg-linear-to-r from-emerald-500/10 via-teal-500/10 to-emerald-500/5 border border-emerald-500/20 flex flex-col justify-between gap-3 shadow-xs">
+            <div class="flex items-start gap-3">
+                <span class="p-2 rounded-xl bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 shrink-0">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v16a2 2 0 002 2z" />
+                    </svg>
+                </span>
+                <div class="min-w-0 flex-1">
+                    <div class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                        <span>📱 Link Live Crew Lapangan</span>
+                        <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold">Crew Internal</span>
+                    </div>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                        Akses khusus teknisi & driver untuk checklist bongkar muat dan input form QC venue.
+                    </p>
+                    <div class="text-[11px] text-slate-400 dark:text-slate-500 font-mono truncate mt-1">
+                        {{ route('spk.live', $order->public_token) }}
+                    </div>
                 </div>
-                <div class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-mono truncate max-w-xl">
-                    {{ route('spk.live', $order->public_token) }}
-                </div>
+            </div>
+
+            <div class="flex items-center gap-2 pt-1 border-t border-emerald-500/10">
+                <button onclick="navigator.clipboard.writeText('{{ route('spk.live', $order->public_token) }}'); alert('Link Crew Lapangan berhasil disalin! Silakan kirimkan ke grup WhatsApp Crew.')" 
+                    class="flex-1 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all shadow-xs flex items-center justify-center gap-1.5">
+                    <span>📋 Salin Link Crew</span>
+                </button>
+                <a href="{{ route('spk.live', $order->public_token) }}" target="_blank" 
+                    class="p-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:text-emerald-600 transition-colors" title="Buka Pratinjau Mobile">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                </a>
             </div>
         </div>
 
-        <div class="flex items-center gap-2 w-full sm:w-auto">
-            <button onclick="navigator.clipboard.writeText('{{ route('spk.live', $order->public_token) }}'); alert('Link Crew Lapangan berhasil disalin! Silakan kirimkan ke grup WhatsApp Crew.')" 
-                class="w-full sm:w-auto px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all shadow-sm">
-                📋 Salin Link WhatsApp
-            </button>
-            <a href="{{ route('spk.live', $order->public_token) }}" target="_blank" 
-                class="p-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:text-emerald-600" title="Buka Pratinjau Mobile">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                </svg>
-            </a>
+        <!-- 2. Customer Self-Service Tracking Portal Bar -->
+        <div class="p-4 rounded-2xl bg-linear-to-r from-cyan-500/10 via-indigo-500/10 to-cyan-500/5 border border-cyan-500/20 flex flex-col justify-between gap-3 shadow-xs">
+            <div class="flex items-start gap-3">
+                <span class="p-2 rounded-xl bg-cyan-500/20 text-cyan-600 dark:text-cyan-400 shrink-0">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                </span>
+                <div class="min-w-0 flex-1">
+                    <div class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                        <span>🌐 Portal Pelacakan Customer & EO</span>
+                        <span class="text-[10px] px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-600 dark:text-cyan-400 font-bold">Klien & VJ Team</span>
+                    </div>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                        Tautan publik mandiri untuk memantau status persiapan, foto BAST QC, dan spesifikasi layar VJ.
+                    </p>
+                    <div class="text-[11px] text-slate-400 dark:text-slate-500 font-mono truncate mt-1">
+                        {{ route('orders.track', $order->public_token) }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2 pt-1 border-t border-cyan-500/10">
+                <a href="{{ $order->tracking_whatsapp_url }}" target="_blank"
+                    class="flex-1 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all shadow-xs flex items-center justify-center gap-1.5">
+                    <span>💬 Kirim ke WA Customer</span>
+                </a>
+
+                <button onclick="navigator.clipboard.writeText('{{ route('orders.track', $order->public_token) }}'); alert('Tautan Pelacakan Customer berhasil disalin!')" 
+                    class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold transition-all">
+                    📋 Salin Link
+                </button>
+
+                <a href="{{ route('orders.track', $order->public_token) }}" target="_blank" 
+                    class="p-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:text-cyan-600 transition-colors" title="Buka Portal Tracking">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                </a>
+            </div>
         </div>
     </div>
 

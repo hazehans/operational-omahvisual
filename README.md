@@ -75,6 +75,12 @@ Aplikasi ini mengintegrasikan data fisik riil dari spreadsheet inventori lapanga
 * Komponen interaktif `components/phone-input.blade.php` dengan katalog 33 negara (Asia Tenggara, Asia Pasifik, Timur Tengah, Eropa, Amerika).
 * Filter pencarian live bendera, nama negara, dan dial code, auto-detect prefix, auto-trim angka 0 di depan nomor, dan integrasi WhatsApp `wa.me` E.164.
 
+### 🚀 H. Portal Pelacakan Mandiri Customer & EO (`/track/{token}`)
+* **Akses Publik Mandiri Tanpa Login:** Klien, EO, dan WO dapat mengakses live status menggunakan tautan dengan token acak 32 karakter (`EventOrder::public_token`) tanpa mengekspos biaya gaji kru atau margin internal.
+* **5-Tahap Pelacak Visual (Live Stepper):** *Pesanan Terkonfirmasi* $\rightarrow$ *Pemuatan Gudang* $\rightarrow$ *Armada Menuju Lokasi* $\rightarrow$ *Instalasi & Uji Kelayakan QC Panggung Lolos (BAST)* $\rightarrow$ *Acara Berlangsung & Selesai*.
+* **Panduan Spesifikasi Layar untuk Tim VJ / Multimedia:** Rincian ukuran fisik ($m^2$), pixel pitch, metode rigging, serta **Kalkulasi Resolusi Piksel Native ($W \times H$ px)** dan **Aspek Rasio Otomatis** untuk akurasi konten video.
+* **Transparansi Hasil QC & Foto Panggung:** Dokumentasi foto panggung BAST, status grounding aman, uji warna RGB bebas dead pixel, dan sinyal video processor.
+* **Rincian Tagihan & 1-Klik Hubungi PIC:** Rekapitulasi pembayaran (DP vs Pelunasan), rekening transfer BCA resmi, link unduh invoice, dan tombol WhatsApp PIC Event.
 
 ---
 
@@ -85,7 +91,7 @@ Aplikasi ini mengintegrasikan data fisik riil dari spreadsheet inventori lapanga
 * **Frontend:** Laravel Blade, Tailwind CSS v4, Vite
 * **Autentikasi & RBAC:** Session Guard + `spatie/laravel-permission` v8.3
 * **Code Formatter:** Laravel Pint
-* **Automated Testing:** PHPUnit (107 feature tests, 693 assertions, 100% Green)
+* **Automated Testing:** PHPUnit (115 feature tests, 741 assertions, 100% Green)
 
 ---
 

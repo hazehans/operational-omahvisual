@@ -319,14 +319,44 @@ Berdasarkan analisis 2 file Excel (`DATA TOOLS BOX .2` dan `DEV_STOCK OPNAME by 
   - Total pengujian meningkat menjadi **107 Tests, 693 Assertions, 100% Lulus (Green)**.
   - Diformat rapi sesuai standar Laravel Pint.
 
+### Tahap 12: Portal Pelacakan Mandiri Customer, Event Organizer & Tim Multimedia VJ (`/track/{token}`) (SELESAI ✅)
+- [x] **Akses Publik Mandiri Berbasis Token Aman (Tanpa Login):**
+  - Rute publik mandiri `/track/{token}` menggunakan token acak 32 karakter dengan entropi tinggi (`EventOrder::public_token`).
+  - Proteksi privasi klien yang ketat: Tidak pernah mengekspos biaya gaji kru internal, margin laba bersih gudang, atau pos servis teknis internal.
+- [x] **Alur Pelacak Visual 5 Tahap (Visual Stepper Tracker):**
+  1. *Pesanan Terkonfirmasi & Jadwal Terkunci* (Status jadwal, loading, dan jam siap acara terdaftar resmi).
+  2. *Pemuatan Barang di Gudang (Loading Out)* (Indikator persiapan modul kabinet, kabel jumper, processor, dan rigging).
+  3. *Armada Menuju Lokasi Acara (En Route & Tiba di Venue)* (Menampilkan nama armada kendaraan yang ditugaskan tanpa rincian biaya BBM/Tol internal).
+  4. *Instalasi & Uji Kelayakan QC Panggung Lolos (BAST Visual)* (Checklist kelistrikan aman, uji warna RGB bebas dead pixel, sinyal processor stabil, dan pratinjau foto dokumentasi BAST panggung).
+  5. *Acara Berlangsung & Selesai (Show Time)* (Layar LED menyala prima mengawal kesuksesan event).
+- [x] **Panduan Spesifikasi Teknis Layar LED untuk Kru VJ & Multimedia EO:**
+  - Kartu per formasi layar: Dimensi fisik ($W \times H$ meter), total luasan $m^2$, dan pixel pitch (P3.9 / P2.6 / P2.9).
+  - **Kalkulasi Resolusi Piksel Native ($W \times H$ px)** dan **Aspek Rasio Otomatis** (misal 16:9, 4:3, atau rasio custom) guna memandu tim motion graphics/VJ EO menyiapkan konten visual presisi.
+  - Tipe metode rigging panggung (Ground Stake, Hanging Rigging, Stage Frame) dan model video processor.
+  - Tampilan diagram blueprint denah panggung tampak depan & atas jika ada.
+- [x] **Rincian Tagihan & Informasi Pembayaran Aman Klien:**
+  - Rekapitulasi nilai sewa, nominal yang telah dibayarkan, dan sisa pelunasan dengan indikator status pembayaran.
+  - Tautan langsung unduh lembar cetak faktur invoice resmi Omah Visual.
+  - Informasi nomor rekening bank BCA resmi untuk kemudahan pelunasan transfer.
+- [x] **Bantuan Langsung & Hubungi PIC Event:**
+  - Tautan 1-klik WhatsApp langsung ke Koordinator / PIC Event yang bertugas di lapangan.
+- [x] **Integrasi pada Detail Pesanan Kantor (`orders/show.blade.php`):**
+  - Bilah ganda modern: *Link Live Crew Lapangan* (checklist bongkar muat internal) dan *Portal Pelacakan Customer & EO* (pratinjau publik).
+  - Tombol 1-klik bagikan tautan tracking via WhatsApp langsung ke nomor telepon customer dengan pesan terformat rapi.
+- [x] **Suite Pengujian Otomatis Komprehensif:**
+  - `tests/Feature/CustomerOrderTrackingTest.php` (8 test fitur baru mencakup akses tanpa login, 404 token tidak valid, data panggung, resolusi VJ, 5-stage timeline, foto BAST QC, tagihan klien, URL WhatsApp, dan tampilan detail pesanan).
+  - Total pengujian meningkat menjadi **115 Tests, 741 Assertions, 100% Lulus (Green)**.
+  - Diformat rapi sesuai standar Laravel Pint.
+
 ---
 
 ## 🔮 8. Roadmap & Rencana Sesi Berikutnya
 - [ ] **Dashboard Analitik Manajer & Laba-Rugi Operasional:** Statistik omset vs realisasi biaya kru & logistik armada, grafik utilisasi TRAGA, dan ranking jam terbang kru.
-- [ ] **Portal Pelacakan Mandiri untuk Customer (`/track/{order_token}`):** Halaman live tracking progres pesanan & persiapan layar LED untuk EO tanpa login.
+- [x] **Portal Pelacakan Mandiri untuk Customer (`/track/{order_token}`):** Halaman live tracking progres pesanan & persiapan layar LED untuk EO tanpa login.
 - [ ] **Fitur Ekspor Laporan Bulanan (Excel/PDF):** Rekapitulasi penggajian kru bulanan dan pengeluaran operasional event.
 - [ ] **Integrasi Barcode / QR Code Fisik Scanner:** Penerapan scanner barcode/QR code fisik pasca alur SPK dan cargo list rampung.
 - [ ] **Notifikasi Discrepancy Otomatis via WhatsApp / Email:** Alert selisih fisik saat ada barang tertinggal pasca-event.
+
 
 
 
