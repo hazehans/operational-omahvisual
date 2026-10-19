@@ -563,11 +563,11 @@
             </tr>
         </table>
 
-        <!-- DIAGRAM 1: TAMPAK ATAS (TOP-DOWN 2D FLOOR PLAN) - ATAS -->
+        <!-- DIAGRAM 1: PEMETAAN PANEL & KABINET LED (RESOLUME & VJ MAPPING) - ATAS -->
         <div style="border: 1.5px solid #000; background: #fff; margin-bottom: 5px;">
             <div style="background: #1e293b; color: #fff; padding: 3px 8px; font-size: 10.5px; font-weight: bold; display: flex; justify-content: space-between; align-items: center;">
-                <span>📐 1. TAMPAK ATAS (TOP-DOWN FLOOR PLAN) — BIDANG PANGGUNG &amp; FORMASI LAYAR</span>
-                <span style="font-size: 9.5px; color: #38bdf8;">Grid: 1 Kotak = 1 Meter</span>
+                <span>🔲 1. PEMETAAN PANEL &amp; KABINET LED — NOMOR KABINET &amp; RESOLUSI KONTEN</span>
+                <span style="font-size: 9.5px; color: #38bdf8;">Panduan Teknisi &amp; VJ Konten</span>
             </div>
             <div style="padding: 0; text-align: center; background: #0a0f1d; overflow: hidden;">
                 @if($assignment->eventOrder->stage_layout_image)
@@ -575,9 +575,9 @@
                 @else
                     <img id="printBlueprintTopImg" src="" style="width: 100%; max-height: 94mm; object-fit: contain; display: none; margin: 0 auto;">
                     <div id="printBlueprintTopFallback" style="height: 80mm; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #94a3b8; font-size: 13px;">
-                        <span style="font-size: 15px; font-weight: bold; color: #e2e8f0; margin-bottom: 4px;">Panggung: {{ $assignment->eventOrder->stage_width_m ?? 10 }}m × {{ $assignment->eventOrder->stage_depth_m ?? 6 }}m</span>
-                        <span style="font-size: 14px; color: #38bdf8; font-weight: bold;">{{ $assignment->eventOrder->screens->map(fn($s) => $s->screen_name . ' (' . $s->width_m . 'x' . $s->height_m . 'm)')->implode(' • ') }}</span>
-                        <span style="margin-top: 6px; color: #facc15; font-weight: bold; font-size: 13px;">▼ BIBIR PANGGUNG MENGHADAP PENONTON ▼</span>
+                        <span style="font-size: 15px; font-weight: bold; color: #e2e8f0; margin-bottom: 4px;">Diagram Pemetaan Panel &amp; Kabinet LED</span>
+                        <span style="font-size: 14px; color: #38bdf8; font-weight: bold;">{{ $assignment->eventOrder->screens->map(fn($s) => $s->screen_name . ' (' . $s->width_m . 'x' . $s->height_m . 'm - ' . $s->total_cabinets . ' Kabinet)')->implode(' • ') }}</span>
+                        <span style="margin-top: 6px; color: #facc15; font-weight: bold; font-size: 13px;">PANDUAN SUSUNAN MODUL TEKNISI &amp; RESOLUSI PIKSEL VJ</span>
                     </div>
                 @endif
             </div>
@@ -754,229 +754,255 @@
         const screensData = @json($screensForJs);
         if (!screensData || screensData.length === 0) return;
 
-        // 1. TOP-DOWN FLOOR PLAN (1200 x 600)
+        // 1. PEMETAAN PANEL & KABINET LED (LED MAPPING BLUEPRINT - 1200 x 600)
         const topCanvas = document.createElement('canvas');
         topCanvas.width = 1200;
         topCanvas.height = 600;
         const ctxTop = topCanvas.getContext('2d');
 
-        ctxTop.fillStyle = '#0a0f1d';
+        // Dark Blueprint Background with subtle grid lines
+        ctxTop.fillStyle = '#070b14';
         ctxTop.fillRect(0, 0, topCanvas.width, topCanvas.height);
 
-        let minX = -stageConfig.width / 2;
-        let maxX = stageConfig.width / 2;
-        let minZ = -stageConfig.depth / 2;
-        let maxZ = stageConfig.depth / 2;
-
-        screensData.forEach(sc => {
-            const rotRad = (sc.rotY || 0) * (Math.PI / 180);
-            const halfW = (sc.width / 2);
-            const pX1 = sc.x - halfW * Math.cos(rotRad);
-            const pX2 = sc.x + halfW * Math.cos(rotRad);
-            const pZ1 = sc.z - halfW * Math.sin(rotRad);
-            const pZ2 = sc.z + halfW * Math.sin(rotRad);
-            minX = Math.min(minX, pX1, pX2);
-            maxX = Math.max(maxX, pX1, pX2);
-            minZ = Math.min(minZ, pZ1, pZ2);
-            maxZ = Math.max(maxZ, pZ1, pZ2);
-        });
-
-        const totalW = Math.max(stageConfig.width, maxX - minX);
-        const totalD = Math.max(stageConfig.depth, maxZ - minZ);
-        const contentW = totalW + 0.8;
-        const contentD = totalD + 1.2;
-
-        const marginX = 40;
-        const marginY = 35;
-        const scale = Math.min((topCanvas.width - marginX * 2) / contentW, (topCanvas.height - marginY * 2) / contentD);
-        const centerX = topCanvas.width / 2;
-        const centerY = topCanvas.height / 2 + 10;
-
-        const stageW_px = stageConfig.width * scale;
-        const stageD_px = stageConfig.depth * scale;
-        const stageX = centerX - stageW_px / 2;
-        const stageY = centerY - stageD_px / 2;
-
-        ctxTop.fillStyle = '#1e293b';
-        ctxTop.fillRect(stageX, stageY, stageW_px, stageD_px);
-
-        // Grid lines across entire canvas
-        ctxTop.strokeStyle = '#1e293b';
+        ctxTop.strokeStyle = '#0f172a';
         ctxTop.lineWidth = 1;
-        for (let x = centerX; x <= topCanvas.width; x += scale) {
+        for (let x = 0; x <= topCanvas.width; x += 40) {
             ctxTop.beginPath(); ctxTop.moveTo(x, 0); ctxTop.lineTo(x, topCanvas.height); ctxTop.stroke();
         }
-        for (let x = centerX - scale; x >= 0; x -= scale) {
-            ctxTop.beginPath(); ctxTop.moveTo(x, 0); ctxTop.lineTo(x, topCanvas.height); ctxTop.stroke();
-        }
-        for (let y = centerY; y <= topCanvas.height; y += scale) {
-            ctxTop.beginPath(); ctxTop.moveTo(0, y); ctxTop.lineTo(topCanvas.width, y); ctxTop.stroke();
-        }
-        for (let y = centerY - scale; y >= 0; y -= scale) {
+        for (let y = 0; y <= topCanvas.height; y += 40) {
             ctxTop.beginPath(); ctxTop.moveTo(0, y); ctxTop.lineTo(topCanvas.width, y); ctxTop.stroke();
         }
 
-        // Inside Stage Grid
-        ctxTop.strokeStyle = '#334155';
-        ctxTop.lineWidth = 1.5;
-        for (let x = centerX; x <= stageX + stageW_px; x += scale) {
-            ctxTop.beginPath(); ctxTop.moveTo(x, stageY); ctxTop.lineTo(x, stageY + stageD_px); ctxTop.stroke();
-        }
-        for (let x = centerX - scale; x >= stageX; x -= scale) {
-            ctxTop.beginPath(); ctxTop.moveTo(x, stageY); ctxTop.lineTo(x, stageY + stageD_px); ctxTop.stroke();
-        }
-        for (let y = centerY; y <= stageY + stageD_px; y += scale) {
-            ctxTop.beginPath(); ctxTop.moveTo(stageX, y); ctxTop.lineTo(stageX + stageW_px, y); ctxTop.stroke();
-        }
-        for (let y = centerY - scale; y >= stageY; y -= scale) {
-            ctxTop.beginPath(); ctxTop.moveTo(stageX, y); ctxTop.lineTo(stageX + stageW_px, y); ctxTop.stroke();
-        }
+        const palettes = [
+            { name: 'blue', even: '#1e3a8a', odd: '#2563eb', border: '#3b82f6', badge: '#38bdf8' },
+            { name: 'red', even: '#991b1b', odd: '#dc2626', border: '#ef4444', badge: '#f87171' },
+            { name: 'green', even: '#166534', odd: '#16a34a', border: '#22c55e', badge: '#4ade80' },
+            { name: 'purple', even: '#6b21a8', odd: '#9333ea', border: '#a855f7', badge: '#c084fc' },
+            { name: 'amber', even: '#9a3412', odd: '#ea580c', border: '#f97316', badge: '#fb923c' },
+            { name: 'cyan', even: '#115e59', odd: '#0d9488', border: '#14b8a6', badge: '#2dd4bf' }
+        ];
 
-        ctxTop.strokeStyle = '#64748b';
-        ctxTop.lineWidth = 3;
-        ctxTop.strokeRect(stageX, stageY, stageW_px, stageD_px);
+        const totalCabinetsAll = screensData.reduce((acc, sc) => {
+            const cols = Math.max(1, Math.round(sc.width / 0.5));
+            const rows = Math.max(1, Math.round(sc.height / 0.5));
+            return acc + (cols * rows);
+        }, 0);
+        const totalSqmAll = screensData.reduce((acc, sc) => acc + (sc.width * sc.height), 0);
 
-        ctxTop.strokeStyle = '#38bdf8';
-        ctxTop.lineWidth = 2;
-        ctxTop.setLineDash([6, 6]);
-        ctxTop.beginPath();
-        ctxTop.moveTo(centerX, stageY);
-        ctxTop.lineTo(centerX, stageY + stageD_px);
-        ctxTop.stroke();
-        ctxTop.setLineDash([]);
-
-        // Front Edge Audience Line
-        ctxTop.strokeStyle = '#facc15';
-        ctxTop.lineWidth = 7;
-        ctxTop.beginPath();
-        ctxTop.moveTo(stageX, stageY + stageD_px);
-        ctxTop.lineTo(stageX + stageW_px, stageY + stageD_px);
-        ctxTop.stroke();
-
-        ctxTop.fillStyle = '#facc15';
-        ctxTop.font = 'bold 15px Arial';
-        ctxTop.textAlign = 'center';
-        ctxTop.fillText('▼ BIBIR PANGGUNG (MENGHADAP PENONTON / AUDIENCE) ▼', centerX, stageY + stageD_px + 26);
-
-        // Stage Dimensions Labels (Larger & Bolder) with dimension line bar
-        const dimY = stageY - 18;
-        ctxTop.strokeStyle = '#64748b';
-        ctxTop.lineWidth = 1.5;
-        ctxTop.beginPath();
-        ctxTop.moveTo(stageX, dimY);
-        ctxTop.lineTo(stageX + stageW_px, dimY);
-        ctxTop.stroke();
-
-        ctxTop.beginPath();
-        ctxTop.moveTo(stageX, dimY - 6); ctxTop.lineTo(stageX, dimY + 6);
-        ctxTop.moveTo(stageX + stageW_px, dimY - 6); ctxTop.lineTo(stageX + stageW_px, dimY + 6);
-        ctxTop.stroke();
-
-        const widthText = `LEBAR PANGGUNG: ${stageConfig.width} METER`;
-        ctxTop.font = 'bold 15px Arial';
-        const wMetrics = ctxTop.measureText(widthText);
-        const wBadgeW = wMetrics.width + 24;
-        ctxTop.fillStyle = '#0a0f1d';
-        ctxTop.fillRect(centerX - wBadgeW / 2, dimY - 12, wBadgeW, 24);
-        ctxTop.strokeStyle = '#475569';
-        ctxTop.lineWidth = 1;
-        ctxTop.strokeRect(centerX - wBadgeW / 2, dimY - 12, wBadgeW, 24);
-
-        ctxTop.fillStyle = '#f8fafc';
-        ctxTop.textAlign = 'center';
-        ctxTop.textBaseline = 'middle';
-        ctxTop.fillText(widthText, centerX, dimY);
-        ctxTop.textBaseline = 'alphabetic';
-        
-        ctxTop.save();
-        ctxTop.translate(stageX - 18, centerY);
-        ctxTop.rotate(-Math.PI / 2);
-        ctxTop.font = 'bold 15px Arial';
-        ctxTop.fillStyle = '#f8fafc';
-        ctxTop.textAlign = 'center';
-        ctxTop.fillText(`KEDALAMAN: ${stageConfig.depth} METER`, 0, 0);
-        ctxTop.restore();
-
-        // Top Screens
-        screensData.forEach((sc, idx) => {
-            const scW_px = sc.width * scale;
-            const scD_px = 24;
-            const scX = centerX + (sc.x * scale);
-            const scY = centerY + (sc.z * scale);
-            const rotRad = (sc.rotY || 0) * (Math.PI / 180);
-
-            ctxTop.save();
-            ctxTop.translate(scX, scY);
-            ctxTop.rotate(rotRad);
-
-            ctxTop.fillStyle = idx === 0 ? '#1d4ed8' : '#0284c7';
-            ctxTop.fillRect(-scW_px / 2, -scD_px / 2, scW_px, scD_px);
-            ctxTop.strokeStyle = '#38bdf8';
-            ctxTop.lineWidth = 3;
-            ctxTop.strokeRect(-scW_px / 2, -scD_px / 2, scW_px, scD_px);
-
-            if (scW_px > 90) {
-                ctxTop.fillStyle = '#fef08a';
-                ctxTop.font = 'bold 13px Arial';
-                ctxTop.textAlign = 'center';
-                ctxTop.textBaseline = 'middle';
-                ctxTop.fillText(`${sc.width}m × ${sc.height}m`, 0, 0);
-                ctxTop.textBaseline = 'alphabetic';
-            }
-
-            // High-contrast Pill Badge for Screen Name
-            // If screen is placed at rear half of stage (sc.z <= 0, e.g. backdrop at z = -2.8),
-            // position badge IN FRONT of the screen (badgeY = scD_px / 2 + 20) on open stage floor
-            // so it NEVER overlaps with stage back boundary or LEBAR PANGGUNG text!
-            const isRear = (sc.z || 0) <= 0;
-            const badgeY = isRear ? (scD_px / 2 + 20) : (-scD_px / 2 - 20);
-
-            const labelText = `${sc.name} (${sc.width}m × ${sc.height}m)`;
-            ctxTop.font = 'bold 15px Arial';
-            const metrics = ctxTop.measureText(labelText);
-            const badgeW = metrics.width + 24;
-            const badgeH = 26;
-
-            ctxTop.fillStyle = 'rgba(15, 23, 42, 0.95)';
-            ctxTop.fillRect(-badgeW / 2, badgeY - badgeH / 2, badgeW, badgeH);
-            ctxTop.strokeStyle = idx === 0 ? '#38bdf8' : '#34d399';
-            ctxTop.lineWidth = 1.5;
-            ctxTop.strokeRect(-badgeW / 2, badgeY - badgeH / 2, badgeW, badgeH);
-
-            ctxTop.fillStyle = '#ffffff';
-            ctxTop.textAlign = 'center';
-            ctxTop.textBaseline = 'middle';
-            ctxTop.fillText(labelText, 0, badgeY);
-            ctxTop.textBaseline = 'alphabetic';
-
-            if (sc.rotY && sc.rotY !== 0) {
-                const angleY = isRear ? (-scD_px / 2 - 14) : (scD_px / 2 + 14);
-                ctxTop.fillStyle = '#f59e0b';
-                ctxTop.font = 'bold 13px Arial';
-                ctxTop.textAlign = 'center';
-                ctxTop.fillText(`Sudut: ${sc.rotY}°`, 0, angleY);
-            }
-
-            ctxTop.restore();
-        });
-
-        // Top Header Block
-        ctxTop.fillStyle = 'rgba(15, 23, 42, 0.95)';
-        ctxTop.fillRect(20, 20, 480, 70);
+        // Header Block
+        ctxTop.fillStyle = 'rgba(15, 23, 42, 0.96)';
+        ctxTop.fillRect(20, 16, topCanvas.width - 40, 70);
         ctxTop.strokeStyle = '#38bdf8';
         ctxTop.lineWidth = 1.5;
-        ctxTop.strokeRect(20, 20, 480, 70);
+        ctxTop.strokeRect(20, 16, topCanvas.width - 40, 70);
 
         ctxTop.fillStyle = '#38bdf8';
-        ctxTop.font = 'bold 16px Arial';
+        ctxTop.font = 'bold 16px Arial, sans-serif';
         ctxTop.textAlign = 'left';
-        ctxTop.fillText('OMAH VISUAL - BLUEPRINT TAMPAK ATAS (FLOOR PLAN)', 32, 44);
+        ctxTop.fillText('OMAH VISUAL — DIAGRAM PEMETAAN PANEL & KABINET LED (MAPPING BLUEPRINT)', 36, 40);
+
         ctxTop.fillStyle = '#e2e8f0';
-        ctxTop.font = '13px Arial';
-        ctxTop.fillText(`Format: Denah Panggung 2D • Total Layar: ${screensData.length} Unit`, 32, 63);
+        ctxTop.font = '13px Arial, sans-serif';
+        ctxTop.fillText(`Total Formasi: ${screensData.length} Layar • ${totalCabinetsAll} Kabinet (${totalSqmAll.toFixed(1)} m²) • Standar Modul: 50 × 50 cm`, 36, 59);
+
         ctxTop.fillStyle = '#94a3b8';
-        ctxTop.font = '12px Arial';
-        ctxTop.fillText(`Skala Grid: 1 Kotak = 1 Meter Persegi (${scale.toFixed(1)} px/m)`, 32, 80);
+        ctxTop.font = '12px Arial, sans-serif';
+        ctxTop.fillText('Pitch P3.9 (128×128 px/kabinet) • Format Sinyal & VJ Mapping: Resolume Arena / NovaStar NovaLCT', 36, 76);
+
+        // Header Right Badge
+        const tagText = 'PANDUAN TEKNISI & VJ KONTEN';
+        ctxTop.font = 'bold 11px Arial, sans-serif';
+        const tagW = ctxTop.measureText(tagText).width + 24;
+        const tagX = topCanvas.width - tagW - 36;
+        ctxTop.fillStyle = 'rgba(56, 189, 248, 0.15)';
+        ctxTop.fillRect(tagX, 36, tagW, 28);
+        ctxTop.strokeStyle = '#38bdf8';
+        ctxTop.lineWidth = 1;
+        ctxTop.strokeRect(tagX, 36, tagW, 28);
+        ctxTop.fillStyle = '#38bdf8';
+        ctxTop.textAlign = 'center';
+        ctxTop.fillText(tagText, tagX + tagW / 2, 54);
+
+        // Sort screens from left to right according to X position
+        const sortedScreens = [...screensData].sort((a, b) => (a.x || 0) - (b.x || 0));
+
+        // Layout calculation to fit screens within canvas
+        const gapMeters = 0.4;
+        const totalMetersW = sortedScreens.reduce((sum, sc) => sum + sc.width, 0) + (sortedScreens.length - 1) * gapMeters;
+        const maxMeterH = sortedScreens.reduce((max, sc) => Math.max(max, sc.height), 1);
+
+        const marginX = 40;
+        const availW = topCanvas.width - marginX * 2;
+        const availH = 430;
+        const scale = Math.min(availW / Math.max(totalMetersW, 5), availH / (maxMeterH + 0.8));
+
+        const gapPx = 20;
+        const totalScreensPxW = sortedScreens.reduce((sum, sc) => sum + (sc.width * scale), 0) + (sortedScreens.length - 1) * gapPx;
+        let currentDrawX = marginX + Math.max(0, (availW - totalScreensPxW) / 2);
+        const topAreaY = 102;
+
+        sortedScreens.forEach((sc, idx) => {
+            const scW_px = sc.width * scale;
+            const scH_px = sc.height * scale;
+            const scY = topAreaY + (availH - 55 - scH_px) / 2;
+
+            const palette = palettes[idx % palettes.length];
+            const cols = Math.max(1, Math.round(sc.width / 0.5));
+            const rows = Math.max(1, Math.round(sc.height / 0.5));
+            const totalPanels = cols * rows;
+
+            const cellW = scW_px / cols;
+            const cellH = scH_px / rows;
+
+            const resW = cols * 128;
+            const resH = rows * 128;
+
+            // 1. Checkered numbered panels
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    const pNum = r * cols + c + 1;
+                    const cellX = currentDrawX + c * cellW;
+                    const cellY = scY + r * cellH;
+
+                    ctxTop.fillStyle = (c + r) % 2 === 0 ? palette.even : palette.odd;
+                    ctxTop.fillRect(cellX, cellY, cellW, cellH);
+
+                    // Subtle inner cabinet border
+                    ctxTop.strokeStyle = 'rgba(255, 255, 255, 0.22)';
+                    ctxTop.lineWidth = 1;
+                    ctxTop.strokeRect(cellX, cellY, cellW, cellH);
+
+                    // Sequential panel number (01, 02, ... 120)
+                    const numStr = pNum < 10 ? '0' + pNum : '' + pNum;
+                    const fontSize = Math.max(9, Math.min(cellW * 0.38, cellH * 0.42, 22));
+                    ctxTop.fillStyle = 'rgba(255, 255, 255, 0.78)';
+                    ctxTop.font = `bold ${fontSize}px Arial, sans-serif`;
+                    ctxTop.textAlign = 'center';
+                    ctxTop.textBaseline = 'middle';
+                    ctxTop.fillText(numStr, cellX + cellW / 2, cellY + cellH / 2);
+                }
+            }
+
+            // 2. Diagonal Dashed Guide Lines ('X' through screen)
+            ctxTop.save();
+            ctxTop.setLineDash([7, 7]);
+            ctxTop.strokeStyle = 'rgba(255, 255, 255, 0.45)';
+            ctxTop.lineWidth = 2;
+            ctxTop.beginPath();
+            ctxTop.moveTo(currentDrawX, scY); ctxTop.lineTo(currentDrawX + scW_px, scY + scH_px);
+            ctxTop.moveTo(currentDrawX, scY + scH_px); ctxTop.lineTo(currentDrawX + scW_px, scY);
+            ctxTop.stroke();
+
+            // 3. Center Crosshair (Horizontal & Vertical)
+            const midX = currentDrawX + scW_px / 2;
+            const midY = scY + scH_px / 2;
+            ctxTop.beginPath();
+            ctxTop.moveTo(currentDrawX, midY); ctxTop.lineTo(currentDrawX + scW_px, midY);
+            ctxTop.moveTo(midX, scY); ctxTop.lineTo(midX, scY + scH_px);
+            ctxTop.stroke();
+
+            // Center reticle ring
+            ctxTop.beginPath();
+            ctxTop.arc(midX, midY, Math.min(36, cellH * 0.75), 0, Math.PI * 2);
+            ctxTop.stroke();
+            ctxTop.restore();
+
+            // 4. Outer Boundary Dashed White Border
+            ctxTop.save();
+            ctxTop.setLineDash([8, 6]);
+            ctxTop.strokeStyle = '#ffffff';
+            ctxTop.lineWidth = 3.5;
+            ctxTop.strokeRect(currentDrawX, scY, scW_px, scH_px);
+            ctxTop.restore();
+
+            // 5. Top-Right Corner Pitch Badge ([P3.9] 50 x 50 cm)
+            if (scW_px >= 120) {
+                const cornerBadgeW = Math.min(135, scW_px * 0.45);
+                const cornerBadgeH = 24;
+                const cornerBadgeX = currentDrawX + scW_px - cornerBadgeW - 6;
+                const cornerBadgeY = scY + 6;
+
+                ctxTop.fillStyle = 'rgba(0, 0, 0, 0.85)';
+                ctxTop.fillRect(cornerBadgeX, cornerBadgeY, cornerBadgeW, cornerBadgeH);
+                ctxTop.strokeStyle = '#22c55e';
+                ctxTop.lineWidth = 1;
+                ctxTop.strokeRect(cornerBadgeX, cornerBadgeY, cornerBadgeW, cornerBadgeH);
+
+                ctxTop.fillStyle = '#22c55e';
+                ctxTop.fillRect(cornerBadgeX + 3, cornerBadgeY + 3, 38, cornerBadgeH - 6);
+                ctxTop.fillStyle = '#052e16';
+                ctxTop.font = 'bold 10px Arial, sans-serif';
+                ctxTop.textAlign = 'center';
+                ctxTop.textBaseline = 'middle';
+                ctxTop.fillText('P3.9', cornerBadgeX + 22, cornerBadgeY + cornerBadgeH / 2);
+
+                ctxTop.fillStyle = '#ffffff';
+                ctxTop.font = 'bold 10px Arial, sans-serif';
+                ctxTop.fillText('50 × 50 cm', cornerBadgeX + 85, cornerBadgeY + cornerBadgeH / 2);
+            }
+
+            // 6. Big Screen Name in Center
+            const cleanName = (sc.name || `SCREEN ${idx + 1}`).toUpperCase();
+            ctxTop.save();
+            const nameFontSize = Math.max(16, Math.min(scW_px * 0.12, scH_px * 0.22, 42));
+            ctxTop.font = `900 ${nameFontSize}px Arial Black, Arial, sans-serif`;
+            ctxTop.textAlign = 'center';
+            ctxTop.textBaseline = 'middle';
+            ctxTop.shadowColor = 'rgba(0, 0, 0, 0.95)';
+            ctxTop.shadowBlur = 10;
+            ctxTop.shadowOffsetX = 2;
+            ctxTop.shadowOffsetY = 2;
+            ctxTop.fillStyle = '#ffffff';
+            ctxTop.fillText(cleanName, midX, midY - (scH_px > 100 ? 14 : 0));
+            ctxTop.restore();
+
+            // 7. Center Resolution Pill Badge (e.g. W 1920 x H 1024)
+            if (scH_px > 90) {
+                const resText = `W ${resW} x H ${resH}`;
+                const resFontSz = Math.max(11, Math.min(nameFontSize * 0.48, 18));
+                ctxTop.font = `bold ${resFontSz}px Arial, sans-serif`;
+                const resMetrics = ctxTop.measureText(resText);
+                const resPillW = resMetrics.width + 24;
+                const resPillH = resFontSz + 12;
+                const resPillX = midX - resPillW / 2;
+                const resPillY = midY + 12;
+
+                ctxTop.fillStyle = 'rgba(0, 0, 0, 0.88)';
+                ctxTop.fillRect(resPillX, resPillY, resPillW, resPillH);
+                ctxTop.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+                ctxTop.lineWidth = 1;
+                ctxTop.strokeRect(resPillX, resPillY, resPillW, resPillH);
+
+                ctxTop.fillStyle = '#f8fafc';
+                ctxTop.textAlign = 'center';
+                ctxTop.textBaseline = 'middle';
+                ctxTop.fillText(resText, midX, resPillY + resPillH / 2);
+            }
+
+            // 8. Info Strip Below Screen
+            const infoY = scY + scH_px + 10;
+            ctxTop.fillStyle = 'rgba(15, 23, 42, 0.9)';
+            ctxTop.fillRect(currentDrawX, infoY, scW_px, 26);
+            ctxTop.strokeStyle = palette.border;
+            ctxTop.lineWidth = 1;
+            ctxTop.strokeRect(currentDrawX, infoY, scW_px, 26);
+
+            ctxTop.fillStyle = '#f8fafc';
+            ctxTop.font = 'bold 11px Arial, sans-serif';
+            ctxTop.textAlign = 'center';
+            ctxTop.textBaseline = 'middle';
+            const infoText = `${sc.name}: ${sc.width}m × ${sc.height}m (${cols}×${rows} = ${totalPanels} Kabinet) • ${resW}×${resH} px`;
+            ctxTop.fillText(infoText, midX, infoY + 13);
+
+            currentDrawX += scW_px + gapPx;
+        });
+
+        // Bottom Technical Instruction Legend
+        ctxTop.fillStyle = '#94a3b8';
+        ctxTop.font = '11px Arial, sans-serif';
+        ctxTop.textAlign = 'center';
+        ctxTop.textBaseline = 'alphabetic';
+        ctxTop.fillText('ℹ️ Alur nomor kabinet: kiri-ke-kanan, atas-ke-bawah (standar NovaStar). Pastikan perkabelan data & catu daya mengikuti urutan nomor di atas.', topCanvas.width / 2, topCanvas.height - 14);
 
         // 2. FRONT ELEVATION BLUEPRINT (1200 x 600)
         const frontCanvas = document.createElement('canvas');

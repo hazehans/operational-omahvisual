@@ -94,10 +94,10 @@
                 @if($order->stage_layout_image)
                     <div class="rounded-xl overflow-hidden border border-slate-700 bg-slate-950 p-1.5 space-y-1">
                         <div class="text-[10px] font-bold text-cyan-400 px-1 flex items-center justify-between">
-                            <span>📐 Tampak Atas (Top Plan)</span>
-                            <span class="text-slate-500 font-normal">Denah Panggung 2D</span>
+                            <span>🔲 Pemetaan Panel LED (Panel Grid & VJ Mapping)</span>
+                            <span class="text-slate-500 font-normal">Nomor Urut Modul & Resolusi</span>
                         </div>
-                        <img src="{{ $order->stage_layout_image }}" alt="Layout Panggung Tampak Atas" class="w-full object-contain rounded-lg">
+                        <img src="{{ $order->stage_layout_image }}" alt="Pemetaan Panel & Kabinet LED" class="w-full object-contain rounded-lg">
                     </div>
                 @endif
 

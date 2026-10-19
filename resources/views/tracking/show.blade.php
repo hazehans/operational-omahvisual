@@ -468,7 +468,7 @@
                         @if($order->stage_layout_front_image)
                             <div class="p-3 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-2">
                                 <div class="text-[11px] font-bold text-slate-400 uppercase">Tampak Depan (Front View)</div>
-                                <img src="{{ asset('storage/' . $order->stage_layout_front_image) }}" 
+                                <img src="{{ str_starts_with($order->stage_layout_front_image, 'data:image') ? $order->stage_layout_front_image : asset('storage/' . $order->stage_layout_front_image) }}" 
                                      alt="Tampak Depan Layar" 
                                      class="w-full h-44 object-contain rounded-xl bg-slate-950 p-2 border border-slate-800">
                             </div>
@@ -476,9 +476,9 @@
 
                         @if($order->stage_layout_image)
                             <div class="p-3 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-2">
-                                <div class="text-[11px] font-bold text-slate-400 uppercase">Tampak Atas (Top View)</div>
-                                <img src="{{ asset('storage/' . $order->stage_layout_image) }}" 
-                                     alt="Tampak Atas Layar" 
+                                <div class="text-[11px] font-bold text-slate-400 uppercase">Pemetaan Panel &amp; Kabinet LED (Grid Modul &amp; Resolusi VJ)</div>
+                                <img src="{{ str_starts_with($order->stage_layout_image, 'data:image') ? $order->stage_layout_image : asset('storage/' . $order->stage_layout_image) }}" 
+                                     alt="Pemetaan Panel &amp; Kabinet LED" 
                                      class="w-full h-44 object-contain rounded-xl bg-slate-950 p-2 border border-slate-800">
                             </div>
                         @endif

@@ -43,8 +43,8 @@
                 <button type="button" id="btnView3D" class="px-2.5 py-1 rounded-lg font-semibold bg-indigo-600 text-white transition-all" title="Sudut Pandang 3D Perspektif Bebas">
                     🎥 3D Orbit
                 </button>
-                <button type="button" id="btnViewTop" class="px-2.5 py-1 rounded-lg font-semibold text-slate-300 hover:text-white transition-all" title="Denah Tampak Atas (Top-Down Floor Plan)">
-                    📐 2D Top Plan
+                <button type="button" id="btnViewMapping" class="px-2.5 py-1 rounded-lg font-semibold text-slate-300 hover:text-white transition-all" title="Diagram Pemetaan Panel & Modul LED (Resolume & VJ Mapping)">
+                    🔲 Mapping Panel
                 </button>
                 <button type="button" id="btnViewFront" class="px-2.5 py-1 rounded-lg font-semibold text-slate-300 hover:text-white transition-all" title="Tampak Depan Penonton (Front Elevation)">
                     🎭 2D Penonton
@@ -122,21 +122,6 @@
             @endif
         </div>
 
-        <!-- 🧭 3D Compass Rose HUD (Utara & Selatan) -->
-        <div class="absolute top-3 right-3 bg-slate-950/85 backdrop-blur-md px-3 py-2 rounded-xl border border-slate-800 text-[11px] flex items-center gap-2.5 pointer-events-none z-10 shadow-lg">
-            <div class="relative w-8 h-8 rounded-full border border-slate-700 bg-slate-900/90 flex items-center justify-center">
-                <div id="compassNeedle3D" class="absolute w-full h-full flex items-center justify-center transition-transform duration-75">
-                    <div class="w-1 h-3.5 bg-rose-500 rounded-t-sm absolute top-0.5"></div>
-                    <div class="w-1 h-3.5 bg-slate-400 rounded-b-sm absolute bottom-0.5"></div>
-                </div>
-                <span class="absolute top-0 text-[8px] font-bold text-rose-400">U</span>
-                <span class="absolute bottom-0 text-[8px] font-bold text-slate-400">S</span>
-            </div>
-            <div class="leading-tight">
-                <div class="font-bold text-slate-200">Arah Angin</div>
-                <div class="text-[9px] text-slate-400">U (Utara) • S (Selatan)</div>
-            </div>
-        </div>
 
         @if($isEditable)
             <!-- Selected Screen Inspector Floating Widget (Panel CRUD) -->
@@ -238,16 +223,16 @@
             <!-- Live 2D Blueprint Snapshot Previews (Tampak Atas with Compass & Tampak Depan for SPK Printout) -->
             <div class="space-y-1">
                 <div class="flex items-center justify-between text-[11px]">
-                    <span class="font-bold uppercase tracking-wider text-slate-400">Blueprint 2D SPK (Atas & Depan)</span>
+                    <span class="font-bold uppercase tracking-wider text-slate-400">Blueprint 2D SPK (Panel & Depan)</span>
                     <span class="text-[10px] text-emerald-400 font-semibold" id="blueprintStatus">✓ 2 Gambar Siap</span>
                 </div>
                 <div class="grid grid-cols-2 gap-2 h-16">
-                    <!-- Tampak Atas (Top Plan) with Compass -->
+                    <!-- Pemetaan Panel & Modul LED (Panel Grid & VJ Mapping) -->
                     <div class="bg-slate-900 rounded-lg border border-slate-800 p-1 flex flex-col items-center justify-center overflow-hidden relative">
-                        <span class="absolute top-1 left-1 text-[8px] bg-slate-950/85 px-1 rounded text-cyan-400 font-bold z-10 border border-slate-800">Tampak Atas (Kompas)</span>
-                        <img id="blueprintThumbnail" src="{{ $savedImage ?: '' }}" alt="Blueprint Tampak Atas" class="max-h-full object-contain rounded {{ $savedImage ? '' : 'hidden' }}">
+                        <span class="absolute top-1 left-1 text-[8px] bg-slate-950/85 px-1 rounded text-cyan-400 font-bold z-10 border border-slate-800">🔲 Mapping Panel</span>
+                        <img id="blueprintThumbnail" src="{{ $savedImage ?: '' }}" alt="Blueprint Pemetaan Panel LED" class="max-h-full object-contain rounded {{ $savedImage ? '' : 'hidden' }}">
                         <div id="blueprintPlaceholder" class="text-[9px] text-slate-500 text-center {{ $savedImage ? 'hidden' : '' }}">
-                            Denah Atas
+                            Mapping Panel
                         </div>
                     </div>
                     <!-- Tampak Depan (Front Elevation) without Compass -->
@@ -563,59 +548,172 @@
         dragPlane.position.y = Math.max(h, 0);
     }
 
-    // Helper to generate dynamic canvas texture with LED cabinet grid & screen label
-    function createScreenTexture(name, width, height) {
+    // Palettes matching reference image (Blue Central, Red Wing, Green Wing, Purple Mod-4, Amber, Cyan)
+    const SCREEN_PALETTES = [
+        { name: 'blue', even: '#1e3a8a', odd: '#2563eb', border: '#3b82f6', badge: '#38bdf8', text: '#ffffff' },
+        { name: 'red', even: '#991b1b', odd: '#dc2626', border: '#ef4444', badge: '#f87171', text: '#ffffff' },
+        { name: 'green', even: '#166534', odd: '#16a34a', border: '#22c55e', badge: '#4ade80', text: '#ffffff' },
+        { name: 'purple', even: '#6b21a8', odd: '#9333ea', border: '#a855f7', badge: '#c084fc', text: '#ffffff' },
+        { name: 'amber', even: '#9a3412', odd: '#ea580c', border: '#f97316', badge: '#fb923c', text: '#ffffff' },
+        { name: 'cyan', even: '#115e59', odd: '#0d9488', border: '#14b8a6', badge: '#2dd4bf', text: '#ffffff' }
+    ];
+
+    // Helper to generate dynamic canvas texture with LED numbered cabinet grid & mapping overlays
+    function createScreenTexture(name, width, height, idx = 0) {
         const canvas = document.createElement('canvas');
-        canvas.width = 512;
-        canvas.height = 256;
+        canvas.width = 1024;
+        canvas.height = 512;
         const ctx = canvas.getContext('2d');
 
-        // Dark LED glossy background
-        ctx.fillStyle = '#05070c';
-        ctx.fillRect(0, 0, 512, 256);
+        const palette = SCREEN_PALETTES[idx % SCREEN_PALETTES.length];
+        const cols = Math.max(1, Math.round(width / 0.5));
+        const rows = Math.max(1, Math.round(height / 0.5));
+        const cellW = canvas.width / cols;
+        const cellH = canvas.height / rows;
 
-        // LED Cabinet Grid lines (50cm / 1m cabinets)
-        ctx.strokeStyle = '#1e293b';
+        // P3.9 Resolution (128x128 px per 50x50cm cabinet)
+        const resW = cols * 128;
+        const resH = rows * 128;
+
+        // 1. Checkered numbered panels
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+                const pNum = r * cols + c + 1;
+                ctx.fillStyle = (c + r) % 2 === 0 ? palette.even : palette.odd;
+                ctx.fillRect(c * cellW, r * cellH, cellW, cellH);
+
+                // Subtle inner cabinet border
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(c * cellW, r * cellH, cellW, cellH);
+
+                // Sequential panel number (01, 02, ... 120)
+                const numStr = pNum < 10 ? '0' + pNum : '' + pNum;
+                const fontSize = Math.max(10, Math.min(cellW * 0.36, cellH * 0.42, 24));
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.72)';
+                ctx.font = `bold ${fontSize}px Arial, sans-serif`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(numStr, c * cellW + cellW / 2, r * cellH + cellH / 2);
+            }
+        }
+
+        // 2. Diagonal Dashed Guide Lines ('X' through center)
+        ctx.save();
+        ctx.setLineDash([8, 8]);
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
         ctx.lineWidth = 2;
-        const cols = Math.max(2, Math.round(width * 2));
-        const rows = Math.max(2, Math.round(height * 2));
+        ctx.beginPath();
+        ctx.moveTo(0, 0); ctx.lineTo(canvas.width, canvas.height);
+        ctx.moveTo(0, canvas.height); ctx.lineTo(canvas.width, 0);
+        ctx.stroke();
 
-        for (let i = 0; i <= cols; i++) {
-            const x = (i / cols) * 512;
-            ctx.beginPath();
-            ctx.moveTo(x, 0);
-            ctx.lineTo(x, 256);
-            ctx.stroke();
+        // 3. Center Crosshair (Horizontal & Vertical)
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
+        ctx.beginPath();
+        ctx.moveTo(0, canvas.height / 2); ctx.lineTo(canvas.width, canvas.height / 2);
+        ctx.moveTo(canvas.width / 2, 0); ctx.lineTo(canvas.width / 2, canvas.height);
+        ctx.stroke();
+
+        // Center reticle ring
+        ctx.beginPath();
+        ctx.arc(canvas.width / 2, canvas.height / 2, Math.min(48, cellH * 0.8), 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.restore();
+
+        // 4. Outer Boundary Dashed White Border
+        ctx.save();
+        ctx.setLineDash([8, 6]);
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 4;
+        ctx.strokeRect(3, 3, canvas.width - 6, canvas.height - 6);
+        ctx.restore();
+
+        // 5. Top-Right Corner Pitch & Module Spec Badge ([P3.9] 50 x 50 cm)
+        const badgeW = 160;
+        const badgeH = 30;
+        const badgeX = canvas.width - badgeW - 12;
+        const badgeY = 12;
+
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
+        ctx.beginPath();
+        if (ctx.roundRect) {
+            ctx.roundRect(badgeX, badgeY, badgeW, badgeH, 6);
+        } else {
+            ctx.rect(badgeX, badgeY, badgeW, badgeH);
         }
-        for (let j = 0; j <= rows; j++) {
-            const y = (j / rows) * 256;
-            ctx.beginPath();
-            ctx.moveTo(0, y);
-            ctx.lineTo(512, y);
-            ctx.stroke();
+        ctx.fill();
+        ctx.strokeStyle = '#22c55e';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        // Green pill inside for P3.9
+        ctx.fillStyle = '#22c55e';
+        ctx.beginPath();
+        if (ctx.roundRect) {
+            ctx.roundRect(badgeX + 4, badgeY + 4, 52, badgeH - 8, 4);
+        } else {
+            ctx.rect(badgeX + 4, badgeY + 4, 52, badgeH - 8);
         }
+        ctx.fill();
 
-        // Glowing border
-        ctx.strokeStyle = '#38bdf8';
-        ctx.lineWidth = 6;
-        ctx.strokeRect(4, 4, 504, 248);
-
-        // Center Content: Label & Dimension
-        ctx.fillStyle = 'rgba(15, 23, 42, 0.75)';
-        ctx.fillRect(40, 60, 432, 136);
+        ctx.fillStyle = '#052e16';
+        ctx.font = 'bold 12px Arial, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('P3.9', badgeX + 30, badgeY + badgeH / 2);
 
         ctx.fillStyle = '#ffffff';
-        ctx.font = 'bold 30px Arial';
+        ctx.font = 'bold 12px Arial, sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText(name, 256, 115);
+        ctx.fillText('50 × 50 cm', badgeX + 106, badgeY + badgeH / 2);
 
-        ctx.fillStyle = '#38bdf8';
-        ctx.font = 'bold 24px Arial';
-        ctx.fillText(`${width.toFixed(1)}m × ${height.toFixed(1)}m`, 256, 155);
+        // 6. Center Big Screen Name
+        const cleanName = (name || 'SCREEN').toUpperCase();
+        ctx.save();
+        ctx.font = '900 48px Arial Black, Arial, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
+        ctx.shadowBlur = 12;
+        ctx.shadowOffsetX = 2;
+        ctx.shadowOffsetY = 3;
+        ctx.fillStyle = '#ffffff';
+        ctx.fillText(cleanName, canvas.width / 2, canvas.height / 2 - 18);
+        ctx.restore();
 
-        ctx.fillStyle = '#94a3b8';
-        ctx.font = '14px Arial';
-        ctx.fillText('OMAHVISUAL LED', 256, 180);
+        // 7. Center Resolution Pill Badge (e.g. W 1920 x H 1024)
+        const resText = `W ${resW} x H ${resH}`;
+        ctx.font = 'bold 20px Arial, sans-serif';
+        const resMetrics = ctx.measureText(resText);
+        const resPillW = resMetrics.width + 36;
+        const resPillH = 34;
+        const resPillX = canvas.width / 2 - resPillW / 2;
+        const resPillY = canvas.height / 2 + 16;
+
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
+        ctx.beginPath();
+        if (ctx.roundRect) {
+            ctx.roundRect(resPillX, resPillY, resPillW, resPillH, 17);
+        } else {
+            ctx.rect(resPillX, resPillY, resPillW, resPillH);
+        }
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        ctx.fillStyle = '#f8fafc';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(resText, canvas.width / 2, resPillY + resPillH / 2);
+
+        // 8. Watermark at Bottom
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
+        ctx.font = 'bold 11px Arial, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'alphabetic';
+        ctx.fillText('OMAH VISUAL • LED DISPLAY MAPPING', canvas.width / 2, canvas.height - 10);
 
         return new THREE.CanvasTexture(canvas);
     }
@@ -640,7 +738,7 @@
             // Materials for 6 faces: Right, Left, Top, Bottom, Front, Back
             const sideMat = new THREE.MeshStandardMaterial({ color: 0x111827, roughness: 0.6, metalness: 0.5 });
             const backMat = new THREE.MeshStandardMaterial({ color: 0x1f2937, roughness: 0.8 });
-            const frontTex = createScreenTexture(sc.name, sc.width, sc.height);
+            const frontTex = createScreenTexture(sc.name, sc.width, sc.height, idx);
             const frontMat = new THREE.MeshStandardMaterial({
                 map: frontTex,
                 roughness: 0.3,
@@ -1060,21 +1158,22 @@
 
     // Camera Views
     function setCameraView(view) {
-        document.querySelectorAll('#btnView3D, #btnViewTop, #btnViewFront').forEach(b => {
-            b.classList.remove('bg-indigo-600', 'text-white');
-            b.classList.add('text-slate-300');
+        document.querySelectorAll('#btnView3D, #btnViewMapping, #btnViewFront').forEach(b => {
+            b?.classList.remove('bg-indigo-600', 'text-white');
+            b?.classList.add('text-slate-300');
         });
 
         if (view === '3d') {
-            document.getElementById('btnView3D').classList.add('bg-indigo-600', 'text-white');
+            document.getElementById('btnView3D')?.classList.add('bg-indigo-600', 'text-white');
             camera.position.set(0, 7, 12);
             controls.target.set(0, 1.2, 0);
-        } else if (view === 'top') {
-            document.getElementById('btnViewTop').classList.add('bg-indigo-600', 'text-white');
-            camera.position.set(0, 16, 0.001); // Looking straight down
-            controls.target.set(0, 0, 0);
+        } else if (view === 'mapping') {
+            document.getElementById('btnViewMapping')?.classList.add('bg-indigo-600', 'text-white');
+            const targetY = stageConfig.height + 1.5;
+            camera.position.set(0, targetY, stageConfig.depth / 2 + 7.5);
+            controls.target.set(0, targetY, 0);
         } else if (view === 'front') {
-            document.getElementById('btnViewFront').classList.add('bg-indigo-600', 'text-white');
+            document.getElementById('btnViewFront')?.classList.add('bg-indigo-600', 'text-white');
             camera.position.set(0, stageConfig.height + 1.5, stageConfig.depth / 2 + 8);
             controls.target.set(0, stageConfig.height + 1.5, 0);
         }
@@ -1083,317 +1182,251 @@
 
     // =========================================================================
     // 2D BLUEPRINT GENERATORS (CRITICAL FOR SPK PRINT & RIGGING CREW)
-    // Generates both Tampak Atas (Top Plan) and Tampak Depan (Front Elevation)
+    // Generates both Pemetaan Panel LED (Mapping Blueprint) and Tampak Depan (Front Elevation)
     // =========================================================================
 
-    // 1. TAMPAK ATAS (TOP-DOWN 2D FLOOR PLAN)
-    function generate2DTopBlueprint() {
+    // 1. PEMETAAN PANEL & KABINET LED (LED MAPPING BLUEPRINT - RESOLUME / NOVASTAR STYLE)
+    function generate2DPanelMappingBlueprint() {
         const bpCanvas = document.createElement('canvas');
         bpCanvas.width = 1200;
         bpCanvas.height = 600;
         const ctx = bpCanvas.getContext('2d');
 
-        // Dark Technical Blueprint Background
-        ctx.fillStyle = '#0a0f1d';
+        // Dark Blueprint Background with subtle grid lines
+        ctx.fillStyle = '#070b14';
         ctx.fillRect(0, 0, bpCanvas.width, bpCanvas.height);
 
-        // Calculate dynamic bounds of stage and all screens
-        let minX = -stageConfig.width / 2;
-        let maxX = stageConfig.width / 2;
-        let minZ = -stageConfig.depth / 2;
-        let maxZ = stageConfig.depth / 2;
-
-        currentScreens.forEach(sc => {
-            const rotRad = (sc.rotY || 0) * (Math.PI / 180);
-            const halfW = (sc.width / 2);
-            const pX1 = sc.x - halfW * Math.cos(rotRad);
-            const pX2 = sc.x + halfW * Math.cos(rotRad);
-            const pZ1 = sc.z - halfW * Math.sin(rotRad);
-            const pZ2 = sc.z + halfW * Math.sin(rotRad);
-            minX = Math.min(minX, pX1, pX2);
-            maxX = Math.max(maxX, pX1, pX2);
-            minZ = Math.min(minZ, pZ1, pZ2);
-            maxZ = Math.max(maxZ, pZ1, pZ2);
-        });
-
-        const totalW = Math.max(stageConfig.width, maxX - minX);
-        const totalD = Math.max(stageConfig.depth, maxZ - minZ);
-        const contentW = totalW + 0.8;
-        const contentD = totalD + 1.2;
-
-        // Tight margins so the diagram fills ~88% of canvas area
-        const marginX = 40;
-        const marginY = 35;
-        const scale = Math.min((bpCanvas.width - marginX * 2) / contentW, (bpCanvas.height - marginY * 2) / contentD);
-        const centerX = bpCanvas.width / 2;
-        const centerY = bpCanvas.height / 2 + 10;
-
-        // Draw Stage Platform Background first
-        const stageW_px = stageConfig.width * scale;
-        const stageD_px = stageConfig.depth * scale;
-        const stageX = centerX - stageW_px / 2;
-        const stageY = centerY - stageD_px / 2;
-
-        ctx.fillStyle = '#1e293b';
-        ctx.fillRect(stageX, stageY, stageW_px, stageD_px);
-
-        // Technical Grid (1 Meter Intervals) Covering FULL CANVAS with no empty voids
-        ctx.strokeStyle = '#1e293b';
+        ctx.strokeStyle = '#0f172a';
         ctx.lineWidth = 1;
-        for (let x = centerX; x <= bpCanvas.width; x += scale) {
+        for (let x = 0; x <= bpCanvas.width; x += 40) {
             ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, bpCanvas.height); ctx.stroke();
         }
-        for (let x = centerX - scale; x >= 0; x -= scale) {
-            ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, bpCanvas.height); ctx.stroke();
-        }
-        for (let y = centerY; y <= bpCanvas.height; y += scale) {
-            ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(bpCanvas.width, y); ctx.stroke();
-        }
-        for (let y = centerY - scale; y >= 0; y -= scale) {
+        for (let y = 0; y <= bpCanvas.height; y += 40) {
             ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(bpCanvas.width, y); ctx.stroke();
         }
 
-        // Inside Stage: Brighter Grid Lines so grid is prominently visible on the stage floor
-        ctx.strokeStyle = '#334155';
-        ctx.lineWidth = 1.5;
-        for (let x = centerX; x <= stageX + stageW_px; x += scale) {
-            ctx.beginPath(); ctx.moveTo(x, stageY); ctx.lineTo(x, stageY + stageD_px); ctx.stroke();
-        }
-        for (let x = centerX - scale; x >= stageX; x -= scale) {
-            ctx.beginPath(); ctx.moveTo(x, stageY); ctx.lineTo(x, stageY + stageD_px); ctx.stroke();
-        }
-        for (let y = centerY; y <= stageY + stageD_px; y += scale) {
-            ctx.beginPath(); ctx.moveTo(stageX, y); ctx.lineTo(stageX + stageW_px, y); ctx.stroke();
-        }
-        for (let y = centerY - scale; y >= stageY; y -= scale) {
-            ctx.beginPath(); ctx.moveTo(stageX, y); ctx.lineTo(stageX + stageW_px, y); ctx.stroke();
-        }
+        // Calculate Totals across all screens
+        const totalCabinetsAll = currentScreens.reduce((acc, sc) => {
+            const cols = Math.max(1, Math.round(sc.width / 0.5));
+            const rows = Math.max(1, Math.round(sc.height / 0.5));
+            return acc + (cols * rows);
+        }, 0);
+        const totalSqmAll = currentScreens.reduce((acc, sc) => acc + (sc.width * sc.height), 0);
 
-        // Stage Platform Outline
-        ctx.strokeStyle = '#64748b';
-        ctx.lineWidth = 3;
-        ctx.strokeRect(stageX, stageY, stageW_px, stageD_px);
-
-        // Center line (dashed cyan)
-        ctx.strokeStyle = '#38bdf8';
-        ctx.lineWidth = 2;
-        ctx.setLineDash([6, 6]);
-        ctx.beginPath();
-        ctx.moveTo(centerX, stageY);
-        ctx.lineTo(centerX, stageY + stageD_px);
-        ctx.stroke();
-        ctx.setLineDash([]);
-
-        // Front Edge (Bibir Panggung) - Audience Line (Thick Amber Yellow)
-        ctx.strokeStyle = '#facc15';
-        ctx.lineWidth = 7;
-        ctx.beginPath();
-        ctx.moveTo(stageX, stageY + stageD_px);
-        ctx.lineTo(stageX + stageW_px, stageY + stageD_px);
-        ctx.stroke();
-
-        ctx.fillStyle = '#facc15';
-        ctx.font = 'bold 15px Arial';
-        ctx.textAlign = 'center';
-        ctx.fillText('▼ BIBIR PANGGUNG (MENGHADAP PENONTON / AUDIENCE) ▼', centerX, stageY + stageD_px + 26);
-
-        // Stage Dimensions Labels (Larger & Bolder) with dimension line bar
-        const dimY = stageY - 18;
-        ctx.strokeStyle = '#64748b';
-        ctx.lineWidth = 1.5;
-        ctx.beginPath();
-        ctx.moveTo(stageX, dimY);
-        ctx.lineTo(stageX + stageW_px, dimY);
-        ctx.stroke();
-
-        ctx.beginPath();
-        ctx.moveTo(stageX, dimY - 6); ctx.lineTo(stageX, dimY + 6);
-        ctx.moveTo(stageX + stageW_px, dimY - 6); ctx.lineTo(stageX + stageW_px, dimY + 6);
-        ctx.stroke();
-
-        const widthText = `LEBAR PANGGUNG: ${stageConfig.width} METER`;
-        ctx.font = 'bold 15px Arial';
-        const wMetrics = ctx.measureText(widthText);
-        const wBadgeW = wMetrics.width + 24;
-        ctx.fillStyle = '#0a0f1d';
-        ctx.fillRect(centerX - wBadgeW / 2, dimY - 12, wBadgeW, 24);
-        ctx.strokeStyle = '#475569';
-        ctx.lineWidth = 1;
-        ctx.strokeRect(centerX - wBadgeW / 2, dimY - 12, wBadgeW, 24);
-
-        ctx.fillStyle = '#f8fafc';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(widthText, centerX, dimY);
-        ctx.textBaseline = 'alphabetic';
-        
-        ctx.save();
-        ctx.translate(stageX - 18, centerY);
-        ctx.rotate(-Math.PI / 2);
-        ctx.font = 'bold 15px Arial';
-        ctx.fillStyle = '#f8fafc';
-        ctx.textAlign = 'center';
-        ctx.fillText(`KEDALAMAN: ${stageConfig.depth} METER`, 0, 0);
-        ctx.restore();
-
-        // Draw Each LED Screen on the 2D Stage
-        currentScreens.forEach((sc, idx) => {
-            const scW_px = sc.width * scale;
-            const scD_px = 24; // Thicker screen bar
-            const scX = centerX + (sc.x * scale);
-            const scY = centerY + (sc.z * scale);
-            const rotRad = (sc.rotY || 0) * (Math.PI / 180);
-
-            ctx.save();
-            ctx.translate(scX, scY);
-            ctx.rotate(rotRad);
-
-            // Screen box
-            ctx.fillStyle = idx === 0 ? '#1d4ed8' : '#0284c7';
-            ctx.fillRect(-scW_px / 2, -scD_px / 2, scW_px, scD_px);
-            ctx.strokeStyle = '#38bdf8';
-            ctx.lineWidth = 3;
-            ctx.strokeRect(-scW_px / 2, -scD_px / 2, scW_px, scD_px);
-
-            // Inside screen bar: dimensions in yellow
-            if (scW_px > 90) {
-                ctx.fillStyle = '#fef08a';
-                ctx.font = 'bold 13px Arial';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillText(`${sc.width}m × ${sc.height}m`, 0, 0);
-                ctx.textBaseline = 'alphabetic';
-            }
-
-            // High-contrast Pill Badge for Screen Name
-            // If screen is placed at rear half of stage (sc.z <= 0, e.g. backdrop at z = -2.8),
-            // position badge IN FRONT of the screen (badgeY = scD_px / 2 + 20) on open stage floor
-            // so it NEVER overlaps with stage back boundary or LEBAR PANGGUNG text!
-            const isRear = (sc.z || 0) <= 0;
-            const badgeY = isRear ? (scD_px / 2 + 20) : (-scD_px / 2 - 20);
-
-            const labelText = `${sc.name} (${sc.width}m × ${sc.height}m)`;
-            ctx.font = 'bold 15px Arial';
-            const metrics = ctx.measureText(labelText);
-            const badgeW = metrics.width + 24;
-            const badgeH = 26;
-
-            ctx.fillStyle = 'rgba(15, 23, 42, 0.95)';
-            ctx.fillRect(-badgeW / 2, badgeY - badgeH / 2, badgeW, badgeH);
-            ctx.strokeStyle = idx === 0 ? '#38bdf8' : '#34d399';
-            ctx.lineWidth = 1.5;
-            ctx.strokeRect(-badgeW / 2, badgeY - badgeH / 2, badgeW, badgeH);
-
-            ctx.fillStyle = '#ffffff';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText(labelText, 0, badgeY);
-            ctx.textBaseline = 'alphabetic';
-
-            if (sc.rotY && sc.rotY !== 0) {
-                const angleY = isRear ? (-scD_px / 2 - 14) : (scD_px / 2 + 14);
-                ctx.fillStyle = '#f59e0b';
-                ctx.font = 'bold 13px Arial';
-                ctx.textAlign = 'center';
-                ctx.fillText(`Sudut: ${sc.rotY}°`, 0, angleY);
-            }
-
-            ctx.restore();
-        });
-
-        // Blueprint Header / Title Block
-        ctx.fillStyle = 'rgba(15, 23, 42, 0.95)';
-        ctx.fillRect(20, 20, 480, 70);
+        // Header Block
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.96)';
+        ctx.fillRect(20, 16, bpCanvas.width - 40, 70);
         ctx.strokeStyle = '#38bdf8';
         ctx.lineWidth = 1.5;
-        ctx.strokeRect(20, 20, 480, 70);
+        ctx.strokeRect(20, 16, bpCanvas.width - 40, 70);
 
         ctx.fillStyle = '#38bdf8';
-        ctx.font = 'bold 16px Arial';
+        ctx.font = 'bold 16px Arial, sans-serif';
         ctx.textAlign = 'left';
-        ctx.fillText('OMAH VISUAL - BLUEPRINT TAMPAK ATAS (FLOOR PLAN)', 32, 44);
+        ctx.fillText('OMAH VISUAL — DIAGRAM PEMETAAN PANEL & KABINET LED (MAPPING BLUEPRINT)', 36, 40);
+
         ctx.fillStyle = '#e2e8f0';
-        ctx.font = '13px Arial';
-        ctx.fillText(`Format: Denah Panggung 2D • Total Layar: ${currentScreens.length} Unit`, 32, 63);
+        ctx.font = '13px Arial, sans-serif';
+        ctx.fillText(`Total Formasi: ${currentScreens.length} Layar • ${totalCabinetsAll} Kabinet (${totalSqmAll.toFixed(1)} m²) • Standar Modul: 50 × 50 cm`, 36, 59);
+
         ctx.fillStyle = '#94a3b8';
-        ctx.font = '12px Arial';
-        ctx.fillText(`Skala Grid: 1 Kotak = 1 Meter Persegi (${scale.toFixed(1)} px/m)`, 32, 80);
+        ctx.font = '12px Arial, sans-serif';
+        ctx.fillText('Pitch P3.9 (128×128 px/kabinet) • Format Sinyal & VJ Mapping: Resolume Arena / NovaStar NovaLCT', 36, 76);
 
-        // 🧭 Compass Rose (Arah Angin: Utara / U & Selatan / S) - ONLY on Tampak Atas
-        const compX = bpCanvas.width - 65;
-        const compY = 65;
-        const compR = 32;
-
-        ctx.save();
-        ctx.translate(compX, compY);
-
-        // Circular dark background disk
-        ctx.beginPath();
-        ctx.arc(0, 0, compR + 10, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(15, 23, 42, 0.95)';
-        ctx.fill();
+        // Header Right Badge
+        const tagText = 'PANDUAN TEKNISI & VJ KONTEN';
+        ctx.font = 'bold 11px Arial, sans-serif';
+        const tagW = ctx.measureText(tagText).width + 24;
+        const tagX = bpCanvas.width - tagW - 36;
+        ctx.fillStyle = 'rgba(56, 189, 248, 0.15)';
+        ctx.fillRect(tagX, 36, tagW, 28);
         ctx.strokeStyle = '#38bdf8';
-        ctx.lineWidth = 1.5;
-        ctx.stroke();
-
-        // Outer ring
-        ctx.beginPath();
-        ctx.arc(0, 0, compR, 0, Math.PI * 2);
-        ctx.strokeStyle = '#475569';
         ctx.lineWidth = 1;
-        ctx.stroke();
-
-        // North needle (Utara - Red)
-        ctx.beginPath();
-        ctx.moveTo(0, -compR + 4);
-        ctx.lineTo(6, -2);
-        ctx.lineTo(0, 3);
-        ctx.fillStyle = '#ef4444';
-        ctx.fill();
-
-        ctx.beginPath();
-        ctx.moveTo(0, -compR + 4);
-        ctx.lineTo(-6, -2);
-        ctx.lineTo(0, 3);
-        ctx.fillStyle = '#b91c1c';
-        ctx.fill();
-
-        // South needle (Selatan - Slate/White)
-        ctx.beginPath();
-        ctx.moveTo(0, compR - 4);
-        ctx.lineTo(6, 2);
-        ctx.lineTo(0, -3);
-        ctx.fillStyle = '#e2e8f0';
-        ctx.fill();
-
-        ctx.beginPath();
-        ctx.moveTo(0, compR - 4);
-        ctx.lineTo(-6, 2);
-        ctx.lineTo(0, -3);
-        ctx.fillStyle = '#94a3b8';
-        ctx.fill();
-
-        // Center hub
-        ctx.beginPath();
-        ctx.arc(0, 0, 3.5, 0, Math.PI * 2);
-        ctx.fillStyle = '#ffffff';
-        ctx.fill();
-
-        // Labels U & S
-        ctx.font = 'bold 12px Arial';
+        ctx.strokeRect(tagX, 36, tagW, 28);
+        ctx.fillStyle = '#38bdf8';
         ctx.textAlign = 'center';
-        ctx.fillStyle = '#ef4444';
-        ctx.fillText('U', 0, -compR - 2);
+        ctx.fillText(tagText, tagX + tagW / 2, 54);
 
-        ctx.fillStyle = '#cbd5e1';
-        ctx.fillText('S', 0, compR + 12);
+        // Sort screens from left to right according to X position
+        const sortedScreens = [...currentScreens].sort((a, b) => (a.x || 0) - (b.x || 0));
 
-        ctx.font = 'bold 9px Arial';
-        ctx.fillStyle = '#64748b';
-        ctx.fillText('B', -compR - 4, 3);
-        ctx.fillText('T', compR + 4, 3);
+        // Layout calculation to fit screens within canvas
+        const gapMeters = 0.4;
+        const totalMetersW = sortedScreens.reduce((sum, sc) => sum + sc.width, 0) + (sortedScreens.length - 1) * gapMeters;
+        const maxMeterH = sortedScreens.reduce((max, sc) => Math.max(max, sc.height), 1);
 
-        ctx.restore();
+        const marginX = 40;
+        const availW = bpCanvas.width - marginX * 2;
+        const availH = 430;
+        const scale = Math.min(availW / Math.max(totalMetersW, 5), availH / (maxMeterH + 0.8));
+
+        const gapPx = 20;
+        const totalScreensPxW = sortedScreens.reduce((sum, sc) => sum + (sc.width * scale), 0) + (sortedScreens.length - 1) * gapPx;
+        let currentDrawX = marginX + Math.max(0, (availW - totalScreensPxW) / 2);
+        const topAreaY = 102;
+
+        sortedScreens.forEach((sc, idx) => {
+            const scW_px = sc.width * scale;
+            const scH_px = sc.height * scale;
+            const scY = topAreaY + (availH - 55 - scH_px) / 2;
+
+            const palette = SCREEN_PALETTES[idx % SCREEN_PALETTES.length];
+            const cols = Math.max(1, Math.round(sc.width / 0.5));
+            const rows = Math.max(1, Math.round(sc.height / 0.5));
+            const totalPanels = cols * rows;
+
+            const cellW = scW_px / cols;
+            const cellH = scH_px / rows;
+
+            const resW = cols * 128;
+            const resH = rows * 128;
+
+            // 1. Checkered numbered panels
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    const pNum = r * cols + c + 1;
+                    const cellX = currentDrawX + c * cellW;
+                    const cellY = scY + r * cellH;
+
+                    ctx.fillStyle = (c + r) % 2 === 0 ? palette.even : palette.odd;
+                    ctx.fillRect(cellX, cellY, cellW, cellH);
+
+                    // Subtle inner cabinet border
+                    ctx.strokeStyle = 'rgba(255, 255, 255, 0.22)';
+                    ctx.lineWidth = 1;
+                    ctx.strokeRect(cellX, cellY, cellW, cellH);
+
+                    // Sequential panel number (01, 02, ... 120)
+                    const numStr = pNum < 10 ? '0' + pNum : '' + pNum;
+                    const fontSize = Math.max(9, Math.min(cellW * 0.38, cellH * 0.42, 22));
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.78)';
+                    ctx.font = `bold ${fontSize}px Arial, sans-serif`;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(numStr, cellX + cellW / 2, cellY + cellH / 2);
+                }
+            }
+
+            // 2. Diagonal Dashed Guide Lines ('X' through screen)
+            ctx.save();
+            ctx.setLineDash([7, 7]);
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(currentDrawX, scY); ctx.lineTo(currentDrawX + scW_px, scY + scH_px);
+            ctx.moveTo(currentDrawX, scY + scH_px); ctx.lineTo(currentDrawX + scW_px, scY);
+            ctx.stroke();
+
+            // 3. Center Crosshair (Horizontal & Vertical)
+            const midX = currentDrawX + scW_px / 2;
+            const midY = scY + scH_px / 2;
+            ctx.beginPath();
+            ctx.moveTo(currentDrawX, midY); ctx.lineTo(currentDrawX + scW_px, midY);
+            ctx.moveTo(midX, scY); ctx.lineTo(midX, scY + scH_px);
+            ctx.stroke();
+
+            // Center reticle ring
+            ctx.beginPath();
+            ctx.arc(midX, midY, Math.min(36, cellH * 0.75), 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.restore();
+
+            // 4. Outer Boundary Dashed White Border
+            ctx.save();
+            ctx.setLineDash([8, 6]);
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 3.5;
+            ctx.strokeRect(currentDrawX, scY, scW_px, scH_px);
+            ctx.restore();
+
+            // 5. Top-Right Corner Pitch Badge ([P3.9] 50 x 50 cm)
+            if (scW_px >= 120) {
+                const cornerBadgeW = Math.min(135, scW_px * 0.45);
+                const cornerBadgeH = 24;
+                const cornerBadgeX = currentDrawX + scW_px - cornerBadgeW - 6;
+                const cornerBadgeY = scY + 6;
+
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
+                ctx.fillRect(cornerBadgeX, cornerBadgeY, cornerBadgeW, cornerBadgeH);
+                ctx.strokeStyle = '#22c55e';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(cornerBadgeX, cornerBadgeY, cornerBadgeW, cornerBadgeH);
+
+                ctx.fillStyle = '#22c55e';
+                ctx.fillRect(cornerBadgeX + 3, cornerBadgeY + 3, 38, cornerBadgeH - 6);
+                ctx.fillStyle = '#052e16';
+                ctx.font = 'bold 10px Arial, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('P3.9', cornerBadgeX + 22, cornerBadgeY + cornerBadgeH / 2);
+
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 10px Arial, sans-serif';
+                ctx.fillText('50 × 50 cm', cornerBadgeX + 85, cornerBadgeY + cornerBadgeH / 2);
+            }
+
+            // 6. Big Screen Name in Center
+            const cleanName = (sc.name || `SCREEN ${idx + 1}`).toUpperCase();
+            ctx.save();
+            const nameFontSize = Math.max(16, Math.min(scW_px * 0.12, scH_px * 0.22, 42));
+            ctx.font = `900 ${nameFontSize}px Arial Black, Arial, sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.95)';
+            ctx.shadowBlur = 10;
+            ctx.shadowOffsetX = 2;
+            ctx.shadowOffsetY = 2;
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText(cleanName, midX, midY - (scH_px > 100 ? 14 : 0));
+            ctx.restore();
+
+            // 7. Center Resolution Pill Badge (e.g. W 1920 x H 1024)
+            if (scH_px > 90) {
+                const resText = `W ${resW} x H ${resH}`;
+                const resFontSz = Math.max(11, Math.min(nameFontSize * 0.48, 18));
+                ctx.font = `bold ${resFontSz}px Arial, sans-serif`;
+                const resMetrics = ctx.measureText(resText);
+                const resPillW = resMetrics.width + 24;
+                const resPillH = resFontSz + 12;
+                const resPillX = midX - resPillW / 2;
+                const resPillY = midY + 12;
+
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.88)';
+                ctx.fillRect(resPillX, resPillY, resPillW, resPillH);
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(resPillX, resPillY, resPillW, resPillH);
+
+                ctx.fillStyle = '#f8fafc';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(resText, midX, resPillY + resPillH / 2);
+            }
+
+            // 8. Info Strip Below Screen
+            const infoY = scY + scH_px + 10;
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+            ctx.fillRect(currentDrawX, infoY, scW_px, 26);
+            ctx.strokeStyle = palette.border;
+            ctx.lineWidth = 1;
+            ctx.strokeRect(currentDrawX, infoY, scW_px, 26);
+
+            ctx.fillStyle = '#f8fafc';
+            ctx.font = 'bold 11px Arial, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            const infoText = `${sc.name}: ${sc.width}m × ${sc.height}m (${cols}×${rows} = ${totalPanels} Kabinet) • ${resW}×${resH} px`;
+            ctx.fillText(infoText, midX, infoY + 13);
+
+            currentDrawX += scW_px + gapPx;
+        });
+
+        // Bottom Technical Instruction Legend
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '11px Arial, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'alphabetic';
+        ctx.fillText('ℹ️ Alur nomor kabinet: kiri-ke-kanan, atas-ke-bawah (standar NovaStar). Pastikan perkabelan data & catu daya mengikuti urutan nomor di atas.', bpCanvas.width / 2, bpCanvas.height - 14);
 
         // Convert to Base64 PNG Data URL
         const dataUrl = bpCanvas.toDataURL('image/png');
@@ -1683,7 +1716,7 @@
 
     // Master function to generate both blueprints
     function generate2DBlueprint() {
-        const topUrl = generate2DTopBlueprint();
+        const topUrl = generate2DPanelMappingBlueprint();
         const frontUrl = generate2DFrontBlueprint();
 
         // Update screens JSON in hidden input
@@ -1699,7 +1732,7 @@
     // Attach UI Event Listeners
     function setupControlsUI() {
         document.getElementById('btnView3D')?.addEventListener('click', () => setCameraView('3d'));
-        document.getElementById('btnViewTop')?.addEventListener('click', () => setCameraView('top'));
+        document.getElementById('btnViewMapping')?.addEventListener('click', () => setCameraView('mapping'));
         document.getElementById('btnViewFront')?.addEventListener('click', () => setCameraView('front'));
 
         document.getElementById('btnPresetCenter')?.addEventListener('click', () => applyPreset('center'));
@@ -1960,11 +1993,6 @@
         requestAnimationFrame(animate);
         if (controls) {
             controls.update();
-            const needle = document.getElementById('compassNeedle3D');
-            if (needle) {
-                const angle = controls.getAzimuthalAngle();
-                needle.style.transform = `rotate(${-angle * (180 / Math.PI)}deg)`;
-            }
         }
         if (renderer && scene && camera) {
             renderer.render(scene, camera);

@@ -348,11 +348,39 @@ Berdasarkan analisis 2 file Excel (`DATA TOOLS BOX .2` dan `DEV_STOCK OPNAME by 
   - Total pengujian meningkat menjadi **115 Tests, 741 Assertions, 100% Lulus (Green)**.
   - Diformat rapi sesuai standar Laravel Pint.
 
+### Tahap 13: Revisi Visual — Diagram Pemetaan Panel & Modul LED (Resolume & NovaStar Mapping Grid) (SELESAI ✅)
+- [x] **Penggantian Tampak Atas & Kompas dengan Pemetaan Panel LED Kotak-Kotak:**
+  - Sesuai arahan dan referensi visual terkini (Resolume Arena / NovaStar test pattern), tampilan denah tampak atas dan jarum kompas arah angin resmi digantikan oleh **Diagram Pemetaan Panel & Kabinet LED**.
+  - Diterapkan secara seragam di:
+    - **SPK Cetak Halaman 4 (`spk/print.blade.php`)**: Judul Diagram 1 resmi menjadi `🔲 1. PEMETAAN PANEL & KABINET LED — NOMOR KABINET & RESOLUSI KONTEN` lengkap dengan panduan susunan modul teknisi dan pemetaan resolusi VJ konten.
+    - **Live View Kru Lapangan (`spk/crew-live.blade.php`)**: Kartu cetak biru menampilkan `🔲 Pemetaan Panel LED (Panel Grid & VJ Mapping)` dengan nomor urut modul dan resolusi.
+    - **Portal Tracking Customer (`tracking/show.blade.php`)**: Pratinjau layout layar menampilkan diagram modul beresolusi tajam.
+- [x] **Tekstur Layar Virtual 3D Realistis (Three.js Screen Texture):**
+  - Meshes layar pada canvas 3D kini diproyeksikan dengan tekstur panel LED beresolusi tinggi (1024×512 px) yang dinamis:
+    - Pola papan catur (*checkered alternating tint*) membedakan tiap kabinet modul 50×50 cm.
+    - Penomoran sekuensial modul (`01`, `02`, ..., `120`) dari kiri-ke-kanan, atas-ke-bawah (standar alur perkabelan sinyal NovaStar).
+    - Garis panduan diagonal putus-putus (*dashed line*) membentuk tanda 'X' di tengah layar serta garis bidik *crosshair* dan *reticle ring*.
+    - Tipografi nama layar berukuran besar (*bold drop-shadow*) di tengah layar (misal `CENTRAL`, `MOD-2`, `WING KIRI`).
+    - *Pill badge* resolusi piksel native di bawah nama layar (misal `W 1920 x H 1024 px`).
+    - *Corner tag badge* spesifikasi di sudut kanan atas: `[P3.9] 50 × 50 cm`.
+    - Palet warna kontras bertema per layar (Layar Utama = Royal Blue `#1d4ed8`, Sayap Kiri = Crimson Red `#dc2626`, Sayap Kanan = Emerald Green `#16a34a`, Header = Purple `#9333ea`, dan Amber `#ea580c`).
+- [x] **Generator Blueprint 2D HD Pemetaan Panel (`generate2DPanelMappingBlueprint`):**
+  - Mengenerasi canvas 1200×600 px ultra-tajam dengan penataan multi-layar proporsional berdampingan secara otomatis.
+  - Setiap layar dilengkapi strip informasi: `Nama Layar • Dimensi m • Jumlah Kabinet • Resolusi Native px`.
+  - Blok kop teknis Omah Visual dengan catatan alur kabel NovaStar dan instruksi rigging lapangan.
+- [x] **Penyempurnaan Navigasi Toolbar Canvas 3D:**
+  - Tombol sudut pandang diubah dari `2D Top Plan` menjadi `🔲 Mapping Panel`, mengarahkan kamera 3D tegak lurus langsung ke bidang layar LED.
+  - Elemen HUD jarum kompas arah angin di sudut kanan atas canvas 3D telah dibersihkan.
+- [x] **Suite Pengujian Otomatis Komprehensif:**
+  - Seluruh assertion SPK print dan crew live view diperbarui di `tests/Feature/EventOrderAndSpkManagementTest.php`.
+  - Total pengujian stabil di **115 Tests, 741 Assertions, 100% Lulus (Green)**.
+  - Diformat rapi sesuai standar Laravel Pint.
+
 ---
 
 ## 🔮 8. Roadmap & Rencana Sesi Berikutnya
+- [ ] **Dropdown Kode Negara Input Nomor Telepon Kru:** Input nomor telepon kru lapangan dengan pilihan kode negara internasional (+62 Indonesia default, +60 Malaysia, +65 Singapura, dsb).
 - [ ] **Dashboard Analitik Manajer & Laba-Rugi Operasional:** Statistik omset vs realisasi biaya kru & logistik armada, grafik utilisasi TRAGA, dan ranking jam terbang kru.
-- [x] **Portal Pelacakan Mandiri untuk Customer (`/track/{order_token}`):** Halaman live tracking progres pesanan & persiapan layar LED untuk EO tanpa login.
 - [ ] **Fitur Ekspor Laporan Bulanan (Excel/PDF):** Rekapitulasi penggajian kru bulanan dan pengeluaran operasional event.
 - [ ] **Integrasi Barcode / QR Code Fisik Scanner:** Penerapan scanner barcode/QR code fisik pasca alur SPK dan cargo list rampung.
 - [ ] **Notifikasi Discrepancy Otomatis via WhatsApp / Email:** Alert selisih fisik saat ada barang tertinggal pasca-event.

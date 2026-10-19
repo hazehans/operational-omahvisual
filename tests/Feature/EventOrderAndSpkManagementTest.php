@@ -290,12 +290,12 @@ class EventOrderAndSpkManagementTest extends TestCase
         $this->assertEquals($sampleBlueprintImage, $order->stage_layout_image);
         $this->assertEquals($sampleBlueprintFrontImage, $order->stage_layout_front_image);
 
-        // Verify printed SPK contains Halaman 4 with both 2D Blueprints (Top Plan & Front Elevation)
+        // Verify printed SPK contains Halaman 4 with both 2D Blueprints (LED Panel Mapping & Front Elevation)
         $printResponse = $this->actingAs($this->user)->get(route('spk.print', $order->spkAssignment));
         $printResponse->assertOk();
         $printResponse->assertSee('BLUEPRINT LAYOUT PANGGUNG 2D');
         $printResponse->assertSee('4 BLUEPRINT TEKNIS: TATA LETAK PANGGUNG & FORMASI LAYAR LED');
-        $printResponse->assertSee('TAMPAK ATAS (TOP-DOWN FLOOR PLAN)');
+        $printResponse->assertSee('PEMETAAN PANEL & KABINET LED');
         $printResponse->assertSee('TAMPAK DEPAN (FRONT ELEVATION)');
         $printResponse->assertSee($sampleBlueprintImage);
         $printResponse->assertSee($sampleBlueprintFrontImage);
@@ -303,7 +303,7 @@ class EventOrderAndSpkManagementTest extends TestCase
         // Verify live crew token view also displays both blueprints
         $crewResponse = $this->get(route('spk.live', $order->public_token));
         $crewResponse->assertOk();
-        $crewResponse->assertSee('Tampak Atas (Top Plan)');
+        $crewResponse->assertSee('Pemetaan Panel LED');
         $crewResponse->assertSee('Tampak Depan (Front Elevation)');
         $crewResponse->assertSee($sampleBlueprintImage);
         $crewResponse->assertSee($sampleBlueprintFrontImage);

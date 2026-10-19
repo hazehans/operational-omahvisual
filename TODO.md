@@ -341,9 +341,31 @@
   - Total pengujian meningkat menjadi **115 Tests, 741 Assertions, 100% Lulus (Green)**.
   - Diformat rapi sesuai standar Laravel Pint.
 
+### 26. Revisi Visual — Diagram Pemetaan Panel & Modul LED (Resolume / NovaStar Grid) — ✅ Selesai
+- [x] **Pembersihan Kompas & Penggantian Denah Tampak Atas:**
+  - Hapus widget HUD jarum kompas arah angin dari canvas 3D virtual.
+  - Ganti judul Diagram 1 pada SPK Cetak Halaman 4 (`spk/print.blade.php`) menjadi `🔲 1. PEMETAAN PANEL & KABINET LED — NOMOR KABINET & RESOLUSI KONTEN`.
+  - Ganti label diagram di Live View Kru (`spk/crew-live.blade.php`) dan Portal Pelacakan Customer (`tracking/show.blade.php`).
+- [x] **Tekstur Tampilan 3D Realistis (Three.js Checkered Numbered Texture):**
+  - Implementasi generator tekstur dinamis 1024×512 px dengan pembagian grid kabinet modul 50×50 cm.
+  - Penomoran modul berurutan (`01`, `02`, ..., `N`) berurutan dari kiri-ke-kanan, atas-ke-bawah sesuai standar alur data NovaStar.
+  - Garis panduan diagonal 'X' putus-putus dan garis crosshair bidik tengah layar.
+  - Judul nama layar tebal di tengah (*bold sans-serif with shadow*).
+  - Pill badge resolusi piksel native P3.9 (`W 1920 x H 1024 px`).
+  - Badge spesifikasi modul sudut kanan atas: `[P3.9] 50 × 50 cm`.
+  - Tema warna kontras per layar: Blue Central, Red Left Wing, Green Right Wing, Purple Header, Amber Accent.
+- [x] **Generator Blueprint 2D HD Pemetaan Panel (`generate2DPanelMappingBlueprint`):**
+  - Render canvas 1200×600 px ultra-HD otomatis menyimpan ke format base64 image untuk dicetak di SPK dan diakses kru lapangan.
+  - Penyusunan layout multi-layar proporsional berdampingan (*side-by-side*).
+  - Keterangan teks teknis alur perkabelan sinyal dan strip spesifikasi per formasi layar.
+- [x] **Pembaruan Toolbar 3D & Uji Otomatis:**
+  - Tombol toolbar kamera diperbarui menjadi `🔲 Mapping Panel`.
+  - Seluruh unit & feature tests lulus 100% (**115 Tests, 741 Assertions, Green**).
+
 ---
 
 ## 🔮 Roadmap Jangka Panjang (Operasional Lanjutan Sesuai PRD Global)
+- [ ] Dropdown Kode Negara Input Nomor Telepon Kru (+62 Indonesia default, +60 Malaysia, +65 Singapura, dsb)
 - [ ] Dashboard Analisis Manajer Operasional (Grafik utilisasi armada TRAGA 1/2/3, tren ukuran layar LED, performa crew, analisa laba bersih event)
 - [x] Portal Pelacakan Mandiri oleh Customer (Tracking status persiapan LED screen via order token)
 - [ ] Fitur Ekspor Laporan Bulanan (Excel/PDF) untuk Rekapitulasi Gaji Kru & Operasional Event
