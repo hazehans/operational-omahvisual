@@ -89,6 +89,7 @@
                     <span>Dashboard</span>
                 </a>
 
+                @can('view inventory')
                 <!-- Master Barang -->
                 <a href="{{ route('products.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all {{ request()->routeIs('products.*') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-slate-800/50' }}">
                     <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -115,12 +116,14 @@
                     </svg>
                     <span>Lokasi & Lemari</span>
                 </a>
+                @endcan
 
-                @hasanyrole('Owner|Superuser')
+                @canany(['view orders', 'view customers', 'view crews', 'view payroll', 'view vehicles', 'view invoices'])
                 <div class="pt-4 px-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                     Event & Persewaan LED
                 </div>
 
+                @can('view orders')
                 <!-- Pesanan Event & SPK -->
                 <a href="{{ route('orders.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all {{ request()->routeIs('orders.*') || request()->routeIs('spk.*') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-slate-800/50' }}">
                     <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -131,7 +134,9 @@
                         <span class="px-1.5 py-0.5 text-[10px] rounded bg-emerald-500/20 text-emerald-400 font-bold">New</span>
                     </div>
                 </a>
+                @endcan
 
+                @can('view customers')
                 <!-- Data Customer -->
                 <a href="{{ route('customers.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all {{ request()->routeIs('customers.*') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-slate-800/50' }}">
                     <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -139,7 +144,9 @@
                     </svg>
                     <span>Data Customer</span>
                 </a>
+                @endcan
 
+                @can('view crews')
                 <!-- Kru & Teknisi -->
                 <a href="{{ route('crews.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all {{ request()->routeIs('crews.*') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-slate-800/50' }}">
                     <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -147,7 +154,9 @@
                     </svg>
                     <span>Kru & Teknisi</span>
                 </a>
+                @endcan
 
+                @can('view payroll')
                 <!-- Honor & Payroll Kru -->
                 <a href="{{ route('crew-payroll.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all {{ request()->routeIs('crew-payroll.*') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-slate-800/50' }}">
                     <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -158,7 +167,9 @@
                         <span class="px-1.5 py-0.5 text-[10px] rounded bg-amber-500/20 text-amber-400 font-bold">Finance</span>
                     </div>
                 </a>
+                @endcan
 
+                @can('view vehicles')
                 <!-- Armada Kendaraan -->
                 <a href="{{ route('vehicles.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all {{ request()->routeIs('vehicles.*') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-slate-800/50' }}">
                     <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -167,7 +178,9 @@
                     </svg>
                     <span>Armada Kendaraan</span>
                 </a>
+                @endcan
 
+                @can('view invoices')
                 <!-- Invoice & Penagihan Client -->
                 <a href="{{ route('invoices.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all {{ request()->routeIs('invoices.*') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-slate-800/50' }}">
                     <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -178,7 +191,8 @@
                         <span class="px-1.5 py-0.5 text-[10px] rounded bg-cyan-500/20 text-cyan-400 font-bold">Billing</span>
                     </div>
                 </a>
-                @endhasanyrole
+                @endcan
+                @endcanany
 
                 <div class="pt-4 px-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                     Operasional Inventori
@@ -258,7 +272,7 @@
                 </a>
                 @endcan
 
-                @hasanyrole('Owner|Superuser')
+                @can('manage users')
                 <div class="pt-4 px-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                     Sistem &amp; Hak Akses
                 </div>
@@ -273,7 +287,7 @@
                         <span class="px-1.5 py-0.5 text-[10px] rounded bg-indigo-500/20 text-indigo-400 font-mono font-bold">{{ \App\Models\User::count() }}</span>
                     </div>
                 </a>
-                @endhasanyrole
+                @endcan
 
                 @hasrole('Superuser')
                 <!-- Superuser Database Manager -->

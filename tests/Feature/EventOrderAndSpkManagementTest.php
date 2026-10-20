@@ -19,10 +19,13 @@ class EventOrderAndSpkManagementTest extends TestCase
 
     protected User $user;
 
+    protected User $warehouseUser;
+
     protected function setUp(): void
     {
         parent::setUp();
         $this->user = User::where('email', 'admin@omahvisual.com')->first() ?? User::factory()->create();
+        $this->warehouseUser = User::where('email', 'warehouse@omahvisual.com')->first() ?? User::factory()->create();
     }
 
     public function test_user_can_view_orders_index(): void
@@ -154,7 +157,7 @@ class EventOrderAndSpkManagementTest extends TestCase
             'departure_status' => 'pending',
         ]);
 
-        $response = $this->actingAs($this->user)->post(route('spk.verify-departure', $assignment), [
+        $response = $this->actingAs($this->warehouseUser)->post(route('spk.verify-departure', $assignment), [
             'departure_pic_event_name' => 'Boby PIC',
             'departure_pic_warehouse_name' => 'Pak Joko Gudang',
         ]);
@@ -177,7 +180,7 @@ class EventOrderAndSpkManagementTest extends TestCase
         ]);
 
         // Attempt return verification with IDENTICAL PIC name (now allowed)
-        $response = $this->actingAs($this->user)->post(route('spk.verify-return', $assignment), [
+        $response = $this->actingAs($this->warehouseUser)->post(route('spk.verify-return', $assignment), [
             'return_pic_event_name' => 'Boby PIC',
             'return_pic_warehouse_name' => 'Pak Joko Gudang',
         ]);
@@ -189,14 +192,14 @@ class EventOrderAndSpkManagementTest extends TestCase
         $this->assertEquals('completed', $assignment->eventOrder->status);
 
         // Reset return gate
-        $resetReturnResponse = $this->actingAs($this->user)->post(route('spk.reset-return', $assignment));
+        $resetReturnResponse = $this->actingAs($this->warehouseUser)->post(route('spk.reset-return', $assignment));
         $resetReturnResponse->assertSessionHasNoErrors();
         $assignment->refresh();
         $this->assertEquals('pending', $assignment->return_status);
         $this->assertNull($assignment->return_pic_event_name);
 
         // Reset departure gate
-        $resetDepResponse = $this->actingAs($this->user)->post(route('spk.reset-departure', $assignment));
+        $resetDepResponse = $this->actingAs($this->warehouseUser)->post(route('spk.reset-departure', $assignment));
         $resetDepResponse->assertSessionHasNoErrors();
         $assignment->refresh();
         $this->assertEquals('pending', $assignment->departure_status);

@@ -27,77 +27,101 @@
     </div>
 
     <!-- Quick Stat Cards -->
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-8 gap-3">
         <!-- Total -->
-        <a href="{{ route('users.index') }}" class="p-4 rounded-2xl bg-slate-900/60 border border-slate-800 shadow-md hover:border-indigo-500/50 transition-all group">
-            <div class="flex items-center justify-between mb-1.5">
-                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Akun</span>
+        <a href="{{ route('users.index') }}" class="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800 shadow-md hover:border-indigo-500/50 transition-all group">
+            <div class="flex items-center justify-between mb-1">
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total</span>
                 <span class="w-2 h-2 rounded-full bg-indigo-500 group-hover:scale-125 transition-transform"></span>
             </div>
-            <div class="text-2xl font-black text-white font-mono">
+            <div class="text-xl font-black text-white font-mono">
                 {{ $metrics['total'] }}
             </div>
-            <p class="text-[10px] text-slate-500 mt-0.5">Semua pengguna</p>
+            <p class="text-[9.5px] text-slate-500 mt-0.5">Semua akun</p>
         </a>
 
-        <!-- Superuser -->
-        <a href="{{ route('users.index', ['role' => 'Superuser']) }}" class="p-4 rounded-2xl bg-slate-900/60 border border-slate-800 shadow-md hover:border-rose-500/50 transition-all group">
-            <div class="flex items-center justify-between mb-1.5">
-                <span class="text-[11px] font-bold text-rose-400 uppercase tracking-wider">Superuser</span>
+        <!-- Superuser & Owner -->
+        <a href="{{ route('users.index', ['role' => 'Superuser']) }}" class="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800 shadow-md hover:border-rose-500/50 transition-all group">
+            <div class="flex items-center justify-between mb-1">
+                <span class="text-[10px] font-bold text-rose-400 uppercase tracking-wider">Super/Owner</span>
                 <span class="w-2 h-2 rounded-full bg-rose-500 group-hover:scale-125 transition-transform"></span>
             </div>
-            <div class="text-2xl font-black text-rose-400 font-mono">
-                {{ $metrics['superuser'] }}
+            <div class="text-xl font-black text-rose-400 font-mono">
+                {{ $metrics['superuser'] + $metrics['owner'] }}
             </div>
-            <p class="text-[10px] text-slate-500 mt-0.5">Full root admin</p>
+            <p class="text-[9.5px] text-slate-500 mt-0.5">Direksi &amp; root</p>
         </a>
 
-        <!-- Owner -->
-        <a href="{{ route('users.index', ['role' => 'Owner']) }}" class="p-4 rounded-2xl bg-slate-900/60 border border-slate-800 shadow-md hover:border-purple-500/50 transition-all group">
-            <div class="flex items-center justify-between mb-1.5">
-                <span class="text-[11px] font-bold text-purple-400 uppercase tracking-wider">Owner</span>
-                <span class="w-2 h-2 rounded-full bg-purple-500 group-hover:scale-125 transition-transform"></span>
+        <!-- Manager Operasional -->
+        <a href="{{ route('users.index', ['role' => 'Manager Operasional']) }}" class="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800 shadow-md hover:border-blue-500/50 transition-all group">
+            <div class="flex items-center justify-between mb-1">
+                <span class="text-[10px] font-bold text-blue-400 uppercase tracking-wider">Manager Ops</span>
+                <span class="w-2 h-2 rounded-full bg-blue-500 group-hover:scale-125 transition-transform"></span>
             </div>
-            <div class="text-2xl font-black text-purple-400 font-mono">
-                {{ $metrics['owner'] }}
+            <div class="text-xl font-black text-blue-400 font-mono">
+                {{ $metrics['manager_ops'] }}
             </div>
-            <p class="text-[10px] text-slate-500 mt-0.5">Approval &amp; owner</p>
-        </a>
-
-        <!-- Teknisi Servis -->
-        <a href="{{ route('users.index', ['role' => 'Teknisi Servis']) }}" class="p-4 rounded-2xl bg-slate-900/60 border border-slate-800 shadow-md hover:border-emerald-500/50 transition-all group">
-            <div class="flex items-center justify-between mb-1.5">
-                <span class="text-[11px] font-bold text-emerald-400 uppercase tracking-wider">Teknisi Servis</span>
-                <span class="w-2 h-2 rounded-full bg-emerald-500 group-hover:scale-125 transition-transform"></span>
-            </div>
-            <div class="text-2xl font-black text-emerald-400 font-mono">
-                {{ $metrics['teknisi'] }}
-            </div>
-            <p class="text-[10px] text-slate-500 mt-0.5">Bengkel &amp; workshop</p>
-        </a>
-
-        <!-- Warehouse -->
-        <a href="{{ route('users.index', ['role' => 'Warehouse']) }}" class="p-4 rounded-2xl bg-slate-900/60 border border-slate-800 shadow-md hover:border-amber-500/50 transition-all group">
-            <div class="flex items-center justify-between mb-1.5">
-                <span class="text-[11px] font-bold text-amber-400 uppercase tracking-wider">Warehouse</span>
-                <span class="w-2 h-2 rounded-full bg-amber-500 group-hover:scale-125 transition-transform"></span>
-            </div>
-            <div class="text-2xl font-black text-amber-400 font-mono">
-                {{ $metrics['warehouse'] }}
-            </div>
-            <p class="text-[10px] text-slate-500 mt-0.5">Fisik &amp; opname</p>
+            <p class="text-[9.5px] text-slate-500 mt-0.5">Kru &amp; SPK</p>
         </a>
 
         <!-- Admin LED -->
-        <a href="{{ route('users.index', ['role' => 'Admin LED']) }}" class="p-4 rounded-2xl bg-slate-900/60 border border-slate-800 shadow-md hover:border-cyan-500/50 transition-all group">
-            <div class="flex items-center justify-between mb-1.5">
-                <span class="text-[11px] font-bold text-cyan-400 uppercase tracking-wider">Admin LED</span>
+        <a href="{{ route('users.index', ['role' => 'Admin LED']) }}" class="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800 shadow-md hover:border-cyan-500/50 transition-all group">
+            <div class="flex items-center justify-between mb-1">
+                <span class="text-[10px] font-bold text-cyan-400 uppercase tracking-wider">Admin LED</span>
                 <span class="w-2 h-2 rounded-full bg-cyan-500 group-hover:scale-125 transition-transform"></span>
             </div>
-            <div class="text-2xl font-black text-cyan-400 font-mono">
+            <div class="text-xl font-black text-cyan-400 font-mono">
                 {{ $metrics['admin_led'] }}
             </div>
-            <p class="text-[10px] text-slate-500 mt-0.5">Order &amp; persewaan</p>
+            <p class="text-[9.5px] text-slate-500 mt-0.5">Order sewa</p>
+        </a>
+
+        <!-- Finance -->
+        <a href="{{ route('users.index', ['role' => 'Finance']) }}" class="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800 shadow-md hover:border-emerald-500/50 transition-all group">
+            <div class="flex items-center justify-between mb-1">
+                <span class="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">Finance</span>
+                <span class="w-2 h-2 rounded-full bg-emerald-500 group-hover:scale-125 transition-transform"></span>
+            </div>
+            <div class="text-xl font-black text-emerald-400 font-mono">
+                {{ $metrics['finance'] }}
+            </div>
+            <p class="text-[9.5px] text-slate-500 mt-0.5">Faktur &amp; gaji</p>
+        </a>
+
+        <!-- Warehouse -->
+        <a href="{{ route('users.index', ['role' => 'Warehouse']) }}" class="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800 shadow-md hover:border-amber-500/50 transition-all group">
+            <div class="flex items-center justify-between mb-1">
+                <span class="text-[10px] font-bold text-amber-400 uppercase tracking-wider">Warehouse</span>
+                <span class="w-2 h-2 rounded-full bg-amber-500 group-hover:scale-125 transition-transform"></span>
+            </div>
+            <div class="text-xl font-black text-amber-400 font-mono">
+                {{ $metrics['warehouse'] }}
+            </div>
+            <p class="text-[9.5px] text-slate-500 mt-0.5">Fisik &amp; gate</p>
+        </a>
+
+        <!-- Kepala Servis -->
+        <a href="{{ route('users.index', ['role' => 'Kepala Servis']) }}" class="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800 shadow-md hover:border-violet-500/50 transition-all group">
+            <div class="flex items-center justify-between mb-1">
+                <span class="text-[10px] font-bold text-violet-400 uppercase tracking-wider">K. Servis</span>
+                <span class="w-2 h-2 rounded-full bg-violet-500 group-hover:scale-125 transition-transform"></span>
+            </div>
+            <div class="text-xl font-black text-violet-400 font-mono">
+                {{ $metrics['kepala_servis'] }}
+            </div>
+            <p class="text-[9.5px] text-slate-500 mt-0.5">Lead bengkel</p>
+        </a>
+
+        <!-- Teknisi Servis -->
+        <a href="{{ route('users.index', ['role' => 'Teknisi Servis']) }}" class="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800 shadow-md hover:border-teal-500/50 transition-all group">
+            <div class="flex items-center justify-between mb-1">
+                <span class="text-[10px] font-bold text-teal-400 uppercase tracking-wider">Teknisi</span>
+                <span class="w-2 h-2 rounded-full bg-teal-500 group-hover:scale-125 transition-transform"></span>
+            </div>
+            <div class="text-xl font-black text-teal-400 font-mono">
+                {{ $metrics['teknisi'] }}
+            </div>
+            <p class="text-[9.5px] text-slate-500 mt-0.5">Reparasi modul</p>
         </a>
     </div>
 

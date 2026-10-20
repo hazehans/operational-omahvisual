@@ -38,7 +38,7 @@ class ServiceTicketAndWorkshopTest extends TestCase
         parent::setUp();
 
         $this->user = User::factory()->create(['name' => 'Hans Superuser']);
-        $this->user->givePermissionTo(['view inventory', 'create service ticket', 'execute service ticket']);
+        $this->user->assignRole('Superuser');
         $uid = uniqid();
 
         $this->mainGudang = Location::create([
@@ -401,7 +401,7 @@ class ServiceTicketAndWorkshopTest extends TestCase
     public function test_teknisi_cannot_create_ticket_but_can_execute_repair_and_finish(): void
     {
         $teknisiUser = User::factory()->create(['name' => 'Budi Teknisi Workshop']);
-        $teknisiUser->givePermissionTo(['view inventory', 'execute service ticket']);
+        $teknisiUser->assignRole('Teknisi Servis');
 
         // 1. Teknisi TIDAK BISA membuka tiket servis baru (403)
         $createFormResponse = $this->actingAs($teknisiUser)->get(route('service-tickets.create'));

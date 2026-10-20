@@ -18,86 +18,263 @@ class InventoryDatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // 1. Roles & Permissions
+        // 1. Roles & Permissions (Based on roles/permissions.json and role_revised.xlsx)
         $permissions = [
+            // Dashboard
+            'view dashboard',
+            'view financial stats',
+            // Orders
+            'view orders',
+            'create orders',
+            'edit orders',
+            'delete orders',
+            'cancel orders',
+            // SPK & Operations
+            'view spk',
+            'print spk',
+            'manage spk crews',
+            'manage spk vehicles',
+            'sign spk operational',
+            'approve spk qc',
+            'view spk live',
+            'upload spk qc',
+            // Warehouse & Gate
+            'manage spk departure',
+            'manage spk return',
+            'sign spk warehouse',
+            'report spk discrepancy',
+            // Service & Workshop
+            'view service tickets',
+            'create service ticket',
+            'assign service ticket',
+            'execute service ticket',
+            'approve service ticket',
+            'manage service spareparts',
+            // Inventory & Assets
             'view inventory',
             'create product',
             'edit product',
             'delete product',
             'manage locations',
             'record movement',
-            'request stock adjustment',
-            'approve stock adjustment',
             'conduct stock count',
             'verify stock count',
-            'view audit logs',
-            'manage service tickets',
-            'create service ticket',
-            'execute service ticket',
+            'request stock adjustment',
+            'approve stock adjustment',
+            // Invoices & Billing
+            'view invoices',
+            'create invoice',
+            'edit invoice',
+            'delete invoice',
+            'record invoice payment',
+            'delete invoice payment',
+            'print invoice',
+            'print receipt',
+            // Payroll & Fees
+            'view payroll',
+            'manage crew fees',
+            'manage operational costs',
+            'mark payroll paid',
+            'print payroll slip',
+            // Master Data
+            'view customers',
+            'manage customers',
+            'view crews',
+            'manage crews',
+            'view vehicles',
+            'manage vehicles',
+            // System Administration
             'manage users',
+            'view audit logs',
+            'access superuser database',
         ];
 
         foreach ($permissions as $perm) {
             Permission::firstOrCreate(['name' => $perm]);
         }
 
-        $ownerRole = Role::firstOrCreate(['name' => 'Owner']);
-        $ownerRole->syncPermissions(Permission::all());
-
-        $branchManagerRole = Role::firstOrCreate(['name' => 'Branch Manager']);
-        $branchManagerRole->syncPermissions([
-            'view inventory', 'create product', 'edit product', 'manage locations',
-            'record movement', 'request stock adjustment', 'approve stock adjustment',
-            'conduct stock count', 'verify stock count', 'view audit logs',
-            'manage service tickets', 'create service ticket', 'execute service ticket',
-        ]);
-
-        $warehouseRole = Role::firstOrCreate(['name' => 'Warehouse']);
-        $warehouseRole->syncPermissions([
-            'view inventory', 'create product', 'edit product', 'manage locations',
-            'record movement', 'request stock adjustment', 'conduct stock count',
-            'verify stock count', 'create service ticket',
-        ]);
-
-        $adminRole = Role::firstOrCreate(['name' => 'Admin LED']);
-        $adminRole->syncPermissions(['view inventory', 'record movement']);
-
-        $teknisiRole = Role::firstOrCreate(['name' => 'Teknisi Servis']);
-        $teknisiRole->syncPermissions(['view inventory', 'execute service ticket']);
-
+        // 1.1 Superuser & Owner (Full Control)
         $superuserRole = Role::firstOrCreate(['name' => 'Superuser']);
         $superuserRole->syncPermissions(Permission::all());
 
-        // 2. Users
-        $ownerUser = User::firstOrCreate(
-            ['email' => 'owner@omahvisual.com'],
-            ['name' => 'Owner / Branch Manager', 'password' => Hash::make('password123')]
-        );
-        $ownerUser->assignRole([$ownerRole, $branchManagerRole]);
+        $ownerRole = Role::firstOrCreate(['name' => 'Owner']);
+        $ownerRole->syncPermissions(Permission::all());
 
-        $warehouseUser = User::firstOrCreate(
-            ['email' => 'warehouse@omahvisual.com'],
-            ['name' => 'Tim Warehouse', 'password' => Hash::make('password123')]
-        );
-        $warehouseUser->assignRole($warehouseRole);
+        // 1.2 Manager Operasional
+        $managerOpsRole = Role::firstOrCreate(['name' => 'Manager Operasional']);
+        $managerOpsRole->syncPermissions([
+            'view dashboard',
+            'view orders',
+            'create orders',
+            'edit orders',
+            'cancel orders',
+            'view spk',
+            'print spk',
+            'manage spk crews',
+            'manage spk vehicles',
+            'sign spk operational',
+            'approve spk qc',
+            'view spk live',
+            'upload spk qc',
+            'create service ticket',
+            'report spk discrepancy',
+            'view inventory',
+            'view customers',
+            'manage customers',
+            'view crews',
+            'manage crews',
+            'view vehicles',
+            'manage vehicles',
+            'view payroll',
+            'manage operational costs',
+        ]);
 
-        $adminUser = User::firstOrCreate(
-            ['email' => 'admin@omahvisual.com'],
-            ['name' => 'Admin LED', 'password' => Hash::make('password123')]
-        );
-        $adminUser->assignRole($adminRole);
+        // 1.3 Admin LED
+        $adminRole = Role::firstOrCreate(['name' => 'Admin LED']);
+        $adminRole->syncPermissions([
+            'view dashboard',
+            'view orders',
+            'create orders',
+            'edit orders',
+            'delete orders',
+            'cancel orders',
+            'view spk',
+            'print spk',
+            'manage spk crews',
+            'manage spk vehicles',
+            'view spk live',
+            'upload spk qc',
+            'view customers',
+            'manage customers',
+            'view crews',
+            'view vehicles',
+            'view inventory',
+            'print invoice',
+        ]);
 
-        $teknisiUser = User::firstOrCreate(
-            ['email' => 'teknisi@omahvisual.com'],
-            ['name' => 'Teknisi Workshop', 'password' => Hash::make('password123'), 'phone' => '081234567894']
-        );
-        $teknisiUser->assignRole($teknisiRole);
+        // 1.4 Finance
+        $financeRole = Role::firstOrCreate(['name' => 'Finance']);
+        $financeRole->syncPermissions([
+            'view dashboard',
+            'view financial stats',
+            'view orders',
+            'view spk',
+            'print spk',
+            'view invoices',
+            'create invoice',
+            'edit invoice',
+            'delete invoice',
+            'record invoice payment',
+            'delete invoice payment',
+            'print invoice',
+            'print receipt',
+            'view payroll',
+            'manage crew fees',
+            'manage operational costs',
+            'mark payroll paid',
+            'print payroll slip',
+            'view customers',
+            'view crews',
+            'manage crews',
+        ]);
 
+        // 1.5 Warehouse
+        $warehouseRole = Role::firstOrCreate(['name' => 'Warehouse']);
+        $warehouseRole->syncPermissions([
+            'view dashboard',
+            'view orders',
+            'view spk',
+            'print spk',
+            'manage spk departure',
+            'manage spk return',
+            'sign spk warehouse',
+            'report spk discrepancy',
+            'view inventory',
+            'create product',
+            'edit product',
+            'manage locations',
+            'record movement',
+            'conduct stock count',
+            'verify stock count',
+            'request stock adjustment',
+            'create service ticket',
+            'view vehicles',
+        ]);
+
+        // 1.6 Kepala Servis
+        $kepalaServisRole = Role::firstOrCreate(['name' => 'Kepala Servis']);
+        $kepalaServisRole->syncPermissions([
+            'view dashboard',
+            'view service tickets',
+            'create service ticket',
+            'assign service ticket',
+            'execute service ticket',
+            'approve service ticket',
+            'manage service spareparts',
+            'view inventory',
+            'manage locations',
+            'record movement',
+            'request stock adjustment',
+        ]);
+
+        // 1.7 Teknisi Servis
+        $teknisiRole = Role::firstOrCreate(['name' => 'Teknisi Servis']);
+        $teknisiRole->syncPermissions([
+            'view dashboard',
+            'view service tickets',
+            'execute service ticket',
+            'manage service spareparts',
+        ]);
+
+        // 2. Default Seeded Users
         $superUser = User::firstOrCreate(
             ['email' => 'super@omahvisual.com'],
             ['name' => 'Super Administrator', 'password' => Hash::make('password123')]
         );
-        $superUser->assignRole($superuserRole);
+        $superUser->syncRoles([$superuserRole]);
+
+        $ownerUser = User::firstOrCreate(
+            ['email' => 'owner@omahvisual.com'],
+            ['name' => 'Owner Omahvisual', 'password' => Hash::make('password123')]
+        );
+        $ownerUser->syncRoles([$ownerRole]);
+
+        $managerOpsUser = User::firstOrCreate(
+            ['email' => 'manager.ops@omahvisual.com'],
+            ['name' => 'Dani FT (Manager Operasional)', 'password' => Hash::make('password123'), 'phone' => '087775995930']
+        );
+        $managerOpsUser->syncRoles([$managerOpsRole]);
+
+        // User Admin doubles as Finance for current business stage
+        $adminUser = User::firstOrCreate(
+            ['email' => 'admin@omahvisual.com'],
+            ['name' => 'Admin LED & Finance', 'password' => Hash::make('password123'), 'phone' => '085785193041']
+        );
+        $adminUser->syncRoles([$adminRole, $financeRole]);
+
+        $financeUser = User::firstOrCreate(
+            ['email' => 'finance@omahvisual.com'],
+            ['name' => 'Staf Finance', 'password' => Hash::make('password123'), 'phone' => '081234567891']
+        );
+        $financeUser->syncRoles([$financeRole]);
+
+        $warehouseUser = User::firstOrCreate(
+            ['email' => 'warehouse@omahvisual.com'],
+            ['name' => 'Byan (Tim Warehouse)', 'password' => Hash::make('password123'), 'phone' => '081234567892']
+        );
+        $warehouseUser->syncRoles([$warehouseRole]);
+
+        $kepalaServisUser = User::firstOrCreate(
+            ['email' => 'kepala.servis@omahvisual.com'],
+            ['name' => 'Kepala Ruang Servis', 'password' => Hash::make('password123'), 'phone' => '081234567893']
+        );
+        $kepalaServisUser->syncRoles([$kepalaServisRole]);
+
+        $teknisiUser = User::firstOrCreate(
+            ['email' => 'teknisi@omahvisual.com'],
+            ['name' => 'Teknisi Workshop Servis', 'password' => Hash::make('password123'), 'phone' => '081234567894']
+        );
+        $teknisiUser->syncRoles([$teknisiRole]);
 
         // 3. Units
         $unitsData = [

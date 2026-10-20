@@ -101,38 +101,48 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                     @php
                         $roleInfos = [
-                            'Teknisi Servis' => [
-                                'badge' => 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
-                                'icon' => '🛠️',
-                                'desc' => 'Fokus bengkel & workshop: buka tiket servis, diagnosa modul rusak, potong sparepart lemari 2, dan uji QC.',
-                            ],
-                            'Warehouse' => [
-                                'badge' => 'bg-amber-500/20 text-amber-400 border-amber-500/30',
-                                'icon' => '📦',
-                                'desc' => 'Staf gudang fisik: pencatatan mutasi rak, penerimaan barang masuk, stok opname berkala, dan penyerahan barang.',
-                            ],
-                            'Admin LED' => [
-                                'badge' => 'bg-blue-500/20 text-blue-400 border-blue-500/30',
-                                'icon' => '📑',
-                                'desc' => 'Administrasi rental & pesanan event: input order, kalkulator panel LED, cetak SPK lapangan & checklist gate.',
-                            ],
-                            'Branch Manager' => [
-                                'badge' => 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30',
-                                'icon' => '👔',
-                                'desc' => 'Manajer operasional: pengawasan seluruh gudang, pengesahan mutasi, dan peninjauan riwayat log audit.',
+                            'Superuser' => [
+                                'badge' => 'bg-rose-500/20 text-rose-400 border-rose-500/30',
+                                'icon' => '⚡',
+                                'desc' => 'Administrator sistem penuh: akses raw database manager, manajemen akun pengguna, dan konfigurasi inti.',
                             ],
                             'Owner' => [
                                 'badge' => 'bg-purple-500/20 text-purple-400 border-purple-500/30',
                                 'icon' => '👑',
                                 'desc' => 'Pemilik bisnis: otorisasi penyesuaian stok bernilai tinggi, laporan lengkap, dan supervisi seluruh modul.',
                             ],
-                            'Superuser' => [
-                                'badge' => 'bg-rose-500/20 text-rose-400 border-rose-500/30',
-                                'icon' => '⚡',
-                                'desc' => 'Administrator sistem penuh: akses raw database manager, manajemen akun pengguna, dan konfigurasi inti.',
+                            'Manager Operasional' => [
+                                'badge' => 'bg-blue-500/20 text-blue-400 border-blue-500/30',
+                                'icon' => '👔',
+                                'desc' => 'Penyalur Admin & Lapangan: plotting kru & armada, pengesahan SPK resmi, approval foto QC & BAST event.',
+                            ],
+                            'Admin LED' => [
+                                'badge' => 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30',
+                                'icon' => '📑',
+                                'desc' => 'Administrasi rental & pesanan event: input order, kalkulator LED, layout panggung, data customer, dan SPK Live.',
+                            ],
+                            'Finance' => [
+                                'badge' => 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
+                                'icon' => '💰',
+                                'desc' => 'Keuangan & penagihan: penerbitan invoice/faktur, kuitansi pembayaran, approval honor kru & uang jalan.',
+                            ],
+                            'Warehouse' => [
+                                'badge' => 'bg-amber-500/20 text-amber-400 border-amber-500/30',
+                                'icon' => '📦',
+                                'desc' => 'Staf logistik gudang: checklist barang keluar & kembali (SPK Hal 2 & 3), stok opname, dan serah unit servis.',
+                            ],
+                            'Kepala Servis' => [
+                                'badge' => 'bg-violet-500/20 text-violet-400 border-violet-500/30',
+                                'icon' => '🔬',
+                                'desc' => 'Supervisor ruang servis: triage modul rusak, delegasi tiket ke teknisi, approval spare part & validasi QC bengkel.',
+                            ],
+                            'Teknisi Servis' => [
+                                'badge' => 'bg-teal-500/20 text-teal-400 border-teal-500/30',
+                                'icon' => '🛠️',
+                                'desc' => 'Teknisi reparasi modul di workshop: solder mata LED, ganti IC chip, PSU, dan input pencatatan sparepart.',
                             ],
                         ];
-                        $selectedRoles = old('roles', old('role') ? (array)old('role') : ['Teknisi Servis']);
+                        $selectedRoles = old('roles', old('role') ? (array)old('role') : ['Admin LED']);
                     @endphp
 
                     @foreach($roles as $role)

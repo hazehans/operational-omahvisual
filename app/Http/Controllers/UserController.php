@@ -46,9 +46,12 @@ class UserController extends Controller
             'total' => User::count(),
             'superuser' => User::role('Superuser')->count(),
             'owner' => User::role('Owner')->count(),
-            'warehouse' => User::role('Warehouse')->count(),
-            'teknisi' => User::role('Teknisi Servis')->count(),
+            'manager_ops' => User::role('Manager Operasional')->count(),
             'admin_led' => User::role('Admin LED')->count(),
+            'finance' => User::role('Finance')->count(),
+            'warehouse' => User::role('Warehouse')->count(),
+            'kepala_servis' => User::role('Kepala Servis')->count(),
+            'teknisi' => User::role('Teknisi Servis')->count(),
         ];
 
         return view('users.index', compact('users', 'roles', 'metrics'));

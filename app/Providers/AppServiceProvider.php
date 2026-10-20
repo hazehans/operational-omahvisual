@@ -20,9 +20,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Implicitly grant 'Superuser' all permissions
+        // Implicitly grant 'Superuser' and 'Owner' all permissions
         Gate::before(function ($user, $ability) {
-            return $user->hasRole('Superuser') ? true : null;
+            return $user->hasAnyRole(['Superuser', 'Owner']) ? true : null;
         });
     }
 }
