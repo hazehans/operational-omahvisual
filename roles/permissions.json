@@ -1,0 +1,151 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CV. Han Media Tekindo - Role & Permission Specification",
+  "version": "1.0.0",
+  "updated_at": "2026-10-20",
+  "source_document": "role_revised.xlsx",
+  "roles": {
+    "Superuser": {
+      "display_name": "Super Administrator",
+      "description": "Full access to all modules, administrative settings, and raw database.",
+      "permissions": ["*"]
+    },
+    "Owner": {
+      "display_name": "Owner / Direksi",
+      "description": "Business owner with full operational, financial, and inventory authority.",
+      "permissions": ["*"]
+    },
+    "Manager Operasional": {
+      "display_name": "Manager Operasional",
+      "description": "Bridge between orders and field execution, fleet/crew allocation, SPK signing, and QC verification.",
+      "permissions": [
+        "view dashboard",
+        "view orders",
+        "create orders",
+        "edit orders",
+        "cancel orders",
+        "view spk",
+        "print spk",
+        "manage spk crews",
+        "manage spk vehicles",
+        "sign spk operational",
+        "approve spk qc",
+        "view spk live",
+        "upload spk qc",
+        "create service ticket",
+        "report spk discrepancy",
+        "view inventory",
+        "view customers",
+        "manage customers",
+        "view crews",
+        "manage crews",
+        "view vehicles",
+        "manage vehicles",
+        "view payroll",
+        "manage operational costs"
+      ]
+    },
+    "Admin LED": {
+      "display_name": "Admin LED",
+      "description": "Order processing, LED layout calculator, schedule management, customer CRM, and initial crew/armada drafting.",
+      "permissions": [
+        "view dashboard",
+        "view orders",
+        "create orders",
+        "edit orders",
+        "delete orders",
+        "cancel orders",
+        "view spk",
+        "print spk",
+        "manage spk crews",
+        "manage spk vehicles",
+        "view spk live",
+        "upload spk qc",
+        "view customers",
+        "manage customers",
+        "view crews",
+        "view vehicles",
+        "view inventory",
+        "print invoice"
+      ]
+    },
+    "Finance": {
+      "display_name": "Finance & Billing",
+      "description": "Invoicing, payments, receipts, crew payroll verification, and fund disbursement.",
+      "permissions": [
+        "view dashboard",
+        "view financial stats",
+        "view orders",
+        "view spk",
+        "print spk",
+        "view invoices",
+        "create invoice",
+        "edit invoice",
+        "delete invoice",
+        "record invoice payment",
+        "delete invoice payment",
+        "print invoice",
+        "print receipt",
+        "view payroll",
+        "manage crew fees",
+        "manage operational costs",
+        "mark payroll paid",
+        "print payroll slip",
+        "view customers",
+        "view crews",
+        "manage crews"
+      ]
+    },
+    "Warehouse": {
+      "display_name": "Warehouse (Tim Gudang)",
+      "description": "Physical inventory handling, departure & return checklists (SPK Pages 2 & 3), and gate passes.",
+      "permissions": [
+        "view dashboard",
+        "view orders",
+        "view spk",
+        "print spk",
+        "manage spk departure",
+        "manage spk return",
+        "sign spk warehouse",
+        "report spk discrepancy",
+        "view inventory",
+        "create product",
+        "edit product",
+        "manage locations",
+        "record movement",
+        "conduct stock count",
+        "request stock adjustment",
+        "create service ticket",
+        "view vehicles"
+      ]
+    },
+    "Kepala Servis": {
+      "display_name": "Kepala Servis (Head of Maintenance)",
+      "description": "LED workshop manager, ticket triage, technician assignment, sparepart approval, and workshop QC clearance.",
+      "permissions": [
+        "view dashboard",
+        "view service tickets",
+        "create service ticket",
+        "assign service ticket",
+        "execute service ticket",
+        "approve service ticket",
+        "manage service spareparts",
+        "view inventory",
+        "manage locations",
+        "record movement",
+        "request stock adjustment"
+      ]
+    },
+    "Teknisi Servis": {
+      "display_name": "Teknisi Servis (Workshop Technician)",
+      "description": "Hands-on module repair, component soldering, and recording spareparts used on assigned tickets.",
+      "permissions": [
+        "view dashboard",
+        "view service tickets",
+        "execute service ticket",
+        "manage service spareparts"
+      ]
+    }
+  }
+}
+
