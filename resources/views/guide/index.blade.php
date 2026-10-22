@@ -4,7 +4,7 @@
 @section('page_title', 'Buku Panduan & SOP Operasional')
 
 @section('content')
-<div x-data="{ 
+<div x-data="{
     activeTab: 'alur',
     searchQuery: '',
     copiedEmail: null,
@@ -19,7 +19,7 @@
     <div class="relative overflow-hidden rounded-3xl bg-linear-to-br from-indigo-950 via-slate-900 to-slate-950 border border-indigo-500/30 p-6 md:p-10 shadow-2xl">
         <div class="absolute -right-10 -top-10 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
         <div class="absolute -left-10 -bottom-10 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
-        
+
         <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
             <div class="space-y-3 max-w-3xl">
                 <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30">
@@ -100,10 +100,10 @@
 
             <!-- Visual Stepper / Timeline -->
             <div class="relative border-l-2 border-indigo-500/30 ml-4 md:ml-8 space-y-10 py-4">
-                
+
                 <!-- Step 1 -->
                 <div class="relative pl-8 group">
-                    <div class="absolute -left-[17px] top-0 w-8 h-8 rounded-full bg-indigo-600 text-white font-black text-xs flex items-center justify-center border-4 border-slate-900 shadow-md">
+                    <div class="absolute -left-4.25 top-0 w-8 h-8 rounded-full bg-indigo-600 text-white font-black text-xs flex items-center justify-center border-4 border-slate-900 shadow-md">
                         1
                     </div>
                     <div class="bg-slate-800/50 hover:bg-slate-800/80 transition-all rounded-2xl p-5 border border-slate-700/60">
@@ -128,7 +128,7 @@
 
                 <!-- Step 2 -->
                 <div class="relative pl-8 group">
-                    <div class="absolute -left-[17px] top-0 w-8 h-8 rounded-full bg-indigo-600 text-white font-black text-xs flex items-center justify-center border-4 border-slate-900 shadow-md">
+                    <div class="absolute -left-4.25 top-0 w-8 h-8 rounded-full bg-indigo-600 text-white font-black text-xs flex items-center justify-center border-4 border-slate-900 shadow-md">
                         2
                     </div>
                     <div class="bg-slate-800/50 hover:bg-slate-800/80 transition-all rounded-2xl p-5 border border-slate-700/60">
@@ -159,7 +159,7 @@
 
                 <!-- Step 3 -->
                 <div class="relative pl-8 group">
-                    <div class="absolute -left-[17px] top-0 w-8 h-8 rounded-full bg-indigo-600 text-white font-black text-xs flex items-center justify-center border-4 border-slate-900 shadow-md">
+                    <div class="absolute -left-4.25 top-0 w-8 h-8 rounded-full bg-indigo-600 text-white font-black text-xs flex items-center justify-center border-4 border-slate-900 shadow-md">
                         3
                     </div>
                     <div class="bg-slate-800/50 hover:bg-slate-800/80 transition-all rounded-2xl p-5 border border-slate-700/60">
@@ -186,7 +186,7 @@
 
                 <!-- Step 4 -->
                 <div class="relative pl-8 group">
-                    <div class="absolute -left-[17px] top-0 w-8 h-8 rounded-full bg-amber-500 text-slate-950 font-black text-xs flex items-center justify-center border-4 border-slate-900 shadow-md">
+                    <div class="absolute -left-4.25 top-0 w-8 h-8 rounded-full bg-amber-500 text-slate-950 font-black text-xs flex items-center justify-center border-4 border-slate-900 shadow-md">
                         4
                     </div>
                     <div class="bg-slate-800/50 hover:bg-slate-800/80 transition-all rounded-2xl p-5 border border-slate-700/60">
@@ -213,7 +213,7 @@
 
                 <!-- Step 5 & 6 -->
                 <div class="relative pl-8 group">
-                    <div class="absolute -left-[17px] top-0 w-8 h-8 rounded-full bg-indigo-600 text-white font-black text-xs flex items-center justify-center border-4 border-slate-900 shadow-md">
+                    <div class="absolute -left-4.25 top-0 w-8 h-8 rounded-full bg-indigo-600 text-white font-black text-xs flex items-center justify-center border-4 border-slate-900 shadow-md">
                         5
                     </div>
                     <div class="bg-slate-800/50 hover:bg-slate-800/80 transition-all rounded-2xl p-5 border border-slate-700/60">
@@ -237,7 +237,7 @@
 
                 <!-- Step 7 -->
                 <div class="relative pl-8 group">
-                    <div class="absolute -left-[17px] top-0 w-8 h-8 rounded-full bg-indigo-600 text-white font-black text-xs flex items-center justify-center border-4 border-slate-900 shadow-md">
+                    <div class="absolute -left-4.25 top-0 w-8 h-8 rounded-full bg-indigo-600 text-white font-black text-xs flex items-center justify-center border-4 border-slate-900 shadow-md">
                         6
                     </div>
                     <div class="bg-slate-800/50 hover:bg-slate-800/80 transition-all rounded-2xl p-5 border border-slate-700/60">
@@ -264,7 +264,7 @@
 
                 <!-- Step 8 -->
                 <div class="relative pl-8 group">
-                    <div class="absolute -left-[17px] top-0 w-8 h-8 rounded-full bg-indigo-600 text-white font-black text-xs flex items-center justify-center border-4 border-slate-900 shadow-md">
+                    <div class="absolute -left-4.25 top-0 w-8 h-8 rounded-full bg-indigo-600 text-white font-black text-xs flex items-center justify-center border-4 border-slate-900 shadow-md">
                         7
                     </div>
                     <div class="bg-slate-800/50 hover:bg-slate-800/80 transition-all rounded-2xl p-5 border border-slate-700/60">
@@ -289,7 +289,7 @@
 
                 <!-- Step 9 -->
                 <div class="relative pl-8 group">
-                    <div class="absolute -left-[17px] top-0 w-8 h-8 rounded-full bg-indigo-600 text-white font-black text-xs flex items-center justify-center border-4 border-slate-900 shadow-md">
+                    <div class="absolute -left-4.25 top-0 w-8 h-8 rounded-full bg-indigo-600 text-white font-black text-xs flex items-center justify-center border-4 border-slate-900 shadow-md">
                         8
                     </div>
                     <div class="bg-slate-800/50 hover:bg-slate-800/80 transition-all rounded-2xl p-5 border border-slate-700/60">
@@ -314,7 +314,7 @@
 
                 <!-- Step 10 -->
                 <div class="relative pl-8 group">
-                    <div class="absolute -left-[17px] top-0 w-8 h-8 rounded-full bg-indigo-600 text-white font-black text-xs flex items-center justify-center border-4 border-slate-900 shadow-md">
+                    <div class="absolute -left-4.25 top-0 w-8 h-8 rounded-full bg-indigo-600 text-white font-black text-xs flex items-center justify-center border-4 border-slate-900 shadow-md">
                         9
                     </div>
                     <div class="bg-slate-800/50 hover:bg-slate-800/80 transition-all rounded-2xl p-5 border border-slate-700/60">
@@ -344,7 +344,7 @@
     <!-- TAB 2: PANDUAN TIAP PERAN (ROLES BREAKDOWN) -->
     <div x-show="activeTab === 'peran'" x-cloak class="space-y-6">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            
+
             <!-- 1. Owner & Superuser -->
             <div class="bg-slate-900 border border-amber-500/30 rounded-3xl p-6 relative overflow-hidden shadow-xl">
                 <div class="flex items-center justify-between mb-4">
@@ -514,7 +514,7 @@
     <!-- TAB 3: FITUR KUNCI & KEUNGGULAN SISTEM -->
     <div x-show="activeTab === 'fitur'" x-cloak class="space-y-6">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            
+
             <!-- Fitur 1 -->
             <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-3">
                 <div class="w-12 h-12 rounded-2xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-black">
@@ -617,7 +617,7 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-800 bg-slate-900/60 font-normal">
-                        
+
                         <!-- Superuser -->
                         <tr class="hover:bg-slate-800/40 transition-colors">
                             <td class="px-5 py-4">
