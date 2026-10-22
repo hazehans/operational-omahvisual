@@ -1,0 +1,11 @@
+- reminder untuk crew berdasarkan tanggal job
+- crew luar hanya bisa read dan fitur tidak selengkap yang ada di crew prioritas
+- aplikasi di hp untuk mempermudah konfirmasi dan informasi yang masuk
+> konfirmasi -> jadwal job yg sdh fix
+> informasi -> crew juga punya kalender dia sendiri
+> wallet crew sendiri (pengajuan pencairan dll berdasarkan saldo yang dimiliki)
+- dashboard finance, dashboard Gudang, dll, berdasarkan dashboard (membuat forum yang menampilkan online condition masing2 role)
+- fast moving inventory management
+
+priority
+spk->kru berangkat->kru pulang

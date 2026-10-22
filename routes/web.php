@@ -9,6 +9,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CustomerTrackingController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EventOrderController;
+use App\Http\Controllers\GuideController;
 use App\Http\Controllers\InitialCountController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\LocationController;
@@ -43,6 +44,9 @@ Route::middleware('auth')->group(function () {
     // Dashboard
     Route::get('/', [DashboardController::class, 'index'])->name('home');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Buku Panduan Aplikasi & SOP Operasional
+    Route::get('/guide', [GuideController::class, 'index'])->name('guide.index');
 
     // User Profile & Password
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
