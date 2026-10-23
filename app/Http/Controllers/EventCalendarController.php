@@ -50,8 +50,8 @@ class EventCalendarController extends Controller
             ->orderBy('event_start_date')
             ->get();
 
-        $startOfGrid = $startOfMonth->copy()->startOfWeek(Carbon::MONDAY);
-        $endOfGrid = $endOfMonth->copy()->endOfWeek(Carbon::SUNDAY);
+        $startOfGrid = $startOfMonth->copy()->startOfWeek();
+        $endOfGrid = $endOfMonth->copy()->endOfWeek();
 
         // Group events by date string (YYYY-MM-DD)
         $eventsByDate = [];

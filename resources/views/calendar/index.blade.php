@@ -215,15 +215,17 @@
                     <!-- Events Container for this Day -->
                     <div class="space-y-1.5 flex-1 overflow-y-auto max-h-27.5 pr-0.5">
                         @foreach($dayEvents as $evt)
+                            @php
+                                $cardClass = match($evt['status']) {
+                                    'confirmed' => 'bg-emerald-950/60 hover:bg-emerald-900/80 border-emerald-500/30 text-emerald-200',
+                                    'loading' => 'bg-sky-950/60 hover:bg-sky-900/80 border-sky-500/30 text-sky-200',
+                                    'completed' => 'bg-purple-950/60 hover:bg-purple-900/80 border-purple-500/30 text-purple-200',
+                                    default => 'bg-slate-800/80 hover:bg-slate-700 border-slate-700 text-slate-200',
+                                };
+                            @endphp
                             <div x-show="matchesFilter({{ Js::from($evt) }})"
                                  @click="openEventDetail({{ Js::from($evt) }})"
-                                 class="p-1.5 rounded-xl text-left cursor-pointer transition-all border transform hover:-translate-y-0.5 shadow-xs
-                                 @if($evt['status'] === 'confirmed') text-emerald-200
-                                 @elseif($evt['status'] === 'loading')
-                                     bg-sky-950/60 hover:bg-sky-900/80 border-sky-500/30 text-sky-200
-                                 @elseif($evt['status'] === 'completed') text-purple-200
-                                 @else text-slate-200
-                                 @endif">
+                                 class="p-1.5 rounded-xl text-left cursor-pointer transition-all border transform hover:-translate-y-0.5 shadow-xs {{ $cardClass }}">
 
                                 <div class="flex items-center justify-between gap-1">
                                     <div class="font-bold text-[11px] truncate leading-tight">
@@ -235,7 +237,7 @@
                                 </div>
 
                                 <div class="flex items-center justify-between text-[10px] opacity-80 mt-0.5">
-                                    <span class="truncate max-w-[85px]">{{ $evt['venue_name'] }}</span>
+                                    <span class="truncate max-w-20">{{ $evt['venue_name'] }}</span>
                                     @if($evt['is_loading_day'])
                                         <span class="text-sky-300 font-bold shrink-0">🚚 In</span>
                                     @elseif($evt['is_event_day'])
