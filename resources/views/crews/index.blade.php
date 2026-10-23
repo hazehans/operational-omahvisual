@@ -85,7 +85,7 @@
                                         @endif
                                     </div>
                                     <div>
-                                        <div class="font-bold text-slate-900 dark:text-white text-sm">{{ $crew->nickname }}</div>
+                                        <a href="{{ route('crews.show', $crew) }}" class="font-bold text-slate-900 dark:text-white text-sm hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">{{ $crew->nickname }}</a>
                                         <div class="font-mono text-[10px] text-indigo-600 dark:text-indigo-400 font-bold">{{ $crew->crew_code }}</div>
                                     </div>
                                 </div>
@@ -159,6 +159,9 @@
                             </td>
                             <td class="px-4 py-3 text-right">
                                 <div class="flex items-center justify-end gap-2">
+                                    <a href="{{ route('crews.show', $crew) }}" class="p-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 hover:bg-indigo-100 text-indigo-600 dark:text-indigo-400 transition-colors" title="Lihat Profil & Dompet Saldo Kru">
+                                        💳
+                                    </a>
                                     <a href="{{ route('crew-payroll.crew-monthly-slip', $crew) }}" target="_blank" class="p-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 hover:bg-emerald-100 text-emerald-600 dark:text-emerald-400 transition-colors" title="Lihat Rekap Slip Bulanan Kru">
                                         💰
                                     </a>

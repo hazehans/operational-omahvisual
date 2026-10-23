@@ -603,6 +603,28 @@
                 </p>
             </div>
 
+            <!-- Fitur 9 -->
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-3">
+                <div class="w-12 h-12 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-black">
+                    💰
+                </div>
+                <h3 class="text-lg font-bold text-white">Dompet &amp; Saldo Honor Kru</h3>
+                <p class="text-sm text-slate-300 leading-relaxed">
+                    Profil kru dilengkapi dashboard dompet terpadu: memantau saldo pending (belum cair), saldo sudah cair, riwayat slip per event, dan tombol 1-klik pengajuan pencairan ke Finance via WhatsApp.
+                </p>
+            </div>
+
+            <!-- Fitur 10 -->
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-3">
+                <div class="w-12 h-12 rounded-2xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-black">
+                    📡
+                </div>
+                <h3 class="text-lg font-bold text-white">Radar Kondisi Tim &amp; Live Feed</h3>
+                <p class="text-sm text-slate-300 leading-relaxed">
+                    Dashboard memonitor kondisi online/siaga masing-masing divisi (Manager Ops, Admin, Gudang, Servis) beserta live activity stream aktivitas audit log terbaru tanpa perlu menanyai tim secara manual.
+                </p>
+            </div>
+
         </div>
     </div>
 

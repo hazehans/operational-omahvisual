@@ -62,4 +62,17 @@ class GuideAndDocumentationTest extends TestCase
         $response->assertSee('Buku Panduan &amp; Standar Operasional (SOP)', false);
         $response->assertSee('Mode Uji Coba Bos');
     }
+
+    public function test_dashboard_displays_team_radar_and_live_activity_stream(): void
+    {
+        $response = $this->actingAs($this->user)->get(route('dashboard'));
+
+        $response->assertStatus(200);
+        $response->assertSee('Kondisi &amp; Radar Tim Operasional', false);
+        $response->assertSee('Manager Operasional');
+        $response->assertSee('Admin LED &amp; Finance', false);
+        $response->assertSee('Tim Gudang (Warehouse)');
+        $response->assertSee('Ruang Servis &amp; Workshop', false);
+        $response->assertSee('Aktivitas Terkini Sistem');
+    }
 }

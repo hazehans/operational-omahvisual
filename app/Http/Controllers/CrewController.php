@@ -156,6 +156,63 @@ class CrewController extends Controller
     }
 
     /**
+     * Display the specified crew member profile & wallet.
+     */
+    public function show(Crew $crew): View
+    {
+        $crew->load(['user']);
+
+        $assignments = $crew->eventCrewAssignments()
+            ->with(['eventOrder', 'spkAssignment'])
+            ->latest()
+            ->paginate(15);
+
+        // Calculate Wallet stats
+        $allAssignments = $crew->eventCrewAssignments;
+        $totalEarned = (float) $allAssignments->sum('total_fee');
+        $totalPaid = (float) $allAssignments->where('payment_status', 'paid')->sum('total_fee');
+        $totalPending = (float) $allAssignments->where('payment_status', '!=', 'paid')->sum('total_fee');
+        $totalJobs = $allAssignments->count();
+
+        // 1-Click WhatsApp Withdrawal Request generator to Finance
+        $financePhone = config('app.finance_phone', '085785193041');
+        $bankName = $crew->bank_name ?? 'Bank';
+        $bankAcc = $crew->bank_account_number ?? '-';
+        $bankHolder = $crew->bank_account_holder ?? $crew->full_name;
+
+        $unpaidEvents = $allAssignments->where('payment_status', '!=', 'paid')->map(function ($a) {
+            return ($a->eventOrder->event_name ?? 'Event').' (Rp '.number_format((float) $a->total_fee, 0, ',', '.').')';
+        })->take(3)->implode(', ');
+
+        $withdrawalMsg = "Halo Finance Omah Visual! 👋\n\n"
+            ."Saya *{$crew->nickname}* ({$crew->full_name}) ingin mengajukan *PENCAIRAN HONOR KRU*:\n"
+            ."━━━━━━━━━━━━━━━━━━━━\n"
+            .'💰 *Total Saldo Diajukan:* Rp '.number_format($totalPending, 0, ',', '.')."\n"
+            ."🏦 *Bank Tujuan:* {$bankName}\n"
+            ."💳 *No Rekening:* {$bankAcc}\n"
+            ."👤 *Atas Nama:* {$bankHolder}\n";
+
+        if ($unpaidEvents) {
+            $withdrawalMsg .= "📋 *Rincian Job:* {$unpaidEvents}\n";
+        }
+
+        $withdrawalMsg .= "━━━━━━━━━━━━━━━━━━━━\n"
+            .'Mohon bantuannya untuk diproses pencairan ke rekening saya. Terima kasih banyak! 🙏✨';
+
+        $withdrawalWhatsappUrl = WhatsAppHelper::buildUrl($financePhone, $withdrawalMsg);
+
+        return view('crews.show', compact(
+            'crew',
+            'assignments',
+            'totalEarned',
+            'totalPaid',
+            'totalPending',
+            'totalJobs',
+            'withdrawalWhatsappUrl'
+        ));
+    }
+
+    /**
      * Show the form for editing the specified crew.
      */
     public function edit(Crew $crew): View

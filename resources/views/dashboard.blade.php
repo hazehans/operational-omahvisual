@@ -210,6 +210,68 @@
         </div>
     </div>
 
+    <!-- Radar Kondisi Tim Operasional (Online Condition Forum Tiap Role) -->
+    <div class="space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+                <div class="flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <h2 class="text-lg font-black text-slate-900 dark:text-white tracking-tight">Kondisi &amp; Radar Tim Operasional (Live Role Status)</h2>
+                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">
+                        Multi-Role Monitor
+                    </span>
+                </div>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                    Pantau kesiapan tim kantor, logistik gudang, teknisi bengkel, dan jejak aktivitas terakhir tiap divisi secara real-time.
+                </p>
+            </div>
+            @can('view audit logs')
+            <a href="{{ route('audit-logs.index') }}" class="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1 self-start sm:self-auto">
+                <span>Lihat Audit Trail Lengkap &rarr;</span>
+            </a>
+            @endcan
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            @foreach($roleRadar as $key => $r)
+                <div class="p-4 rounded-2xl bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800/80 shadow-md flex flex-col justify-between space-y-3 hover:border-indigo-500/40 transition-all">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                <span>Siaga / Aktif</span>
+                            </span>
+                            @if($r['last_log'])
+                                <span class="text-[10px] text-slate-400 font-mono">
+                                    {{ $r['last_log']->created_at?->diffForHumans() }}
+                                </span>
+                            @endif
+                        </div>
+
+                        <h3 class="text-sm font-bold text-slate-900 dark:text-white leading-snug">
+                            {{ $r['title'] }}
+                        </h3>
+                        <div class="text-xs font-semibold text-indigo-600 dark:text-indigo-400 mt-0.5">
+                            {{ $r['user']?->name ?? 'Tim Divisi' }}
+                        </div>
+                        <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+                            {{ $r['focus'] }}
+                        </p>
+                    </div>
+
+                    <div class="pt-2 border-t border-slate-100 dark:border-slate-800/60 flex items-center justify-between text-xs">
+                        <span class="text-[11px] text-slate-400 truncate max-w-[140px]" title="{{ $r['last_log']?->description ?? 'Menunggu aktivitas baru' }}">
+                            {{ Str::limit($r['last_log']?->description ?? 'Siaga di pos operasional', 28) }}
+                        </span>
+                        <a href="{{ $r['route'] }}" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 font-bold text-xs shrink-0">
+                            Buka &rarr;
+                        </a>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    </div>
+
     <!-- Section 2 Kolom: Processor Novastar & Riwayat Mutasi -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
@@ -308,6 +370,40 @@
                             </div>
                         </a>
                     @endforeach
+                </div>
+            </div>
+
+            <!-- Aktivitas Terkini Sistem (Live Activity Feed) -->
+            <div>
+                <div class="flex items-center justify-between mb-1">
+                    <h2 class="text-lg font-bold text-slate-900 dark:text-white">Aktivitas Terkini Sistem</h2>
+                    <span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 font-bold uppercase">Live Feed</span>
+                </div>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mb-3">Rekaman tindakan operasional terbaru dari seluruh divisi</p>
+
+                <div class="space-y-2">
+                    @forelse($recentActivities as $act)
+                        <div class="p-3 rounded-xl bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800/80 text-xs space-y-1 shadow-xs">
+                            <div class="flex items-center justify-between gap-2">
+                                <div class="flex items-center gap-1.5 font-bold text-slate-800 dark:text-slate-200">
+                                    <div class="w-5 h-5 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-[10px] font-bold">
+                                        {{ strtoupper(substr($act->user?->name ?? 'S', 0, 1)) }}
+                                    </div>
+                                    <span class="truncate max-w-28">{{ $act->user?->name ?? 'Sistem' }}</span>
+                                </div>
+                                <span class="text-[10px] font-mono text-slate-400 shrink-0">
+                                    {{ $act->created_at?->diffForHumans() }}
+                                </span>
+                            </div>
+                            <p class="text-[11px] text-slate-600 dark:text-slate-400 leading-tight">
+                                {{ $act->description ?? $act->action }}
+                            </p>
+                        </div>
+                    @empty
+                        <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 text-slate-400 text-xs text-center">
+                            Belum ada aktivitas tercatat.
+                        </div>
+                    @endforelse
                 </div>
             </div>
         </div>

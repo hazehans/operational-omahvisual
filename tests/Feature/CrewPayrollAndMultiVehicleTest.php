@@ -670,4 +670,26 @@ class CrewPayrollAndMultiVehicleTest extends TestCase
         $this->assertEquals('6581234567', $customer->whatsapp_number);
         $this->assertEquals('https://wa.me/6581234567', $customer->whatsapp_url);
     }
+
+    public function test_can_view_crew_profile_and_wallet_page(): void
+    {
+        EventCrewAssignment::create([
+            'event_order_id' => $this->order->id,
+            'crew_id' => $this->crew->id,
+            'role_label' => 'Crew Panggung',
+            'fee_loading_in' => 100000,
+            'payment_status' => 'unpaid',
+            'status' => 'acc',
+        ]);
+
+        $response = $this->actingAs($this->user)->get(route('crews.show', $this->crew));
+
+        $response->assertStatus(200);
+        $response->assertViewIs('crews.show');
+        $response->assertSee('Dompet &amp; Saldo Honor', false);
+        $response->assertSee('Saldo Belum Dicairkan');
+        $response->assertSee('Sudah Dicairkan');
+        $response->assertSee('Total Akumulasi Honor');
+        $response->assertSee('Ajukan Pencairan Honor ke Finance');
+    }
 }
