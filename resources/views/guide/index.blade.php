@@ -581,6 +581,28 @@
                 </p>
             </div>
 
+            <!-- Fitur 7 -->
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-3">
+                <div class="w-12 h-12 rounded-2xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-black">
+                    📅
+                </div>
+                <h3 class="text-lg font-bold text-white">Kalender Jadwal &amp; Deteksi Bentrok</h3>
+                <p class="text-sm text-slate-300 leading-relaxed">
+                    Visualisasi kalender bulanan interaktif untuk memonitor agenda loading dan show, lengkap dengan indikator otomatis jika ada multi-event serentak atau kapasitas stok kabinet videotron terpakai tinggi.
+                </p>
+            </div>
+
+            <!-- Fitur 8 -->
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-3">
+                <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-black">
+                    ⏰
+                </div>
+                <h3 class="text-lg font-bold text-white">1-Click WhatsApp Reminder Kru</h3>
+                <p class="text-sm text-slate-300 leading-relaxed">
+                    Sistem dapat mengirimkan pesan pengingat jadwal tugas ke WhatsApp personel kru secara instan: memuat nama acara, tanggal loading, alamat venue, posisi/tugas, dan tautan langsung ke SPK Live mobile.
+                </p>
+            </div>
+
         </div>
     </div>
 

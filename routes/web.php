@@ -8,6 +8,7 @@ use App\Http\Controllers\CrewPayrollController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CustomerTrackingController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\EventCalendarController;
 use App\Http\Controllers\EventOrderController;
 use App\Http\Controllers\GuideController;
 use App\Http\Controllers\InitialCountController;
@@ -47,6 +48,9 @@ Route::middleware('auth')->group(function () {
 
     // Buku Panduan Aplikasi & SOP Operasional
     Route::get('/guide', [GuideController::class, 'index'])->name('guide.index');
+
+    // Kalender Jadwal Operasional & Kru
+    Route::get('/calendar', [EventCalendarController::class, 'index'])->name('calendar.index');
 
     // User Profile & Password
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

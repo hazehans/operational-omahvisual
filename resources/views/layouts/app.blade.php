@@ -134,6 +134,17 @@
                     Event & Persewaan LED
                 </div>
 
+                <!-- Kalender Jadwal Event & Kru -->
+                <a href="{{ route('calendar.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all {{ request()->routeIs('calendar.*') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-slate-800/50' }}">
+                    <svg class="w-4 h-4 shrink-0 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <div class="flex items-center justify-between flex-1">
+                        <span>Kalender Jadwal</span>
+                        <span class="px-1.5 py-0.5 text-[10px] rounded bg-indigo-500/20 text-indigo-400 font-bold">Agenda</span>
+                    </div>
+                </a>
+
                 @can('view orders')
                 <!-- Pesanan Event & SPK -->
                 <a href="{{ route('orders.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all {{ request()->routeIs('orders.*') || request()->routeIs('spk.*') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-slate-800/50' }}">

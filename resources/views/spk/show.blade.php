@@ -436,7 +436,10 @@
                                         <!-- Aksi & WA -->
                                         <td class="px-4 py-3 text-right">
                                             <div class="flex items-center justify-end gap-1.5">
-                                                <a href="{{ $caWaUrl }}" target="_blank" class="p-1 rounded bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 text-emerald-600 dark:text-emerald-400" title="Kirim Penawaran WhatsApp">
+                                                <a href="{{ $ca->whatsapp_reminder_url }}" target="_blank" class="px-2 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[10px] flex items-center gap-1 shadow-xs transition-all" title="Kirim Reminder Jadwal & Link SPK Live via WhatsApp">
+                                                    <span>⏰ Reminder</span>
+                                                </a>
+                                                <a href="{{ $ca->whatsapp_offer_url }}" target="_blank" class="p-1 rounded bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 text-emerald-600 dark:text-emerald-400" title="Kirim Penawaran Fee WhatsApp">
                                                     💬
                                                 </a>
                                                 <button type="button" @click="openEditCrewModal({{ Js::from($ca) }})" class="p-1 rounded bg-slate-100 dark:bg-slate-800 hover:bg-indigo-50 text-slate-600 dark:text-slate-300" title="Edit Fee / Peran">
