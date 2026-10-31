@@ -29,6 +29,11 @@ class StockMovementItem extends Model
         return $this->belongsTo(StockMovement::class, 'stock_movement_id');
     }
 
+    public function stockMovement(): BelongsTo
+    {
+        return $this->movement();
+    }
+
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);

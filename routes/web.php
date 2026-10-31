@@ -59,6 +59,8 @@ Route::middleware('auth')->group(function () {
 
     // Master Products & Categories
     Route::middleware('can:view inventory')->group(function () {
+        Route::get('/products/export/csv', [ProductController::class, 'exportCsv'])->name('products.export-csv');
+        Route::get('/products/print/report', [ProductController::class, 'printReport'])->name('products.print-report');
         Route::resource('products', ProductController::class);
 
         // Individual Serialized Assets
