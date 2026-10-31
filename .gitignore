@@ -26,3 +26,5 @@ Homestead.json
 Thumbs.db
 /temp/*
 !/temp/.gitkeep
+/database/backups/*.sql
+!/database/backups/.gitkeep
