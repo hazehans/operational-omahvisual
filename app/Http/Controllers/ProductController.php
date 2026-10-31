@@ -56,8 +56,9 @@ class ProductController extends Controller
 
         $totalSqmReady = 0;
         foreach ($allProducts as $p) {
+            /** @var Product $p */
             if ($p->sqm_per_unit) {
-                $readyQty = $p->isIndividual()
+                $readyQty = $p->tracking_type === 'individual'
                     ? $p->assets->where('condition', 'available')->where('status', 'in_storage')->count()
                     : (float) $p->stockBalances->where('condition', 'available')->sum('quantity');
                 $totalSqmReady += round($readyQty * (float) $p->sqm_per_unit, 2);
@@ -126,7 +127,8 @@ class ProductController extends Controller
 
             $no = 1;
             foreach ($products as $prod) {
-                if ($prod->isIndividual()) {
+                /** @var Product $prod */
+                if ($prod->tracking_type === 'individual') {
                     $ready = $prod->assets->where('condition', 'available')->where('status', 'in_storage')->count();
                     $service = $prod->assets->where('condition', 'in_service')->count();
                     $damaged = $prod->assets->where('condition', 'damaged')->count();
@@ -146,7 +148,7 @@ class ProductController extends Controller
                     $prod->category->name ?? '-',
                     $prod->brand ?? '-',
                     $prod->model_series ?? '-',
-                    $prod->isIndividual() ? 'Per-Unit Serial' : 'Kuantitas Stok',
+                    $prod->tracking_type === 'individual' ? 'Per-Unit Serial' : 'Kuantitas Stok',
                     $prod->sqm_per_unit ? (float) $prod->sqm_per_unit : '-',
                     $ready,
                     $service,
@@ -202,7 +204,8 @@ class ProductController extends Controller
         $totalDamagedQuantity = 0;
 
         foreach ($products as $prod) {
-            if ($prod->isIndividual()) {
+            /** @var Product $prod */
+            if ($prod->tracking_type === 'individual') {
                 $ready = $prod->assets->where('condition', 'available')->where('status', 'in_storage')->count();
                 $service = $prod->assets->where('condition', 'in_service')->count();
                 $damaged = $prod->assets->where('condition', 'damaged')->count();
