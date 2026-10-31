@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Asset;
 use App\Models\AuditLog;
 use App\Models\Location;
 use App\Models\Product;
@@ -50,7 +51,63 @@ class StockAdjustmentController extends Controller
         $locations = Location::where('is_active', true)->orderBy('name')->get();
         $products = Product::where('is_active', true)->with('unit')->orderBy('name')->get();
 
-        return view('adjustments.create', compact('locations', 'products'));
+        // Ambil pemetaan produk di setiap lokasi berdasarkan StockBalance & Asset
+        $stockBalances = StockBalance::select('location_id', 'product_id', 'condition', 'ownership', 'quantity')
+            ->get();
+
+        $assets = Asset::select('current_location_id as location_id', 'product_id', 'condition', 'ownership')
+            ->whereIn('status', ['in_storage', 'deployed'])
+            ->get();
+
+        $locationProductsMap = [];
+        foreach ($stockBalances as $sb) {
+            $locId = (int) $sb->location_id;
+            $prodId = (int) $sb->product_id;
+            $qty = (float) $sb->quantity;
+
+            if (! isset($locationProductsMap[$locId])) {
+                $locationProductsMap[$locId] = [];
+            }
+            if (! isset($locationProductsMap[$locId][$prodId])) {
+                $locationProductsMap[$locId][$prodId] = [
+                    'total_qty' => 0,
+                    'breakdown' => [],
+                ];
+            }
+            $locationProductsMap[$locId][$prodId]['total_qty'] += $qty;
+            $key = "{$sb->condition}_{$sb->ownership}";
+            $locationProductsMap[$locId][$prodId]['breakdown'][$key] = ($locationProductsMap[$locId][$prodId]['breakdown'][$key] ?? 0) + $qty;
+        }
+
+        foreach ($assets as $ast) {
+            $locId = (int) $ast->location_id;
+            $prodId = (int) $ast->product_id;
+
+            if (! isset($locationProductsMap[$locId])) {
+                $locationProductsMap[$locId] = [];
+            }
+            if (! isset($locationProductsMap[$locId][$prodId])) {
+                $locationProductsMap[$locId][$prodId] = [
+                    'total_qty' => 0,
+                    'breakdown' => [],
+                ];
+            }
+            $locationProductsMap[$locId][$prodId]['total_qty'] += 1;
+            $key = "{$ast->condition}_{$ast->ownership}";
+            $locationProductsMap[$locId][$prodId]['breakdown'][$key] = ($locationProductsMap[$locId][$prodId]['breakdown'][$key] ?? 0) + 1;
+        }
+
+        $productsList = $products->map(function ($p) {
+            return [
+                'id' => $p->id,
+                'code' => $p->code,
+                'name' => $p->name,
+                'unit' => $p->unit->symbol ?? $p->unit->name ?? 'unit',
+                'tracking_type' => $p->tracking_type,
+            ];
+        })->values();
+
+        return view('adjustments.create', compact('locations', 'products', 'productsList', 'locationProductsMap'));
     }
 
     /**
@@ -71,6 +128,8 @@ class StockAdjustmentController extends Controller
             'adjusted_quantity.required' => 'Jumlah fisik hasil temuan wajib diisi.',
         ]);
 
+        $product = Product::findOrFail($validated['product_id']);
+
         // Cek saldo sistem saat ini
         $balance = StockBalance::where('product_id', $validated['product_id'])
             ->where('location_id', $validated['location_id'])
@@ -78,7 +137,18 @@ class StockAdjustmentController extends Controller
             ->where('ownership', $validated['ownership'])
             ->first();
 
-        $currentQty = $balance ? (float) $balance->quantity : 0;
+        if ($balance) {
+            $currentQty = (float) $balance->quantity;
+        } elseif ($product->isIndividual()) {
+            $currentQty = (float) Asset::where('product_id', $product->id)
+                ->where('current_location_id', $validated['location_id'])
+                ->where('condition', $validated['condition'])
+                ->where('ownership', $validated['ownership'])
+                ->count();
+        } else {
+            $currentQty = 0;
+        }
+
         $adjustedQty = (float) $validated['adjusted_quantity'];
         $difference = $adjustedQty - $currentQty;
 

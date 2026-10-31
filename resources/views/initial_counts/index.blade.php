@@ -191,7 +191,7 @@
                                 <span class="font-mono text-indigo-400 font-bold block">{{ $item->product->code }}</span>
                                 <span class="font-semibold text-white">{{ $item->product->name }}</span>
                                 @if($item->product->sqm_per_unit)
-                                    <span class="block text-[11px] text-slate-400">Luas: {{ $item->product->sqm_per_unit }} m²/unit</span>
+                                    <span class="block text-[11px] text-slate-400">Luas: {{ number_format((float) $item->product->sqm_per_unit, 2) }} m²/unit</span>
                                 @endif
                             </td>
                             <td class="px-5 py-3.5 text-slate-300">

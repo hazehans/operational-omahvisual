@@ -140,7 +140,7 @@
             <div>
                 <span class="text-slate-400 text-xs block mb-0.5">Luas Meter Persegi:</span>
                 <span class="font-semibold text-indigo-400">
-                    {{ $product->sqm_per_unit ? $product->sqm_per_unit . ' m² / unit' : 'Bukan Kabinet' }}
+                    {{ $product->sqm_per_unit ? number_format((float) $product->sqm_per_unit, 2) . ' m² / unit' : 'Bukan Kabinet' }}
                 </span>
             </div>
             <div>

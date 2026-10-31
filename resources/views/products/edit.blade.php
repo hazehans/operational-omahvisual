@@ -124,7 +124,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-sm font-semibold text-slate-200 mb-1.5">Luas m² / Unit (Khusus Kabinet)</label>
-                    <input type="number" step="0.0001" name="sqm_per_unit" value="{{ old('sqm_per_unit', $product->sqm_per_unit) }}"
+                    <input type="number" step="0.01" name="sqm_per_unit" value="{{ old('sqm_per_unit', $product->sqm_per_unit) }}" placeholder="Contoh: 0.50 (100x50 cm)"
                         class="w-full px-4 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-sm text-white focus:outline-none focus:border-indigo-500 transition-colors">
                 </div>
                 <div>

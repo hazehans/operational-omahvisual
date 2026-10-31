@@ -373,7 +373,7 @@ class InventoryDatabaseSeeder extends Seeder
                 'model_series' => 'P3.9',
                 'specification' => '100x50 cm (0.50 sqm/unit)',
                 'tracking_type' => 'quantity',
-                'sqm_per_unit' => 0.5000,
+                'sqm_per_unit' => 0.50,
             ]
         );
         StockBalance::firstOrCreate(
@@ -391,7 +391,7 @@ class InventoryDatabaseSeeder extends Seeder
                 'model_series' => 'P3.9',
                 'specification' => '50x50 cm (0.25 sqm/unit)',
                 'tracking_type' => 'quantity',
-                'sqm_per_unit' => 0.2500,
+                'sqm_per_unit' => 0.25,
             ]
         );
         StockBalance::firstOrCreate(
@@ -409,7 +409,7 @@ class InventoryDatabaseSeeder extends Seeder
                 'model_series' => 'P2.6',
                 'specification' => '100x50 cm (0.50 sqm/unit)',
                 'tracking_type' => 'quantity',
-                'sqm_per_unit' => 0.5000,
+                'sqm_per_unit' => 0.50,
             ]
         );
         StockBalance::firstOrCreate(

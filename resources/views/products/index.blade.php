@@ -179,7 +179,7 @@
                             </td>
                             <td class="px-5 py-4 text-slate-300">
                                 @if($prod->sqm_per_unit)
-                                    <span class="font-semibold text-indigo-400">{{ $prod->sqm_per_unit }} m²</span>
+                                    <span class="font-semibold text-indigo-400">{{ number_format((float) $prod->sqm_per_unit, 2) }} m²</span>
                                     <span class="text-slate-400 text-xs block">per unit kabinet</span>
                                 @else
                                     <span>{{ $prod->unit->name ?? 'Pcs' }}</span>

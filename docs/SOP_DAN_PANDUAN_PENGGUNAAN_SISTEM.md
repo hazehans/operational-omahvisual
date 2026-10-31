@@ -121,7 +121,8 @@ Sistem Web Operasional Omah Visual mengintegrasikan seluruh lini bisnis: kalkula
 2. **Pengajuan oleh Tim Warehouse:**
    * Tim Gudang membuka menu **Inventaris** ➔ **Penyesuaian Stok** (`/adjustments`).
    * Klik tombol **"Ajukan Penyesuaian"** (`/adjustments/create`).
-   * Pilih Lokasi Gudang, Nama Barang, Kondisi Fisik (*Bagus/Rusak/Servis*), dan masukkan **Jumlah Fisik Hasil Temuan Sebenarnya**.
+   * Pilih Lokasi Gudang (dropdown barang/SKU akan secara otomatis memfilter hanya barang yang berada di lokasi tersebut beserta keterangan stoknya, dengan opsi checkbox *Semua Katalog* jika dibutuhkan).
+   * Pilih Nama Barang, Kondisi Fisik (*Bagus/Rusak/Servis*), dan masukkan **Jumlah Fisik Hasil Temuan Sebenarnya** (sistem menyediakan *Live Comparison Card* yang otomatis menghitung selisih lebih/kurang sebelum formulir dikirim).
    * Wajib mengisi **Alasan Selisih** (misal: *"Modul tertimpa rigging saat loading panggung di venue outdoor"*) dan mengunggah **Foto Bukti Fisik**.
    * Status pengajuan menjadi `pending_approval`. Pada tahap ini, saldo resmi di sistem **BELUM BERUBAH**.
 3. **Peninjauan & Keputusan oleh Owner:**

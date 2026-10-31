@@ -28,7 +28,7 @@ class Product extends Model
     ];
 
     protected $casts = [
-        'sqm_per_unit' => 'decimal:4',
+        'sqm_per_unit' => 'decimal:2',
         'min_stock' => 'decimal:2',
         'is_active' => 'boolean',
     ];
