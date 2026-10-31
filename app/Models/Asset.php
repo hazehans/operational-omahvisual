@@ -43,6 +43,27 @@ class Asset extends Model
         return $this->hasMany(ServiceTicket::class);
     }
 
+    public function getConditionLabelAttribute(): string
+    {
+        return match ($this->condition) {
+            'available' => 'Bagus / Siap Sewa',
+            'damaged' => 'Rusak',
+            'in_service' => 'Dalam Servis',
+            default => ucfirst((string) $this->condition),
+        };
+    }
+
+    public function getStatusLabelAttribute(): string
+    {
+        return match ($this->status) {
+            'in_storage' => 'Tersimpan di Gudang',
+            'deployed' => 'Sedang Dipakai Event',
+            'maintenance' => 'Perbaikan / Workshop',
+            'lost' => 'Hilang / Tertinggal',
+            default => ucfirst((string) $this->status),
+        };
+    }
+
     /**
      * Auto-generate kode aset unik Omah Visual LED
      * Format: OVL-AST-YYYYMM-XXXX (contoh: OVL-AST-202610-0001)

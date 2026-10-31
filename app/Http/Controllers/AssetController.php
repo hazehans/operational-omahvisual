@@ -120,20 +120,23 @@ class AssetController extends Controller
     }
 
     /**
-     * Update condition and status of an individual asset.
+     * Update details, serial number, condition and status of an individual asset.
      */
     public function updateStatus(Request $request, Asset $asset): RedirectResponse
     {
         abort_if(auth()->user()->hasRole('Teknisi Servis'), 403, 'Teknisi tidak dapat mengubah status aset manual. Status dikelola otomatis melalui Tiket Servis.');
 
         $validated = $request->validate([
+            'serial_number' => ['nullable', 'string', 'max:100'],
+            'barcode' => ['nullable', 'string', 'max:100'],
+            'ownership' => ['nullable', 'in:company,external'],
             'condition' => ['required', 'in:available,damaged,in_service'],
             'status' => ['required', 'in:in_storage,deployed,maintenance,lost'],
             'current_location_id' => ['required', 'exists:locations,id'],
             'notes' => ['nullable', 'string'],
         ]);
 
-        $oldValues = $asset->only(['condition', 'status', 'current_location_id', 'notes']);
+        $oldValues = $asset->only(['serial_number', 'barcode', 'ownership', 'condition', 'status', 'current_location_id', 'notes']);
         $asset->update($validated);
 
         AuditLog::log(
@@ -142,10 +145,41 @@ class AssetController extends Controller
             entityId: $asset->id,
             oldValues: $oldValues,
             newValues: $validated,
-            description: 'Mengubah status aset '.$asset->asset_code.' menjadi kondisi: '.$validated['condition'].', status: '.$validated['status']
+            description: 'Mengubah data unit aset '.$asset->asset_code.' (No Seri: '.$asset->serial_number.', Kondisi: '.$validated['condition'].', Status: '.$validated['status'].')'
         );
 
         return redirect()->route('assets.show', $asset)
-            ->with('success', 'Status dan kondisi aset '.$asset->asset_code.' berhasil diperbarui.');
+            ->with('success', 'Data unit aset dan nomor seri/label '.$asset->asset_code.' berhasil diperbarui.');
+    }
+
+    /**
+     * Remove the specified serialized asset from storage.
+     */
+    public function destroy(Asset $asset): RedirectResponse
+    {
+        abort_if(auth()->user()->hasRole('Teknisi Servis'), 403, 'Anda tidak memiliki hak akses untuk menghapus unit aset.');
+
+        if ($asset->serviceTickets()->whereIn('status', ['open', 'in_progress'])->exists()) {
+            return back()->with('error', 'Unit aset '.$asset->asset_code.' tidak dapat dihapus karena sedang dalam tiket servis aktif.');
+        }
+
+        if ($asset->movementItems()->exists()) {
+            return back()->with('error', 'Unit aset '.$asset->asset_code.' sudah memiliki riwayat mutasi operasional. Untuk menonaktifkannya, ubah status menjadi Hilang / Rusak.');
+        }
+
+        $code = $asset->asset_code;
+        $productName = $asset->product->name ?? 'Produk';
+        $asset->delete();
+
+        AuditLog::log(
+            action: 'delete_asset',
+            entityType: 'Asset',
+            entityId: null,
+            oldValues: ['asset_code' => $code, 'product' => $productName],
+            description: 'Menghapus unit aset fisik '.$code.' ('.$productName.')'
+        );
+
+        return redirect()->route('assets.index')
+            ->with('success', 'Unit aset '.$code.' berhasil dihapus dari sistem.');
     }
 }

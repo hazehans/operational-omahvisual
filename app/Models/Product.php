@@ -108,6 +108,67 @@ class Product extends Model
     }
 
     /**
+     * Auto-generate SKU unik untuk Master Barang
+     * Format: [PREFIX]-[0001] (Contoh: KBL-0001, VDT-0001, PRD-0001)
+     */
+    public static function generateSku(?int $categoryId = null, ?string $name = null): string
+    {
+        $prefix = 'PRD';
+
+        if ($categoryId) {
+            $category = Category::find($categoryId);
+            if ($category) {
+                $slug = strtolower($category->slug ?? $category->name);
+                if (str_contains($slug, 'kabel') || str_contains($slug, 'perkabelan')) {
+                    $prefix = 'KBL';
+                } elseif (str_contains($slug, 'videotron') || str_contains($slug, 'kabinet') || str_contains($slug, 'modul')) {
+                    $prefix = 'VDT';
+                } elseif (str_contains($slug, 'listrik') || str_contains($slug, 'power')) {
+                    $prefix = 'PWR';
+                } elseif (str_contains($slug, 'controller') || str_contains($slug, 'processor') || str_contains($slug, 'sistem')) {
+                    $prefix = 'SYS';
+                } elseif (str_contains($slug, 'tv') || str_contains($slug, 'layar')) {
+                    $prefix = 'TV';
+                } elseif (str_contains($slug, 'rigging') || str_contains($slug, 'konstruksi')) {
+                    $prefix = 'RIG';
+                } elseif (str_contains($slug, 'tool') || str_contains($slug, 'peralatan') || str_contains($slug, 'alat')) {
+                    $prefix = 'TLS';
+                } elseif (str_contains($slug, 'hardcase') || str_contains($slug, 'flightcase') || str_contains($slug, 'penyimpanan')) {
+                    $prefix = 'HCS';
+                } elseif (str_contains($slug, 'sparepart') || str_contains($slug, 'komponen')) {
+                    $prefix = 'SPR';
+                } else {
+                    $clean = preg_replace('/[^a-zA-Z]/', '', $category->name);
+                    $prefix = strtoupper(substr($clean, 0, 3)) ?: 'PRD';
+                }
+            }
+        }
+
+        $latest = static::where('code', 'LIKE', $prefix.'-%')
+            ->orderBy('code', 'desc')
+            ->first();
+
+        $nextNum = 1;
+        if ($latest) {
+            $parts = explode('-', $latest->code);
+            $lastPart = end($parts);
+            if (is_numeric($lastPart)) {
+                $nextNum = (int) $lastPart + 1;
+            }
+        }
+
+        do {
+            $candidate = sprintf('%s-%04d', $prefix, $nextNum);
+            $exists = static::where('code', $candidate)->exists();
+            if ($exists) {
+                $nextNum++;
+            }
+        } while ($exists);
+
+        return $candidate;
+    }
+
+    /**
      * URL Gambar produk jika ada
      */
     public function getImageUrlAttribute(): ?string

@@ -97,7 +97,7 @@
                     <tr>
                         <th class="px-5 py-4">Kode Aset</th>
                         <th class="px-5 py-4">Perangkat & Model</th>
-                        <th class="px-5 py-4">Nomor Seri Pabrik</th>
+                        <th class="px-5 py-4">No. Seri / Label Box</th>
                         <th class="px-5 py-4">Lokasi Penyimpanan</th>
                         <th class="px-5 py-4">Kondisi Fisik</th>
                         <th class="px-5 py-4">Status Penggunaan</th>
@@ -138,9 +138,19 @@
                                 @endif
                             </td>
                             <td class="px-5 py-4">
-                                <span class="text-slate-300 font-medium">
-                                    {{ $ast->status === 'in_storage' ? 'Di Gudang' : ($ast->status === 'deployed' ? 'Dipakai Event' : $ast->status) }}
-                                </span>
+                                @if($ast->status === 'in_storage')
+                                    <span class="text-slate-300 font-medium">Di Gudang</span>
+                                @elseif($ast->status === 'deployed')
+                                    <span class="text-indigo-400 font-medium">Dipakai Event</span>
+                                @elseif($ast->status === 'maintenance')
+                                    <span class="text-amber-400 font-medium">Servis</span>
+                                @elseif($ast->status === 'lost')
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-500/20 text-rose-400 border border-rose-500/30">
+                                        Hilang
+                                    </span>
+                                @else
+                                    <span class="text-slate-300 font-medium">{{ $ast->status_label }}</span>
+                                @endif
                             </td>
                             <td class="px-5 py-4 text-right">
                                 <a href="{{ route('assets.show', $ast) }}" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold inline-block transition-colors">

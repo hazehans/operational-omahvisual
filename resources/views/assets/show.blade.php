@@ -77,8 +77,8 @@
                     </div>
                     <div>
                         <span class="text-slate-500 block">Status Operasional:</span>
-                        <span class="font-semibold text-slate-200">
-                            {{ $asset->status === 'in_storage' ? 'Tersimpan di Gudang' : ($asset->status === 'deployed' ? 'Dipakai di Event' : $asset->status) }}
+                        <span class="font-semibold {{ $asset->status === 'lost' ? 'text-rose-400 font-bold' : ($asset->status === 'deployed' ? 'text-indigo-400' : 'text-slate-200') }}">
+                            {{ $asset->status_label }}
                         </span>
                     </div>
                     <div>
@@ -169,12 +169,35 @@
                         </div>
                     </div>
                 @else
-                    <h3 class="text-sm font-bold text-white">Perbarui Status &amp; Kondisi Fisik</h3>
-                    <p class="text-xs text-slate-400">Gunakan form ini untuk mencatat unit yang rusak di lapangan atau penyesuaian lokasi.</p>
+                    <h3 class="text-sm font-bold text-white">Perbarui Data Unit &amp; Status Fisik</h3>
+                    <p class="text-xs text-slate-400">Gunakan form ini untuk mengubah nomor box fisik, kondisi, atau lokasi penyimpanan.</p>
 
                     <form action="{{ route('assets.update-status', $asset) }}" method="POST" class="space-y-4">
                         @csrf
                         @method('PUT')
+
+                        <!-- Nomor Seri / Label Box Fisik -->
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1.5 uppercase">No. Seri / Label Box Fisik</label>
+                            <input type="text" name="serial_number" value="{{ old('serial_number', $asset->serial_number) }}" placeholder="Contoh: BOX 01, SN-xxxx"
+                                class="w-full px-3 py-2 rounded-xl bg-slate-950/60 border border-slate-800 text-xs text-white font-mono focus:outline-none focus:border-indigo-500">
+                        </div>
+
+                        <!-- Barcode / QR Scanner -->
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1.5 uppercase">Barcode / QR Scanner (Opsional)</label>
+                            <input type="text" name="barcode" value="{{ old('barcode', $asset->barcode) }}" placeholder="Scan barcode fisik..."
+                                class="w-full px-3 py-2 rounded-xl bg-slate-950/60 border border-slate-800 text-xs text-white font-mono focus:outline-none focus:border-indigo-500">
+                        </div>
+
+                        <!-- Kepemilikan -->
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1.5 uppercase">Kepemilikan *</label>
+                            <select name="ownership" required class="w-full px-3 py-2 rounded-xl bg-slate-950/60 border border-slate-800 text-xs text-white focus:outline-none focus:border-indigo-500">
+                                <option value="company" {{ old('ownership', $asset->ownership) === 'company' ? 'selected' : '' }}>Aset Omah Visual</option>
+                                <option value="external" {{ old('ownership', $asset->ownership) === 'external' ? 'selected' : '' }}>Vendor Rekanan (Eksternal)</option>
+                            </select>
+                        </div>
 
                         <!-- Kondisi Fisik -->
                         <div>
@@ -217,7 +240,7 @@
                         </div>
 
                         <button type="submit" class="w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs uppercase tracking-wider shadow-lg shadow-indigo-600/25 transition-all">
-                            Perbarui Status Unit
+                            Simpan Perubahan Unit Aset
                         </button>
 
                         @can('create service ticket')
@@ -228,6 +251,22 @@
                         </div>
                         @endcan
                     </form>
+
+                    <!-- Hapus Aset (Hanya jika belum ada pergerakan operasional) -->
+                    @if(!$asset->movementItems()->exists() && !$asset->serviceTickets()->whereIn('status', ['open', 'in_progress'])->exists())
+                        <div class="pt-2 border-t border-slate-800/80">
+                            <form action="{{ route('assets.destroy', $asset) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus unit aset {{ $asset->asset_code }} ini secara permanen?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="w-full py-2 px-3 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 text-xs font-semibold transition-all flex items-center justify-center gap-1.5">
+                                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                    <span>Hapus Unit Aset Ini</span>
+                                </button>
+                            </form>
+                        </div>
+                    @endif
                 @endif
             </div>
         </div>

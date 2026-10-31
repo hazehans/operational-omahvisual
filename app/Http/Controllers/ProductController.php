@@ -273,7 +273,7 @@ class ProductController extends Controller
         $validated = $request->validate([
             'category_id' => ['required', 'exists:categories,id'],
             'unit_id' => ['required', 'exists:units,id'],
-            'code' => ['required', 'string', 'max:50', 'unique:products,code'],
+            'code' => ['nullable', 'string', 'max:50', 'unique:products,code'],
             'name' => ['required', 'string', 'max:255'],
             'brand' => ['nullable', 'string', 'max:100'],
             'model_series' => ['nullable', 'string', 'max:100'],
@@ -284,6 +284,10 @@ class ProductController extends Controller
             'min_stock' => ['nullable', 'numeric', 'min:0'],
             'notes' => ['nullable', 'string'],
         ]);
+
+        if (empty($validated['code'])) {
+            $validated['code'] = Product::generateSku((int) $validated['category_id'], $validated['name']);
+        }
 
         $validated['is_active'] = true;
 

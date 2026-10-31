@@ -128,7 +128,7 @@
         </div>
 
         <!-- Metric Details -->
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8 pt-6 border-t border-slate-800/80 text-sm">
+        <div class="grid grid-cols-2 sm:grid-cols-5 gap-4 mt-8 pt-6 border-t border-slate-800/80 text-sm">
             <div>
                 <span class="text-slate-400 text-xs block mb-0.5">Brand / Merk:</span>
                 <span class="font-semibold text-slate-200">{{ $product->brand ?? '-' }}</span>
@@ -142,6 +142,10 @@
                 <span class="font-semibold text-indigo-400">
                     {{ $product->sqm_per_unit ? number_format((float) $product->sqm_per_unit, 2) . ' m² / unit' : 'Bukan Kabinet' }}
                 </span>
+            </div>
+            <div>
+                <span class="text-slate-400 text-xs block mb-0.5">Batas Min Stok:</span>
+                <span class="font-semibold text-amber-400 font-mono">{{ (float) ($product->min_stock ?? 0) }} {{ $product->unit->symbol ?? 'unit' }}</span>
             </div>
             <div>
                 <span class="text-slate-400 text-xs block mb-0.5">Kondisi Rusak / Servis:</span>

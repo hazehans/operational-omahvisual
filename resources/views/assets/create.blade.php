@@ -30,13 +30,30 @@
                     Jenis Perangkat / Master Barang <span class="text-rose-500">*</span>
                 </label>
                 <select name="product_id" required class="w-full px-4 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-sm text-white focus:outline-none focus:border-indigo-500 transition-all">
-                    <option value="">Pilih Jenis Perangkat Serial...</option>
-                    @foreach($products as $prod)
-                        <option value="{{ $prod->id }}" {{ old('product_id', $selectedProductId) == $prod->id ? 'selected' : '' }}>
-                            {{ $prod->code }} — {{ $prod->name }} ({{ $prod->brand ?? 'No Brand' }})
-                        </option>
-                    @endforeach
+                    @if($products->isEmpty())
+                        <option value="" disabled selected>Belum ada Master Barang ber-mode Unit Serial Individual...</option>
+                    @else
+                        <option value="">Pilih Jenis Perangkat Serial...</option>
+                        @foreach($products as $prod)
+                            <option value="{{ $prod->id }}" {{ old('product_id', $selectedProductId) == $prod->id ? 'selected' : '' }}>
+                                {{ $prod->code }} — {{ $prod->name }} ({{ $prod->brand ?? 'No Brand' }})
+                            </option>
+                        @endforeach
+                    @endif
                 </select>
+                @if($products->isEmpty())
+                    <div class="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-300 flex flex-col sm:flex-row sm:items-center justify-between gap-3 mt-2.5">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-5 h-5 shrink-0 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                            <span>Dropdown ini hanya memuat barang ber-mode <strong>Unit Serial Individual</strong>. Saat ini belum ada master barang serial yang didaftarkan.</span>
+                        </div>
+                        <a href="{{ route('products.create') }}" class="px-3.5 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs whitespace-nowrap transition-colors inline-flex items-center gap-1 self-start sm:self-auto">
+                            <span>+ Buat Master Barang Serial</span>
+                        </a>
+                    </div>
+                @endif
                 @error('product_id')
                     <p class="text-xs text-rose-500 mt-1">{{ $message }}</p>
                 @enderror
@@ -49,8 +66,9 @@
                         Kode Aset Internal
                         <span class="text-xs font-normal text-slate-500 lowercase">(kosongkan untuk auto-generate)</span>
                     </label>
-                    <input type="text" name="asset_code" value="{{ old('asset_code') }}" placeholder="Contoh: OVL-AST-202610-0026"
+                    <input type="text" name="asset_code" value="{{ old('asset_code') }}" placeholder="Kosongkan untuk auto (misal: OVL-AST-202610-0001)"
                         class="w-full px-4 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-sm text-white font-mono placeholder-slate-600 focus:outline-none focus:border-indigo-500 transition-all">
+                    <p class="text-[11px] text-slate-500 mt-1">ID resmi ERP Omah Visual, bisa kosongkan agar otomatis berurutan.</p>
                     @error('asset_code')
                         <p class="text-xs text-rose-500 mt-1">{{ $message }}</p>
                     @enderror
@@ -58,10 +76,11 @@
 
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
-                        Nomor Seri Pabrik (Serial Number)
+                        Nomor Seri / No. Box Fisik (Serial / Label)
                     </label>
-                    <input type="text" name="serial_number" value="{{ old('serial_number') }}" placeholder="Contoh: SN-NOVA-VX20M-98765"
+                    <input type="text" name="serial_number" value="{{ old('serial_number') }}" placeholder="Contoh: BOX-01, 01, atau SN-NOVA-98765"
                         class="w-full px-4 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-sm text-white font-mono placeholder-slate-600 focus:outline-none focus:border-indigo-500 transition-all">
+                    <p class="text-[11px] text-slate-500 mt-1">Untuk flightcase/box, tulis nomor stensil box fisik (misal: <code>BOX-01</code>, <code>01</code>, <code>BOX 12</code>).</p>
                     @error('serial_number')
                         <p class="text-xs text-rose-500 mt-1">{{ $message }}</p>
                     @enderror

@@ -19,7 +19,28 @@
         <h1 class="text-2xl font-bold text-white mb-1.5">Tambah Barang / Perangkat Baru</h1>
         <p class="text-sm text-slate-400 mb-6">Daftarkan SKU produk dan spesifikasi baru ke katalog master Omah Visual LED</p>
 
-        <form action="{{ route('products.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+        <form action="{{ route('products.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6"
+            x-data="{
+                skuCode: '{{ old('code', '') }}',
+                generateSku() {
+                    const catSelect = document.querySelector('select[name=\'category_id\']');
+                    const catName = catSelect ? (catSelect.options[catSelect.selectedIndex]?.text || '').toLowerCase() : '';
+                    let prefix = 'PRD';
+                    if (catName.includes('kabel') || catName.includes('perkabelan')) prefix = 'KBL';
+                    else if (catName.includes('videotron') || catName.includes('kabinet') || catName.includes('modul')) prefix = 'VDT';
+                    else if (catName.includes('listrik') || catName.includes('power')) prefix = 'PWR';
+                    else if (catName.includes('controller') || catName.includes('sistem') || catName.includes('processor')) prefix = 'SYS';
+                    else if (catName.includes('tv') || catName.includes('layar')) prefix = 'TV';
+                    else if (catName.includes('rigging') || catName.includes('konstruksi')) prefix = 'RIG';
+                    else if (catName.includes('tool') || catName.includes('peralatan') || catName.includes('alat')) prefix = 'TLS';
+                    else if (catName.includes('case') || catName.includes('penyimpanan') || catName.includes('hardcase')) prefix = 'HCS';
+                    else if (catName.includes('sparepart') || catName.includes('komponen')) prefix = 'SPR';
+
+                    const rand = Math.floor(1000 + Math.random() * 9000);
+                    this.skuCode = `${prefix}-${rand}`;
+                }
+            }"
+        >
             @csrf
 
             <!-- Foto Barang Upload -->
@@ -49,9 +70,18 @@
             <!-- Grid 2 Col: Kode & Nama -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                    <label class="block text-sm font-semibold text-slate-200 mb-1.5">Kode Barang (SKU) *</label>
-                    <input type="text" name="code" value="{{ old('code') }}" required placeholder="MISAL: CAB-P3.9-OUT"
+                    <div class="flex items-center justify-between mb-1.5">
+                        <label class="block text-sm font-semibold text-slate-200">Kode Barang (SKU)</label>
+                        <button type="button" @click="generateSku()" class="text-[11px] text-indigo-400 hover:text-indigo-300 font-semibold flex items-center gap-1 transition-colors" title="Generate SKU otomatis berdasarkan kategori">
+                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                            <span>Auto Generate</span>
+                        </button>
+                    </div>
+                    <input type="text" name="code" x-model="skuCode" placeholder="Otomatis jika kosong (misal: KBL-0001)"
                         class="w-full px-4 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-sm text-white uppercase font-mono focus:outline-none focus:border-indigo-500 transition-colors">
+                    <p class="text-[11px] text-slate-500 mt-1">Bisa manual (contoh: <code>CAB-P3.9-OUT</code>) atau kosongkan untuk otomatis.</p>
                     @error('code')
                         <p class="text-xs text-rose-400 mt-1">{{ $message }}</p>
                     @enderror
@@ -98,8 +128,8 @@
                 </div>
             </div>
 
-            <!-- Grid 2 Col: Tracking Type & Luas m2 -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <!-- Grid 3 Col: Tracking Type, Luas m2, & Min Stock -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
                     <label class="block text-sm font-semibold text-slate-200 mb-1.5">Mode Pelacakan *</label>
                     <select name="tracking_type" required class="w-full px-4 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-sm text-white focus:outline-none focus:border-indigo-500 transition-colors">
@@ -115,6 +145,14 @@
                     <input type="number" step="0.01" name="sqm_per_unit" value="{{ old('sqm_per_unit') }}" placeholder="Contoh: 0.50 (100x50 cm)"
                         class="w-full px-4 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-sm text-white focus:outline-none focus:border-indigo-500 transition-colors">
                     @error('sqm_per_unit')
+                        <p class="text-xs text-rose-400 mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-200 mb-1.5">Batas Minimum Stok Alert</label>
+                    <input type="number" step="0.01" min="0" name="min_stock" value="{{ old('min_stock', 5) }}" placeholder="Contoh: 10"
+                        class="w-full px-4 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-sm text-white focus:outline-none focus:border-indigo-500 transition-colors">
+                    @error('min_stock')
                         <p class="text-xs text-rose-400 mt-1">{{ $message }}</p>
                     @enderror
                 </div>

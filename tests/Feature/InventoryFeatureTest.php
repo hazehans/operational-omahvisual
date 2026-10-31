@@ -3,10 +3,12 @@
 namespace Tests\Feature;
 
 use App\Models\Asset;
+use App\Models\Category;
 use App\Models\InventoryCount;
 use App\Models\Location;
 use App\Models\Product;
 use App\Models\StockAdjustment;
+use App\Models\Unit;
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
@@ -25,6 +27,44 @@ class InventoryFeatureTest extends TestCase
 
         $this->owner = User::where('email', 'owner@omahvisual.com')->first();
         $this->warehouse = User::where('email', 'warehouse@omahvisual.com')->first();
+
+        $category = Category::firstOrCreate(['slug' => 'cat-test'], ['name' => 'Category Test']);
+        $unit = Unit::firstOrCreate(['symbol' => 'PCS'], ['name' => 'Pieces']);
+        $location = Location::firstOrCreate(['code' => 'GU-TEST'], ['name' => 'Gudang Test']);
+
+        $bulkProduct = Product::firstOrCreate(
+            ['tracking_type' => 'quantity'],
+            [
+                'code' => 'TEST-BULK',
+                'name' => 'Barang Bulk Test',
+                'category_id' => $category->id,
+                'unit_id' => $unit->id,
+                'is_active' => true,
+            ]
+        );
+
+        $indProduct = Product::firstOrCreate(
+            ['tracking_type' => 'individual'],
+            [
+                'code' => 'TEST-IND',
+                'name' => 'Barang Individual Test',
+                'category_id' => $category->id,
+                'unit_id' => $unit->id,
+                'is_active' => true,
+            ]
+        );
+
+        Asset::firstOrCreate(
+            ['asset_code' => 'OVL-AST-TEST-0001'],
+            [
+                'product_id' => $indProduct->id,
+                'current_location_id' => $location->id,
+                'serial_number' => 'SN-TEST-1234',
+                'ownership' => 'company',
+                'condition' => 'available',
+                'status' => 'in_storage',
+            ]
+        );
     }
 
     public function test_guest_is_redirected_to_login(): void

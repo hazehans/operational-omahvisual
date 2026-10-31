@@ -84,6 +84,23 @@ class ProductCrudAndAvailabilityReportTest extends TestCase
         $this->assertTrue($product->is_active);
     }
 
+    public function test_product_code_is_auto_generated_when_empty(): void
+    {
+        $response = $this->actingAs($this->warehouse)->post(route('products.store'), [
+            'category_id' => $this->category->id,
+            'unit_id' => $this->unit->id,
+            'code' => '', // Dikosongkan agar auto-generate
+            'name' => 'Kabel HDMI 4K Gold Plated 10M',
+            'tracking_type' => 'quantity',
+        ]);
+
+        $product = Product::where('name', 'Kabel HDMI 4K Gold Plated 10M')->first();
+        $this->assertNotNull($product);
+        $this->assertNotEmpty($product->code);
+        $this->assertMatchesRegularExpression('/^[A-Z0-9]+-\d{4}$/', $product->code);
+        $response->assertRedirect(route('products.show', $product));
+    }
+
     public function test_user_can_delete_unused_product_permanently(): void
     {
         $product = Product::create([

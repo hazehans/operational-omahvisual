@@ -69,6 +69,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/assets', [AssetController::class, 'store'])->name('assets.store');
         Route::get('/assets/{asset}', [AssetController::class, 'show'])->name('assets.show');
         Route::put('/assets/{asset}/status', [AssetController::class, 'updateStatus'])->name('assets.update-status');
+        Route::delete('/assets/{asset}', [AssetController::class, 'destroy'])->name('assets.destroy');
 
         // Locations & Lemari Storage
         Route::resource('locations', LocationController::class);
