@@ -165,7 +165,7 @@
             <button @click="activeTab = 'completed'"
                     :class="activeTab === 'completed' ? 'border-purple-500 text-purple-400 bg-purple-500/10 font-bold' : 'border-transparent text-slate-400 hover:text-slate-200 hover:border-slate-700 font-medium'"
                     class="px-4 py-2.5 border-b-2 rounded-t-xl text-xs transition-all flex items-center gap-2 cursor-pointer">
-                <span>✅ Project Selesai & Termin</span>
+                <span>✅ Project Selesai &amp; Termin</span>
                 <span class="px-2 py-0.5 rounded-full text-[10px] bg-purple-500/20 text-purple-300 font-bold">{{ $stats['completed_projects_count'] }}</span>
             </button>
         </div>

@@ -137,41 +137,42 @@
 ---
 
 ### 4. Modul Orders & SPK Dashboard (`/orders`)
-- [ ] **4.1 Desain & Tipografi**:
-  - [ ] Perkecil ukuran font tabel agar lebih proporsional, compact, dan muat lebih banyak data tanpa scroll berlebih.
-  - [ ] Sembunyikan nomor HP klien dari kolom tabel preview awal (pindahkan ke tooltip atau halaman detail order).
-- [ ] **4.2 Highlight Metrik Operasional (Mengikuti Sheet "KASIR LED")**:
-  - [ ] Ganti metrik omset/finansial murni di dashboard dengan metrik operasional lapangan:
-    - *Event Bulan Ini*
+- [x] **4.1 Desain & Tipografi**:
+  - [x] Perkecil ukuran font tabel agar lebih proporsional, compact (text-xs / 11-12px), dan muat lebih banyak data tanpa scroll berlebih.
+  - [x] Sembunyikan nomor HP klien dari kolom tabel preview awal (pindahkan ke tooltip atau halaman detail order).
+- [x] **4.2 Highlight Metrik Operasional (Mengikuti Sheet "KASIR LED")**:
+  - [x] Ganti metrik omset/finansial murni di dashboard dengan metrik operasional lapangan:
+    - *Event Bulan Ini* (Total booking bulan berjalan)
     - *Terkonfirmasi (Siap Jalan)*
+    - *Sedang Loading / Live Hari Ini* (Aktif di lapangan)
     - *Event Selesai (Completed)*
-    - *Armada Berangkat / Loading-In Hari Ini*
-    - *Armada Kepulangan / Selesai Loading-Out*
-- [ ] **4.3 Filter & Kolom Tabel Transaksi**:
-  - [ ] Filter multi-kriteria: Filter bulan, status pengerjaan, jenis event, dan tipe instalasi.
-  - [ ] Kolom jadwal lengkap: Tanggal Acara, Jam Loading-In, Jam Acara, Estimasi Jam Loading-Out.
-  - [ ] Badge penanda khusus untuk event dengan *LED Gantung / Rigging*.
+- [x] **4.3 Filter & Kolom Tabel Transaksi**:
+  - [x] Filter multi-kriteria: Filter bulan, tahun, status pengerjaan, dan filter instalasi (LED Gantung vs Ground Stack).
+  - [x] Quick Filter Pills: `Semua`, `Bulan Ini`, `Terkonfirmasi`, `Sedang Loading`, `Selesai`, `🎯 LED Gantung`.
+  - [x] Kolom jadwal lengkap: Tanggal Loading & Jam Loading, Tanggal Acara & Jam Acara.
+  - [x] Badge penanda khusus untuk event dengan *LED Gantung / Rigging*.
 
 ---
 
 ### 5. Modul Kalender Jadwal (`/calendar`)
-- [ ] **5.1 Tampilan Event Pill Interaktif**:
-  - [ ] Tampilkan informasi lengkap di pill tanggal kalender:
-    - Nama Klien / Vendor
-    - Lokasi Venue
+- [x] **5.1 Tampilan Event Pill Interaktif**:
+  - [x] Tampilkan informasi lengkap di pill tanggal kalender:
+    - Nama Klien (dengan sapaan)
+    - Nama Event & Lokasi Venue
     - Luas Layar (Sqm)
     - Jam Loading-In
-    - Indikator warna status pengerjaan
-  - [ ] Modal klik event: "Click for more detail" menampilkan ringkasan cepat kru PIC, supir, armada, dan link ke SPK.
-- [ ] **5.2 Tab Highlight Monitoring (Mengikuti Tab Kasir LED)**:
-  - [ ] Tambahkan tab navigasi di atas kalender:
-    - `[Kalender Utama]`
-    - `[Highlight Monitoring: Project Berjalan / Live]`
-    - `[Highlight Monitoring: Project Kedepannya / Upcoming]`
-    - `[Highlight Monitoring: Project Selesai & Termin]`
-- [ ] **5.3 Integrasi Hari Libur Nasional & Tanggal Merah Indonesia**:
-  - [ ] Sinkronisasi kalender hari libur nasional Indonesia & cuti bersama resmi.
-  - [ ] Penanda warna merah pada kolom tanggal libur untuk memudahkan tim mengantisipasi jadwal traffic dan kesiapan kru.
+    - Indikator badge `🎯 Gantung/Rigging`
+  - [x] Modal klik event: "Click for more detail" menampilkan ringkasan cepat kru PIC, armada mobil, jadwal loading/acara, link WA reminder, dan link ke SPK.
+- [x] **5.2 Tab Highlight Monitoring (Mengikuti Tab Kasir LED)**:
+  - [x] Tambahkan tab navigasi di atas kalender:
+    - `[📅 Kalender Bulanan]`
+    - `[⚡ Highlight: Project Berjalan / Live]`
+    - `[🗓️ Highlight: Project Kedepannya]`
+    - `[✅ Highlight: Project Selesai & Termin]`
+  - [x] Tampilan tabel terstruktur pada masing-masing tab highlight monitoring.
+- [x] **5.3 Integrasi Hari Libur Nasional & Tanggal Merah Indonesia**:
+  - [x] Implementasi helper resmi `App\Support\IndonesianHolidays` (SKB 3 Menteri).
+  - [x] Penanda tanggal merah pada hari Minggu dan hari libur nasional resmi dengan badge merah `🚩 [Nama Hari Libur Nasional]`.
 
 ---
 
@@ -222,10 +223,10 @@
 | **1** | Master Data GA & Klasifikasi Barang Rental vs Internal | ✅ *Selesai* | 101 item rental + 69 aset internal + 8 armada tersinkron |
 | **2** | Modul Customer (Gelar, Emergency Contact, Foto, Verifikasi) | ✅ *Selesai* | Sapaan di atas UI, Foto profil, Self-Register publik, Verifikasi company |
 | **3** | SPK Halaman 1 (`referensi_halaman1_spk.png`), Checklist 2-3, 4A Routing & BAST | ✅ *Selesai* | 100% presisi Hal 1, Checklist per area, Brand obfuscation, 4A Routing 3-Fasa, BAST resmi |
-| **4** | Dashboard `/orders` (Tipografi, Metrik Operasional, Filter) | ⏳ *Berikutnya (Tahap 3)* | Target Tahap 3 |
-| **5** | Kalender `/calendar` (Event Pill, Libur Nasional, Tab Monitoring)| ⏳ *Berikutnya (Tahap 3)* | Target Tahap 3 |
-| **6** | Form `/orders/create` (Multi-Area, Rute KM, Kelistrikan led.fyi) | ⏳ *Pending* | Menunggu Tahap 4 |
-| **7** | Finansial & Pricing Otomatis | ⏳ *Pending* | Menunggu Tahap 4 |
+| **4** | Dashboard `/orders` (Tipografi, Metrik Operasional, Filter) | ✅ *Selesai* | Font compact (text-xs), metrik operasional (omset dihapus), No HP disembunyikan di preview, multi-filter bulan/status/gantung |
+| **5** | Kalender `/calendar` (Event Pill, Libur Nasional, Tab Monitoring)| ✅ *Selesai* | Info pill lengkap (klien/venue/sqm/loading), libur nasional resmi SKB 3 Menteri, 4 tab highlight monitoring Kasir LED |
+| **6** | Form `/orders/create` (Multi-Area, Rute KM, Kelistrikan led.fyi) | ⏳ *Target Tahap 4* | Menunggu Sprint Tahap 4 |
+| **7** | Finansial & Pricing Otomatis | ⏳ *Target Tahap 4* | Menunggu Sprint Tahap 4 |
 
 ---
 
