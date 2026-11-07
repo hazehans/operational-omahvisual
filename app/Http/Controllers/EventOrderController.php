@@ -44,21 +44,64 @@ class EventOrderController extends Controller
             });
         }
 
+        if ($month = $request->input('month')) {
+            if ($month === 'this_month') {
+                $query->whereMonth('loading_date', now()->month)
+                    ->whereYear('loading_date', now()->year);
+            } elseif (is_numeric($month) && (int) $month >= 1 && (int) $month <= 12) {
+                $query->whereMonth('loading_date', (int) $month);
+            }
+        }
+
+        if ($year = $request->input('year')) {
+            if (is_numeric($year)) {
+                $query->whereYear('loading_date', (int) $year);
+            }
+        }
+
         if ($status = $request->input('status')) {
             $query->where('status', $status);
         }
 
-        $orders = $query->paginate(15)->withQueryString();
+        if ($riggingFilter = $request->input('rigging_filter')) {
+            if ($riggingFilter === 'gantung') {
+                $query->whereHas('screens', function ($sq) {
+                    $sq->where('rigging_method', 'ilike', '%hang%')
+                        ->orWhere('rigging_method', 'ilike', '%gantung%')
+                        ->orWhere('rigging_method', 'ilike', '%rig%');
+                });
+            } elseif ($riggingFilter === 'ground') {
+                $query->whereDoesntHave('screens', function ($sq) {
+                    $sq->where('rigging_method', 'ilike', '%hang%')
+                        ->orWhere('rigging_method', 'ilike', '%gantung%')
+                        ->orWhere('rigging_method', 'ilike', '%rig%');
+                });
+            }
+        }
 
-        // Metrics for summary cards
+        $orders = $query->paginate(20)->withQueryString();
+
+        // Operational Metrics (fokus ke operasional lapangan sesuai sheet KASIR LED)
         $thisMonthOrders = EventOrder::whereMonth('loading_date', now()->month)
             ->whereYear('loading_date', now()->year)
             ->count();
         $confirmedCount = EventOrder::where('status', 'confirmed')->count();
+        $today = now()->toDateString();
+        $loadingTodayCount = EventOrder::where('status', 'loading')
+            ->orWhere(function ($q) use ($today) {
+                $q->where('loading_date', $today)
+                    ->whereIn('status', ['confirmed', 'loading']);
+            })
+            ->count();
         $completedCount = EventOrder::where('status', 'completed')->count();
-        $totalRevenue = EventOrder::where('payment_status', 'paid')->sum('total_price');
 
-        return view('orders.index', compact('orders', 'thisMonthOrders', 'confirmedCount', 'completedCount', 'totalRevenue'));
+        return view('orders.index', compact(
+            'orders',
+            'thisMonthOrders',
+            'confirmedCount',
+            'loadingTodayCount',
+            'completedCount'
+        ));
     }
 
     /**

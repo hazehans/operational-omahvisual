@@ -5,6 +5,7 @@
 
 @section('content')
 <div x-data="{
+    activeTab: 'calendar',
     statusFilter: 'all',
     searchQuery: '',
     selectedEvent: null,
@@ -26,14 +27,14 @@
 }" class="space-y-6">
 
     <!-- Header & Navigation Bar -->
-    <div class="rounded-3xl bg-linear-to-r from-slate-900 via-indigo-950/50 to-slate-900 border border-slate-800 p-6 md:p-8 shadow-xl">
+    <div class="rounded-3xl bg-linear-to-r from-slate-900 via-indigo-950/50 to-slate-900 border border-slate-800 p-5 md:p-7 shadow-xl">
         <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
             <div>
                 <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 mb-2">
                     <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
-                    <span>Jadwal Operasional Terpadu</span>
+                    <span>Monitoring Jadwal Operasional & Kasir LED</span>
                 </div>
                 <h1 class="text-2xl md:text-3xl font-black text-white tracking-tight flex items-center gap-3">
                     <span>{{ $currentDate->translatedFormat('F Y') }}</span>
@@ -42,7 +43,7 @@
                     </span>
                 </h1>
                 <p class="text-xs md:text-sm text-slate-400 mt-1 max-w-2xl">
-                    Pantau agenda bongkar pasang panggung, loading out gudang, penugasan kru lapangan, serta deteksi bentrok stok videotron.
+                    Pantau agenda bongkar pasang panggung, loading out gudang, penugasan kru lapangan, hari libur nasional, dan tracking status termin proyek.
                 </p>
             </div>
 
@@ -87,23 +88,23 @@
             </div>
         </div>
 
-        <!-- KPI Mini Stats Banner -->
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6 pt-6 border-t border-slate-800/80">
+        <!-- KPI Mini Stats Banner (Operational Metrics) -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6 pt-5 border-t border-slate-800/80">
             <div class="p-3.5 rounded-2xl bg-slate-800/40 border border-slate-800 space-y-1">
-                <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Total Event Bulan Ini</span>
+                <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Event Bulan Ini</span>
                 <div class="text-xl font-black text-white">{{ $stats['total_events'] }} <span class="text-xs font-normal text-slate-400">Acara</span></div>
             </div>
             <div class="p-3.5 rounded-2xl bg-slate-800/40 border border-slate-800 space-y-1">
-                <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Luas Layar Tersewa</span>
+                <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Sedang Berjalan / Live</span>
+                <div class="text-xl font-black text-amber-400">{{ $stats['live_projects_count'] }} <span class="text-xs font-normal text-slate-400">Event</span></div>
+            </div>
+            <div class="p-3.5 rounded-2xl bg-slate-800/40 border border-slate-800 space-y-1">
+                <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Terkonfirmasi Mendatang</span>
+                <div class="text-xl font-black text-emerald-400">{{ $stats['upcoming_projects_count'] }} <span class="text-xs font-normal text-slate-400">Siap Jalan</span></div>
+            </div>
+            <div class="p-3.5 rounded-2xl bg-slate-800/40 border border-slate-800 space-y-1">
+                <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Total Luas Layar</span>
                 <div class="text-xl font-black text-indigo-400">{{ $stats['total_sqm'] }} <span class="text-xs font-normal text-slate-400">m²</span></div>
-            </div>
-            <div class="p-3.5 rounded-2xl bg-slate-800/40 border border-slate-800 space-y-1">
-                <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Kru Lapangan Terlibat</span>
-                <div class="text-xl font-black text-emerald-400">{{ $stats['total_crews_involved'] }} <span class="text-xs font-normal text-slate-400">Personel</span></div>
-            </div>
-            <div class="p-3.5 rounded-2xl bg-slate-800/40 border border-slate-800 space-y-1">
-                <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Status Loading / Aktif</span>
-                <div class="text-xl font-black text-amber-400">{{ $stats['loading_events'] }} <span class="text-xs font-normal text-slate-400">Berjalan</span></div>
             </div>
         </div>
     </div>
@@ -137,122 +138,453 @@
     </div>
     @endif
 
-    <!-- Filter & Live Search Toolbar -->
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-md">
-        <!-- Live Search -->
-        <div class="relative flex-1 max-w-md">
-            <svg class="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-            <input type="text" x-model="searchQuery" placeholder="Cari nama event, venue, atau customer..."
-                   class="w-full pl-9 pr-4 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors">
-        </div>
+    <!-- Highlight Monitoring Tabs Navigation (Mengikuti Kasir LED Sheet Tab) -->
+    <div class="border-b border-slate-800 flex items-center justify-between gap-4 overflow-x-auto pb-px">
+        <div class="flex items-center gap-2 shrink-0">
+            <button @click="activeTab = 'calendar'"
+                    :class="activeTab === 'calendar' ? 'border-indigo-500 text-indigo-400 bg-indigo-500/10 font-bold' : 'border-transparent text-slate-400 hover:text-slate-200 hover:border-slate-700 font-medium'"
+                    class="px-4 py-2.5 border-b-2 rounded-t-xl text-xs transition-all flex items-center gap-2 cursor-pointer">
+                <span>📅 Kalender Bulanan</span>
+                <span class="px-2 py-0.5 rounded-full text-[10px] bg-slate-800 text-slate-300">{{ $stats['total_events'] }}</span>
+            </button>
 
-        <!-- Status Filter Pills -->
-        <div class="flex flex-wrap items-center gap-1.5 text-xs">
-            <span class="text-slate-400 font-medium mr-1 text-[11px]">Filter:</span>
-            <button @click="statusFilter = 'all'" :class="statusFilter === 'all' ? 'bg-indigo-600 text-white font-bold' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'" class="px-3 py-1.5 rounded-lg transition-all cursor-pointer">
-                Semua
+            <button @click="activeTab = 'live'"
+                    :class="activeTab === 'live' ? 'border-amber-500 text-amber-400 bg-amber-500/10 font-bold' : 'border-transparent text-slate-400 hover:text-slate-200 hover:border-slate-700 font-medium'"
+                    class="px-4 py-2.5 border-b-2 rounded-t-xl text-xs transition-all flex items-center gap-2 cursor-pointer">
+                <span>⚡ Highlight: Project Berjalan / Live</span>
+                <span class="px-2 py-0.5 rounded-full text-[10px] bg-amber-500/20 text-amber-300 font-bold">{{ $stats['live_projects_count'] }}</span>
             </button>
-            <button @click="statusFilter = 'confirmed'" :class="statusFilter === 'confirmed' ? 'bg-emerald-600 text-white font-bold' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'" class="px-3 py-1.5 rounded-lg transition-all cursor-pointer">
-                ✓ Confirmed
+
+            <button @click="activeTab = 'upcoming'"
+                    :class="activeTab === 'upcoming' ? 'border-emerald-500 text-emerald-400 bg-emerald-500/10 font-bold' : 'border-transparent text-slate-400 hover:text-slate-200 hover:border-slate-700 font-medium'"
+                    class="px-4 py-2.5 border-b-2 rounded-t-xl text-xs transition-all flex items-center gap-2 cursor-pointer">
+                <span>🗓️ Highlight: Project Kedepannya</span>
+                <span class="px-2 py-0.5 rounded-full text-[10px] bg-emerald-500/20 text-emerald-300 font-bold">{{ $stats['upcoming_projects_count'] }}</span>
             </button>
-            <button @click="statusFilter = 'loading'" :class="statusFilter === 'loading' ? 'bg-sky-600 text-white font-bold' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'" class="px-3 py-1.5 rounded-lg transition-all cursor-pointer">
-                🚚 Loading
-            </button>
-            <button @click="statusFilter = 'completed'" :class="statusFilter === 'completed' ? 'bg-purple-600 text-white font-bold' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'" class="px-3 py-1.5 rounded-lg transition-all cursor-pointer">
-                ★ Selesai
+
+            <button @click="activeTab = 'completed'"
+                    :class="activeTab === 'completed' ? 'border-purple-500 text-purple-400 bg-purple-500/10 font-bold' : 'border-transparent text-slate-400 hover:text-slate-200 hover:border-slate-700 font-medium'"
+                    class="px-4 py-2.5 border-b-2 rounded-t-xl text-xs transition-all flex items-center gap-2 cursor-pointer">
+                <span>✅ Project Selesai & Termin</span>
+                <span class="px-2 py-0.5 rounded-full text-[10px] bg-purple-500/20 text-purple-300 font-bold">{{ $stats['completed_projects_count'] }}</span>
             </button>
         </div>
     </div>
 
-    <!-- Interactive Calendar Grid -->
-    <div class="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl">
-        <!-- Weekday Headers -->
-        <div class="grid grid-cols-7 border-b border-slate-800 bg-slate-950/80 text-center font-bold text-xs uppercase tracking-wider text-slate-400">
-            <div class="py-3.5 border-r border-slate-800/80">Senin</div>
-            <div class="py-3.5 border-r border-slate-800/80">Selasa</div>
-            <div class="py-3.5 border-r border-slate-800/80">Rabu</div>
-            <div class="py-3.5 border-r border-slate-800/80">Kamis</div>
-            <div class="py-3.5 border-r border-slate-800/80">Jumat</div>
-            <div class="py-3.5 border-r border-slate-800/80 text-amber-400/90">Sabtu</div>
-            <div class="py-3.5 text-rose-400/90">Minggu</div>
+    <!-- VIEW 1: KALENDER BULANAN (GRID VIEW) -->
+    <div x-show="activeTab === 'calendar'" class="space-y-4">
+        <!-- Filter & Live Search Toolbar -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-md">
+            <!-- Live Search -->
+            <div class="relative flex-1 max-w-md">
+                <svg class="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" x-model="searchQuery" placeholder="Cari nama event, venue, atau customer..."
+                       class="w-full pl-9 pr-4 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors">
+            </div>
+
+            <!-- Status Filter Pills -->
+            <div class="flex flex-wrap items-center gap-1.5 text-xs">
+                <span class="text-slate-400 font-medium mr-1 text-[11px]">Filter:</span>
+                <button @click="statusFilter = 'all'" :class="statusFilter === 'all' ? 'bg-indigo-600 text-white font-bold' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'" class="px-3 py-1.5 rounded-lg transition-all cursor-pointer">
+                    Semua
+                </button>
+                <button @click="statusFilter = 'confirmed'" :class="statusFilter === 'confirmed' ? 'bg-emerald-600 text-white font-bold' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'" class="px-3 py-1.5 rounded-lg transition-all cursor-pointer">
+                    ✓ Confirmed
+                </button>
+                <button @click="statusFilter = 'loading'" :class="statusFilter === 'loading' ? 'bg-sky-600 text-white font-bold' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'" class="px-3 py-1.5 rounded-lg transition-all cursor-pointer">
+                    🚚 Loading
+                </button>
+                <button @click="statusFilter = 'completed'" :class="statusFilter === 'completed' ? 'bg-purple-600 text-white font-bold' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'" class="px-3 py-1.5 rounded-lg transition-all cursor-pointer">
+                    ★ Selesai
+                </button>
+            </div>
         </div>
 
-        <!-- Days Grid -->
-        <div class="grid grid-cols-7 divide-x divide-y divide-slate-800/80 bg-slate-950/20">
-            @php
-                $cursorDay = $startOfGrid->copy();
-            @endphp
+        <!-- Interactive Calendar Grid -->
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl">
+            <!-- Weekday Headers -->
+            <div class="grid grid-cols-7 border-b border-slate-800 bg-slate-950/80 text-center font-bold text-xs uppercase tracking-wider text-slate-400">
+                <div class="py-3.5 border-r border-slate-800/80">Senin</div>
+                <div class="py-3.5 border-r border-slate-800/80">Selasa</div>
+                <div class="py-3.5 border-r border-slate-800/80">Rabu</div>
+                <div class="py-3.5 border-r border-slate-800/80">Kamis</div>
+                <div class="py-3.5 border-r border-slate-800/80">Jumat</div>
+                <div class="py-3.5 border-r border-slate-800/80 text-amber-400/90">Sabtu</div>
+                <div class="py-3.5 text-rose-400/90 font-black">Minggu</div>
+            </div>
 
-            @while($cursorDay->lte($endOfGrid))
+            <!-- Days Grid -->
+            <div class="grid grid-cols-7 divide-x divide-y divide-slate-800/80 bg-slate-950/20">
                 @php
-                    $dateKey = $cursorDay->toDateString();
-                    $isCurrentMonth = $cursorDay->month === $currentDate->month;
-                    $isToday = $cursorDay->isToday();
-                    $dayEvents = $eventsByDate[$dateKey] ?? [];
-                    $hasConflict = isset($dayConflicts[$dateKey]);
+                    $cursorDay = $startOfGrid->copy();
                 @endphp
 
-                <div class="min-h-35 md:min-h-40 p-2 md:p-2.5 transition-colors {{ $isCurrentMonth ? 'bg-slate-900/60 hover:bg-slate-850/60' : 'bg-slate-950/60 opacity-40' }} flex flex-col justify-between group">
-                    <!-- Day Number & Indicators -->
-                    <div class="flex items-center justify-between mb-1.5">
-                        <span class="inline-flex items-center justify-center w-7 h-7 rounded-xl text-xs font-black {{ $isToday ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/40 ring-2 ring-indigo-400' : ($cursorDay->isWeekend() ? 'text-amber-400 font-bold' : 'text-slate-300') }}">
-                            {{ $cursorDay->day }}
-                        </span>
+                @while($cursorDay->lte($endOfGrid))
+                    @php
+                        $dateKey = $cursorDay->toDateString();
+                        $isCurrentMonth = $cursorDay->month === $currentDate->month;
+                        $isToday = $cursorDay->isToday();
+                        $dayEvents = $eventsByDate[$dateKey] ?? [];
+                        $hasConflict = isset($dayConflicts[$dateKey]);
+                        $holidayName = $holidays[$dateKey] ?? null;
+                        $isRedDate = $cursorDay->isSunday() || $holidayName !== null;
+                    @endphp
 
-                        @if($hasConflict)
-                            <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-amber-500/20 text-amber-300 font-bold text-[10px] border border-amber-500/30" title="{{ $dayConflicts[$dateKey]['count'] }} Event serentak di hari ini (Total {{ $dayConflicts[$dateKey]['total_sqm'] }} m²)">
-                                ⚡ {{ $dayConflicts[$dateKey]['count'] }}
-                            </span>
-                        @elseif(count($dayEvents) > 0)
-                            <span class="text-[10px] text-slate-500 font-medium">
-                                {{ count($dayEvents) }} job
-                            </span>
-                        @endif
-                    </div>
+                    <div class="min-h-36 md:min-h-44 p-2 md:p-2.5 transition-colors {{ $isCurrentMonth ? 'bg-slate-900/60 hover:bg-slate-850/60' : 'bg-slate-950/60 opacity-40' }} flex flex-col justify-between group">
+                        <!-- Day Number & Indicators -->
+                        <div class="flex items-start justify-between gap-1 mb-1.5">
+                            <div class="flex items-center gap-1.5">
+                                <span class="inline-flex items-center justify-center w-7 h-7 rounded-xl text-xs font-black 
+                                    {{ $isToday ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/40 ring-2 ring-indigo-400' : ($isRedDate ? 'bg-rose-500/20 text-rose-400 ring-1 ring-rose-500/40' : ($cursorDay->isSaturday() ? 'text-amber-400 font-bold' : 'text-slate-300')) }}">
+                                    {{ $cursorDay->day }}
+                                </span>
 
-                    <!-- Events Container for this Day -->
-                    <div class="space-y-1.5 flex-1 overflow-y-auto max-h-27.5 pr-0.5">
-                        @foreach($dayEvents as $evt)
-                            @php
-                                $cardClass = match($evt['status']) {
-                                    'confirmed' => 'bg-emerald-950/60 hover:bg-emerald-900/80 border-emerald-500/30 text-emerald-200',
-                                    'loading' => 'bg-sky-950/60 hover:bg-sky-900/80 border-sky-500/30 text-sky-200',
-                                    'completed' => 'bg-purple-950/60 hover:bg-purple-900/80 border-purple-500/30 text-purple-200',
-                                    default => 'bg-slate-800/80 hover:bg-slate-700 border-slate-700 text-slate-200',
-                                };
-                            @endphp
-                            <div x-show="matchesFilter({{ Js::from($evt) }})"
-                                 @click="openEventDetail({{ Js::from($evt) }})"
-                                 class="p-1.5 rounded-xl text-left cursor-pointer transition-all border transform hover:-translate-y-0.5 shadow-xs {{ $cardClass }}">
+                                @if($hasConflict)
+                                    <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-amber-500/20 text-amber-300 font-bold text-[10px] border border-amber-500/30" title="{{ $dayConflicts[$dateKey]['count'] }} Event serentak di hari ini (Total {{ $dayConflicts[$dateKey]['total_sqm'] }} m²)">
+                                        ⚡ {{ $dayConflicts[$dateKey]['count'] }}
+                                    </span>
+                                @elseif(count($dayEvents) > 0)
+                                    <span class="text-[10px] text-slate-500 font-medium">
+                                        {{ count($dayEvents) }} job
+                                    </span>
+                                @endif
+                            </div>
 
-                                <div class="flex items-center justify-between gap-1">
-                                    <div class="font-bold text-[11px] truncate leading-tight">
+                            @if($holidayName)
+                                <span class="text-[9px] font-bold text-rose-400 bg-rose-500/15 border border-rose-500/30 px-1.5 py-0.5 rounded truncate max-w-28 text-right" title="Hari Libur Nasional: {{ $holidayName }}">
+                                    🚩 {{ $holidayName }}
+                                </span>
+                            @endif
+                        </div>
+
+                        <!-- Events Container for this Day -->
+                        <div class="space-y-1.5 flex-1 overflow-y-auto max-h-32 pr-0.5">
+                            @foreach($dayEvents as $evt)
+                                @php
+                                    $cardClass = match($evt['status']) {
+                                        'confirmed' => 'bg-emerald-950/60 hover:bg-emerald-900/80 border-emerald-500/30 text-emerald-200',
+                                        'loading' => 'bg-sky-950/60 hover:bg-sky-900/80 border-sky-500/30 text-sky-200',
+                                        'completed' => 'bg-purple-950/60 hover:bg-purple-900/80 border-purple-500/30 text-purple-200',
+                                        default => 'bg-slate-800/80 hover:bg-slate-700 border-slate-700 text-slate-200',
+                                    };
+                                @endphp
+                                <div x-show="matchesFilter({{ Js::from($evt) }})"
+                                     @click="openEventDetail({{ Js::from($evt) }})"
+                                     class="p-1.5 rounded-xl text-left cursor-pointer transition-all border transform hover:-translate-y-0.5 shadow-xs {{ $cardClass }}"
+                                     title="Klik untuk melihat detail lengkap & penugasan kru">
+
+                                    <!-- Client & Screen Size -->
+                                    <div class="flex items-center justify-between gap-1">
+                                        <div class="font-bold text-[11px] truncate leading-tight text-white">
+                                            {{ $evt['customer_name'] }}
+                                        </div>
+                                        <span class="text-[9px] font-mono px-1 py-0.2 rounded bg-black/40 text-indigo-300 shrink-0 font-bold">
+                                            {{ $evt['total_sqm'] }}m²
+                                        </span>
+                                    </div>
+
+                                    <!-- Event Title -->
+                                    <div class="text-[10px] truncate text-slate-300 font-medium">
                                         {{ $evt['event_name'] }}
                                     </div>
-                                    <span class="text-[9px] font-mono px-1 py-0.2 rounded bg-black/30 shrink-0">
-                                        {{ $evt['total_sqm'] }}m²
-                                    </span>
-                                </div>
 
-                                <div class="flex items-center justify-between text-[10px] opacity-80 mt-0.5">
-                                    <span class="truncate max-w-20">{{ $evt['venue_name'] }}</span>
-                                    @if($evt['is_loading_day'])
-                                        <span class="text-sky-300 font-bold shrink-0">🚚 In</span>
-                                    @elseif($evt['is_event_day'])
-                                        <span class="text-amber-300 font-bold shrink-0">🎭 Show</span>
+                                    <!-- Venue & Loading In Time -->
+                                    <div class="flex items-center justify-between text-[9px] opacity-90 mt-0.5 pt-0.5 border-t border-white/10">
+                                        <span class="truncate max-w-22 text-slate-400">📍 {{ $evt['venue_name'] }}</span>
+                                        <span class="font-bold text-sky-300 shrink-0">In: {{ $evt['loading_time'] }}</span>
+                                    </div>
+
+                                    @if($evt['is_rigging'])
+                                        <div class="mt-0.5">
+                                            <span class="inline-block text-[8px] px-1 py-0.2 rounded bg-amber-500/30 text-amber-300 font-bold uppercase">
+                                                🎯 Gantung/Rigging
+                                            </span>
+                                        </div>
                                     @endif
                                 </div>
-                            </div>
-                        @endforeach
+                            @endforeach
+                        </div>
                     </div>
-                </div>
 
-                @php
-                    $cursorDay->addDay();
-                @endphp
-            @endwhile
+                    @php
+                        $cursorDay->addDay();
+                    @endphp
+                @endwhile
+            </div>
+        </div>
+    </div>
+
+    <!-- VIEW 2: HIGHLIGHT PROJECT BERJALAN / LIVE (KASIR LED MONITORING) -->
+    <div x-show="activeTab === 'live'" class="space-y-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-xl">
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <h2 class="text-base font-bold text-white flex items-center gap-2">
+                        <span>⚡ Project Berjalan / Live Lapangan</span>
+                        <span class="px-2 py-0.5 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                            {{ $liveOrders->count() }} Event Aktif
+                        </span>
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-0.5">
+                        Daftar pekerjaan yang sedang dalam tahap loading-in, gladi resik, standby show, maupun persiapan loading-out hari ini.
+                    </p>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs text-slate-300">
+                    <thead class="bg-slate-950/80 text-[11px] uppercase tracking-wider text-slate-400 border-b border-slate-800">
+                        <tr>
+                            <th class="px-3.5 py-3 font-semibold">Tgl Loading & Acara</th>
+                            <th class="px-3.5 py-3 font-semibold">Client & Instansi</th>
+                            <th class="px-3.5 py-3 font-semibold">Nama Event & Venue</th>
+                            <th class="px-3.5 py-3 font-semibold">Spesifikasi LED</th>
+                            <th class="px-3.5 py-3 font-semibold">PIC & Kru Lapangan</th>
+                            <th class="px-3.5 py-3 font-semibold">Armada Mobil</th>
+                            <th class="px-3.5 py-3 font-semibold">Status</th>
+                            <th class="px-3.5 py-3 font-semibold text-right">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-800/60">
+                        @forelse($liveOrders as $lo)
+                            @php
+                                $picLo = $lo->crewAssignments->where('role_label', 'PIC')->first()?->crew?->nickname
+                                    ?? $lo->crewAssignments->first()?->crew?->nickname ?? '-';
+                                $isRiggingLo = $lo->screens->contains(function ($s) {
+                                    $m = strtolower($s->rigging_method ?? '');
+                                    return str_contains($m, 'hang') || str_contains($m, 'gantung') || str_contains($m, 'rig');
+                                });
+                            @endphp
+                            <tr class="hover:bg-slate-800/40 transition-colors">
+                                <td class="px-3.5 py-2.5 whitespace-nowrap">
+                                    <div class="font-bold text-white">{{ $lo->loading_date?->format('d M Y') }}</div>
+                                    <div class="text-[11px] text-amber-400 font-semibold">In: {{ $lo->loading_time }}</div>
+                                    <div class="text-[10px] text-slate-500">Acara: {{ $lo->event_time ?: ($lo->jam_acara ?: '-') }}</div>
+                                </td>
+                                <td class="px-3.5 py-2.5">
+                                    <div class="font-bold text-white">{{ $lo->customer?->salutation ? $lo->customer->salutation.' ' : '' }}{{ $lo->customer?->name }}</div>
+                                    <div class="text-[11px] text-slate-400">{{ $lo->customer?->organization ?: 'Pelanggan Umum' }}</div>
+                                </td>
+                                <td class="px-3.5 py-2.5">
+                                    <div class="font-medium text-white">{{ $lo->event_name }}</div>
+                                    <div class="text-[11px] text-slate-400 flex items-center gap-1">
+                                        <span>📍 {{ $lo->venue_name }}</span>
+                                    </div>
+                                </td>
+                                <td class="px-3.5 py-2.5">
+                                    <div class="font-bold text-indigo-400">{{ $lo->total_sqm }} m²</div>
+                                    <div class="text-[11px] text-slate-400">{{ $lo->screens->pluck('brand_series')->unique()->implode(', ') }}</div>
+                                    @if($isRiggingLo)
+                                        <span class="inline-block px-1.5 py-0.2 rounded text-[9px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                                            🎯 Gantung / Rigging
+                                        </span>
+                                    @endif
+                                </td>
+                                <td class="px-3.5 py-2.5">
+                                    <div class="font-semibold text-white">PIC: <span class="text-indigo-300">{{ $picLo }}</span></div>
+                                    <div class="text-[11px] text-slate-400">{{ $lo->crewAssignments->count() }} Kru Terlibat</div>
+                                </td>
+                                <td class="px-3.5 py-2.5 whitespace-nowrap">
+                                    <div class="font-mono text-slate-200">🚐 {{ $lo->vehicle_loading_in ?? 'Armada Gudang' }}</div>
+                                </td>
+                                <td class="px-3.5 py-2.5">
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                                        {{ $lo->status }}
+                                    </span>
+                                </td>
+                                <td class="px-3.5 py-2.5 text-right whitespace-nowrap">
+                                    <div class="flex items-center justify-end gap-1.5">
+                                        <a href="{{ route('orders.show', $lo) }}" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold" title="Detail Order">
+                                            Detail
+                                        </a>
+                                        @if($lo->spkAssignment)
+                                            <a href="{{ route('spk.show', $lo->spkAssignment) }}" class="px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-semibold" title="Buka SPK">
+                                                SPK
+                                            </a>
+                                        @endif
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="8" class="px-4 py-8 text-center text-slate-500">
+                                    Tidak ada project yang sedang live atau loading hari ini.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- VIEW 3: HIGHLIGHT PROJECT KEDEPANNYA / UPCOMING -->
+    <div x-show="activeTab === 'upcoming'" class="space-y-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-xl">
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <h2 class="text-base font-bold text-white flex items-center gap-2">
+                        <span>🗓️ Project Kedepannya (Upcoming Events)</span>
+                        <span class="px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                            {{ $upcomingOrders->count() }} Event Terkonfirmasi
+                        </span>
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-0.5">
+                        Jadwal proyek masa depan yang sudah terkonfirmasi dan siap dipersiapkan oleh tim logistik & teknisi.
+                    </p>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs text-slate-300">
+                    <thead class="bg-slate-950/80 text-[11px] uppercase tracking-wider text-slate-400 border-b border-slate-800">
+                        <tr>
+                            <th class="px-3.5 py-3 font-semibold">Tgl Loading & Acara</th>
+                            <th class="px-3.5 py-3 font-semibold">Client & Instansi</th>
+                            <th class="px-3.5 py-3 font-semibold">Nama Event & Venue</th>
+                            <th class="px-3.5 py-3 font-semibold">Spesifikasi LED</th>
+                            <th class="px-3.5 py-3 font-semibold">PIC & Kru</th>
+                            <th class="px-3.5 py-3 font-semibold">Armada</th>
+                            <th class="px-3.5 py-3 font-semibold text-right">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-800/60">
+                        @forelse($upcomingOrders as $uo)
+                            @php
+                                $picUo = $uo->crewAssignments->where('role_label', 'PIC')->first()?->crew?->nickname
+                                    ?? $uo->crewAssignments->first()?->crew?->nickname ?? '-';
+                                $isRiggingUo = $uo->screens->contains(function ($s) {
+                                    $m = strtolower($s->rigging_method ?? '');
+                                    return str_contains($m, 'hang') || str_contains($m, 'gantung') || str_contains($m, 'rig');
+                                });
+                            @endphp
+                            <tr class="hover:bg-slate-800/40 transition-colors">
+                                <td class="px-3.5 py-2.5 whitespace-nowrap">
+                                    <div class="font-bold text-white">{{ $uo->loading_date?->format('d M Y') }}</div>
+                                    <div class="text-[11px] text-emerald-400 font-semibold">In: {{ $uo->loading_time }}</div>
+                                    <div class="text-[10px] text-slate-500">Show: {{ $uo->event_time ?: ($uo->jam_acara ?: '-') }}</div>
+                                </td>
+                                <td class="px-3.5 py-2.5">
+                                    <div class="font-bold text-white">{{ $uo->customer?->salutation ? $uo->customer->salutation.' ' : '' }}{{ $uo->customer?->name }}</div>
+                                    <div class="text-[11px] text-slate-400">{{ $uo->customer?->organization ?: 'Pelanggan Umum' }}</div>
+                                </td>
+                                <td class="px-3.5 py-2.5">
+                                    <div class="font-medium text-white">{{ $uo->event_name }}</div>
+                                    <div class="text-[11px] text-slate-400">📍 {{ $uo->venue_name }}</div>
+                                </td>
+                                <td class="px-3.5 py-2.5">
+                                    <div class="font-bold text-indigo-400">{{ $uo->total_sqm }} m²</div>
+                                    <div class="text-[11px] text-slate-400">{{ $uo->screens->pluck('brand_series')->unique()->implode(', ') }}</div>
+                                    @if($isRiggingUo)
+                                        <span class="inline-block px-1.5 py-0.2 rounded text-[9px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                                            🎯 Gantung / Rigging
+                                        </span>
+                                    @endif
+                                </td>
+                                <td class="px-3.5 py-2.5">
+                                    <div class="font-semibold text-white">PIC: <span class="text-indigo-300">{{ $picUo }}</span></div>
+                                    <div class="text-[11px] text-slate-400">{{ $uo->crewAssignments->count() }} Kru</div>
+                                </td>
+                                <td class="px-3.5 py-2.5 whitespace-nowrap">
+                                    <div class="font-mono text-slate-200">🚐 {{ $uo->vehicle_loading_in ?? 'Armada Gudang' }}</div>
+                                </td>
+                                <td class="px-3.5 py-2.5 text-right whitespace-nowrap">
+                                    <div class="flex items-center justify-end gap-1.5">
+                                        <a href="{{ route('orders.show', $uo) }}" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold">
+                                            Detail
+                                        </a>
+                                        @if($uo->spkAssignment)
+                                            <a href="{{ route('spk.show', $uo->spkAssignment) }}" class="px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-semibold">
+                                                SPK
+                                            </a>
+                                        @endif
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="7" class="px-4 py-8 text-center text-slate-500">
+                                    Belum ada project mendatang yang terjadwal.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- VIEW 4: HIGHLIGHT PROJECT SELESAI & TERMIN -->
+    <div x-show="activeTab === 'completed'" class="space-y-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-xl">
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <h2 class="text-base font-bold text-white flex items-center gap-2">
+                        <span>✅ Project Selesai & Riwayat Termin</span>
+                        <span class="px-2 py-0.5 rounded-full text-xs font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                            {{ $completedOrders->count() }} Event Selesai
+                        </span>
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-0.5">
+                        Arsip event yang telah sukses dilaksanakan, barang kembali ke gudang, dan berita acara serah terima selesai.
+                    </p>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs text-slate-300">
+                    <thead class="bg-slate-950/80 text-[11px] uppercase tracking-wider text-slate-400 border-b border-slate-800">
+                        <tr>
+                            <th class="px-3.5 py-3 font-semibold">No Order & Tgl</th>
+                            <th class="px-3.5 py-3 font-semibold">Client & Instansi</th>
+                            <th class="px-3.5 py-3 font-semibold">Nama Event & Venue</th>
+                            <th class="px-3.5 py-3 font-semibold">Luas Layar</th>
+                            <th class="px-3.5 py-3 font-semibold">Status Pembayaran</th>
+                            <th class="px-3.5 py-3 font-semibold text-right">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-800/60">
+                        @forelse($completedOrders as $co)
+                            <tr class="hover:bg-slate-800/40 transition-colors">
+                                <td class="px-3.5 py-2.5 whitespace-nowrap">
+                                    <div class="font-bold text-white">{{ $co->order_number }}</div>
+                                    <div class="text-[11px] text-slate-400">{{ $co->loading_date?->format('d M Y') }}</div>
+                                </td>
+                                <td class="px-3.5 py-2.5">
+                                    <div class="font-bold text-white">{{ $co->customer?->salutation ? $co->customer->salutation.' ' : '' }}{{ $co->customer?->name }}</div>
+                                    <div class="text-[11px] text-slate-400">{{ $co->customer?->organization ?: 'Pelanggan Umum' }}</div>
+                                </td>
+                                <td class="px-3.5 py-2.5">
+                                    <div class="font-medium text-white">{{ $co->event_name }}</div>
+                                    <div class="text-[11px] text-slate-400">📍 {{ $co->venue_name }}</div>
+                                </td>
+                                <td class="px-3.5 py-2.5">
+                                    <span class="font-bold text-indigo-400">{{ $co->total_sqm }} m²</span>
+                                </td>
+                                <td class="px-3.5 py-2.5">
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider 
+                                        {{ $co->payment_status === 'paid' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30' }}">
+                                        {{ $co->payment_status === 'paid' ? 'Lunas' : ($co->payment_status === 'dp' ? 'DP Masuk' : 'Pending') }}
+                                    </span>
+                                </td>
+                                <td class="px-3.5 py-2.5 text-right whitespace-nowrap">
+                                    <a href="{{ route('orders.show', $co) }}" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold">
+                                        Lihat Arsip
+                                    </a>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6" class="px-4 py-8 text-center text-slate-500">
+                                    Belum ada arsip project selesai.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -279,9 +611,14 @@
                               x-text="selectedEvent?.status">
                         </span>
                         <span class="text-xs font-mono text-slate-400" x-text="selectedEvent?.order_number"></span>
+                        <template x-if="selectedEvent?.is_rigging">
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                                🎯 LED Gantung
+                            </span>
+                        </template>
                     </div>
                     <h2 class="text-xl md:text-2xl font-black text-white" x-text="selectedEvent?.event_name"></h2>
-                    <p class="text-xs text-indigo-400 font-semibold mt-0.5" x-text="'Klien: ' + selectedEvent?.customer_name"></p>
+                    <p class="text-xs text-indigo-400 font-semibold mt-0.5" x-text="'Klien: ' + selectedEvent?.customer_name + ' (' + selectedEvent?.customer_org + ')'"></p>
                 </div>
 
                 <button @click="showModal = false" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors cursor-pointer">
@@ -299,13 +636,15 @@
                         <span class="text-slate-400 font-semibold text-[11px] block uppercase tracking-wider">Lokasi Venue:</span>
                         <div class="font-bold text-white text-sm" x-text="selectedEvent?.venue_name"></div>
                         <div class="text-slate-400 text-xs" x-text="selectedEvent?.venue_address"></div>
+                        <div class="text-slate-300 text-xs pt-1">Armada: <strong class="text-white" x-text="selectedEvent?.vehicle_loading_in"></strong></div>
                     </div>
 
                     <div class="space-y-1 sm:border-l sm:border-slate-800 sm:pl-3">
                         <span class="text-slate-400 font-semibold text-[11px] block uppercase tracking-wider">Waktu Operasional:</span>
-                        <div>Loading: <strong class="text-slate-200" x-text="selectedEvent?.loading_date + ' (' + selectedEvent?.loading_time + ')'"></strong></div>
-                        <div>Acara: <strong class="text-slate-200" x-text="selectedEvent?.event_start_date + ' s/d ' + selectedEvent?.event_end_date"></strong></div>
-                        <div>Dimensi Layar: <strong class="text-indigo-400" x-text="selectedEvent?.total_sqm + ' m²'"></strong></div>
+                        <div>Loading In: <strong class="text-amber-400" x-text="selectedEvent?.loading_date + ' (' + selectedEvent?.loading_time + ')'"></strong></div>
+                        <div>Jadwal Acara: <strong class="text-slate-200" x-text="selectedEvent?.event_start_date + ' • ' + selectedEvent?.event_time"></strong></div>
+                        <div>Dimensi Layar: <strong class="text-indigo-400" x-text="selectedEvent?.total_sqm + ' m² (' + selectedEvent?.screens_summary + ')'"></strong></div>
+                        <div>PIC Lapangan: <strong class="text-emerald-400" x-text="selectedEvent?.pic_crew"></strong></div>
                     </div>
                 </div>
 
@@ -370,4 +709,3 @@
 
 </div>
 @endsection
-
