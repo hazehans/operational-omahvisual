@@ -46,12 +46,22 @@ class ProductController extends Controller
             $query->where('tracking_type', $request->tracking_type);
         }
 
+        if ($request->filled('item_type')) {
+            if ($request->item_type === 'rental') {
+                $query->where('is_rental_item', true);
+            } elseif ($request->item_type === 'internal') {
+                $query->where('is_rental_item', false);
+            }
+        }
+
         $products = $query->orderBy('name', 'asc')->paginate(15)->withQueryString();
         $categories = Category::where('is_active', true)->orderBy('name')->get();
 
         // Rekap ringkas ketersediaan untuk kartu KPI atas
         $totalSku = Product::count();
         $totalActiveSku = Product::where('is_active', true)->count();
+        $totalRentalSku = Product::where('is_rental_item', true)->count();
+        $totalInternalSku = Product::where('is_rental_item', false)->count();
         $allProducts = Product::with(['stockBalances', 'assets'])->get();
 
         $totalSqmReady = 0;
@@ -65,7 +75,7 @@ class ProductController extends Controller
             }
         }
 
-        return view('products.index', compact('products', 'categories', 'totalSku', 'totalActiveSku', 'totalSqmReady'));
+        return view('products.index', compact('products', 'categories', 'totalSku', 'totalActiveSku', 'totalRentalSku', 'totalInternalSku', 'totalSqmReady'));
     }
 
     /**
@@ -280,10 +290,15 @@ class ProductController extends Controller
             'specification' => ['nullable', 'string', 'max:255'],
             'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:4096'],
             'tracking_type' => ['required', 'in:individual,quantity'],
+            'is_rental_item' => ['nullable', 'boolean'],
             'sqm_per_unit' => ['nullable', 'numeric', 'min:0'],
             'min_stock' => ['nullable', 'numeric', 'min:0'],
+            'purchase_price' => ['nullable', 'numeric', 'min:0'],
+            'rental_rate_per_day' => ['nullable', 'numeric', 'min:0'],
             'notes' => ['nullable', 'string'],
         ]);
+
+        $validated['is_rental_item'] = $request->boolean('is_rental_item', true);
 
         if (empty($validated['code'])) {
             $validated['code'] = Product::generateSku((int) $validated['category_id'], $validated['name']);
@@ -363,11 +378,16 @@ class ProductController extends Controller
             'specification' => ['nullable', 'string', 'max:255'],
             'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:4096'],
             'remove_image' => ['nullable', 'boolean'],
+            'is_rental_item' => ['nullable', 'boolean'],
             'sqm_per_unit' => ['nullable', 'numeric', 'min:0'],
             'min_stock' => ['nullable', 'numeric', 'min:0'],
+            'purchase_price' => ['nullable', 'numeric', 'min:0'],
+            'rental_rate_per_day' => ['nullable', 'numeric', 'min:0'],
             'is_active' => ['boolean'],
             'notes' => ['nullable', 'string'],
         ]);
+
+        $validated['is_rental_item'] = $request->boolean('is_rental_item', true);
 
         if ($request->boolean('remove_image')) {
             if ($product->image_path) {

@@ -21,8 +21,11 @@ class Product extends Model
         'specification',
         'image_path',
         'tracking_type',
+        'is_rental_item',
         'sqm_per_unit',
         'min_stock',
+        'purchase_price',
+        'rental_rate_per_day',
         'is_active',
         'notes',
     ];
@@ -30,6 +33,9 @@ class Product extends Model
     protected $casts = [
         'sqm_per_unit' => 'decimal:2',
         'min_stock' => 'decimal:2',
+        'purchase_price' => 'decimal:2',
+        'rental_rate_per_day' => 'decimal:2',
+        'is_rental_item' => 'boolean',
         'is_active' => 'boolean',
     ];
 

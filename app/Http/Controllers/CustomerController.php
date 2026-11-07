@@ -7,10 +7,20 @@ use App\Support\WhatsAppHelper;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class CustomerController extends Controller
 {
+    public const SALUTATIONS = [
+        'Bapak',
+        'Ibu',
+        'Kak',
+        'Mas',
+        'Mbak',
+        'Dek',
+    ];
+
     public const PROVINCES = [
         'Aceh', 'Sumatera Utara', 'Sumatera Barat', 'Riau', 'Kepulauan Riau', 'Jambi',
         'Sumatera Selatan', 'Kepulauan Bangka Belitung', 'Bengkulu', 'Lampung',
@@ -37,7 +47,7 @@ class CustomerController extends Controller
      */
     public function index(Request $request): View
     {
-        $query = Customer::withCount('orders')->latest();
+        $query = Customer::withCount('orders')->with('verifier')->latest();
 
         if ($search = $request->input('search')) {
             $query->where(function ($q) use ($search) {
@@ -52,9 +62,21 @@ class CustomerController extends Controller
             });
         }
 
+        if ($status = $request->input('status')) {
+            if ($status === 'verified') {
+                $query->where('verification_status', 'verified');
+            } elseif ($status === 'pending') {
+                $query->where('verification_status', 'pending_verification');
+            }
+        }
+
+        $totalCustomers = Customer::count();
+        $verifiedCount = Customer::where('verification_status', 'verified')->count();
+        $pendingCount = Customer::where('verification_status', 'pending_verification')->count();
+
         $customers = $query->paginate(15)->withQueryString();
 
-        return view('customers.index', compact('customers'));
+        return view('customers.index', compact('customers', 'totalCustomers', 'verifiedCount', 'pendingCount'));
     }
 
     /**
@@ -62,10 +84,11 @@ class CustomerController extends Controller
      */
     public function create(): View
     {
+        $salutations = self::SALUTATIONS;
         $provinces = self::PROVINCES;
         $categories = self::CATEGORIES;
 
-        return view('customers.create', compact('provinces', 'categories'));
+        return view('customers.create', compact('salutations', 'provinces', 'categories'));
     }
 
     /**
@@ -74,6 +97,7 @@ class CustomerController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
+            'salutation' => ['nullable', 'string', 'max:20'],
             'name' => ['required', 'string', 'max:255'],
             'full_name' => ['nullable', 'string', 'max:255'],
             'birth_date' => ['nullable', 'date'],
@@ -81,6 +105,7 @@ class CustomerController extends Controller
             'email' => ['nullable', 'email', 'max:255'],
             'organization' => ['nullable', 'string', 'max:255'],
             'category' => ['nullable', 'string', 'max:100'],
+            'photo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:4096'],
             'address' => ['nullable', 'string'],
             'province' => ['nullable', 'string', 'max:100'],
             'city' => ['nullable', 'string', 'max:100'],
@@ -88,12 +113,18 @@ class CustomerController extends Controller
             'pic_secondary_phone' => ['nullable', 'string', 'max:50'],
             'pic_secondary_relation' => ['nullable', 'string', 'max:100'],
             'registration_date' => ['nullable', 'date'],
+            'verification_status' => ['nullable', 'in:pending_verification,verified'],
             'notes' => ['nullable', 'string'],
         ]);
 
         $validated['phone'] = WhatsAppHelper::normalizePhone($validated['phone'], null, true) ?? $validated['phone'];
         if (! empty($validated['pic_secondary_phone'])) {
             $validated['pic_secondary_phone'] = WhatsAppHelper::normalizePhone($validated['pic_secondary_phone'], null, true) ?? $validated['pic_secondary_phone'];
+        }
+
+        $photoPath = null;
+        if ($request->hasFile('photo')) {
+            $photoPath = $request->file('photo')->store('customers', 'public');
         }
 
         $nextNum = Customer::count() + 1;
@@ -102,8 +133,11 @@ class CustomerController extends Controller
             $nextNum++;
         } while (Customer::where('customer_code', $code)->exists());
 
-        Customer::create([
+        $isVerified = ($validated['verification_status'] ?? 'verified') === 'verified';
+
+        $customer = Customer::create([
             'customer_code' => $code,
+            'salutation' => $validated['salutation'] ?? null,
             'name' => $validated['name'],
             'full_name' => $validated['full_name'] ?? null,
             'birth_date' => $validated['birth_date'] ?? null,
@@ -111,6 +145,7 @@ class CustomerController extends Controller
             'email' => $validated['email'] ?? null,
             'organization' => $validated['organization'] ?? null,
             'category' => $validated['category'] ?? 'Event Organizer (EO)',
+            'photo_path' => $photoPath,
             'address' => $validated['address'] ?? null,
             'province' => $validated['province'] ?? null,
             'city' => $validated['city'] ?? null,
@@ -118,12 +153,27 @@ class CustomerController extends Controller
             'pic_secondary_phone' => $validated['pic_secondary_phone'] ?? null,
             'pic_secondary_relation' => $validated['pic_secondary_relation'] ?? null,
             'registration_date' => $validated['registration_date'] ?? now()->toDateString(),
+            'verification_status' => $isVerified ? 'verified' : 'pending_verification',
+            'verified_at' => $isVerified ? now() : null,
+            'verified_by' => $isVerified ? Auth::id() : null,
             'notes' => $validated['notes'] ?? null,
             'created_by' => Auth::id(),
         ]);
 
         return redirect()->route('customers.index')
-            ->with('success', "Customer {$validated['name']} ({$code}) berhasil ditambahkan.");
+            ->with('success', "Customer {$customer->name} ({$code}) berhasil didaftarkan.");
+    }
+
+    /**
+     * Display the specified customer.
+     */
+    public function show(Customer $customer): View
+    {
+        $customer->load(['orders' => function ($q) {
+            $q->latest()->limit(10);
+        }, 'verifier', 'creator']);
+
+        return view('customers.show', compact('customer'));
     }
 
     /**
@@ -131,10 +181,11 @@ class CustomerController extends Controller
      */
     public function edit(Customer $customer): View
     {
+        $salutations = self::SALUTATIONS;
         $provinces = self::PROVINCES;
         $categories = self::CATEGORIES;
 
-        return view('customers.edit', compact('customer', 'provinces', 'categories'));
+        return view('customers.edit', compact('customer', 'salutations', 'provinces', 'categories'));
     }
 
     /**
@@ -143,6 +194,7 @@ class CustomerController extends Controller
     public function update(Request $request, Customer $customer): RedirectResponse
     {
         $validated = $request->validate([
+            'salutation' => ['nullable', 'string', 'max:20'],
             'name' => ['required', 'string', 'max:255'],
             'full_name' => ['nullable', 'string', 'max:255'],
             'birth_date' => ['nullable', 'date'],
@@ -150,6 +202,8 @@ class CustomerController extends Controller
             'email' => ['nullable', 'email', 'max:255'],
             'organization' => ['nullable', 'string', 'max:255'],
             'category' => ['nullable', 'string', 'max:100'],
+            'photo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:4096'],
+            'remove_photo' => ['nullable', 'boolean'],
             'address' => ['nullable', 'string'],
             'province' => ['nullable', 'string', 'max:100'],
             'city' => ['nullable', 'string', 'max:100'],
@@ -157,6 +211,7 @@ class CustomerController extends Controller
             'pic_secondary_phone' => ['nullable', 'string', 'max:50'],
             'pic_secondary_relation' => ['nullable', 'string', 'max:100'],
             'registration_date' => ['nullable', 'date'],
+            'verification_status' => ['nullable', 'in:pending_verification,verified'],
             'notes' => ['nullable', 'string'],
         ]);
 
@@ -165,10 +220,51 @@ class CustomerController extends Controller
             $validated['pic_secondary_phone'] = WhatsAppHelper::normalizePhone($validated['pic_secondary_phone'], null, true) ?? $validated['pic_secondary_phone'];
         }
 
+        if ($request->boolean('remove_photo')) {
+            if ($customer->photo_path) {
+                Storage::disk('public')->delete($customer->photo_path);
+            }
+            $validated['photo_path'] = null;
+        }
+
+        if ($request->hasFile('photo')) {
+            if ($customer->photo_path) {
+                Storage::disk('public')->delete($customer->photo_path);
+            }
+            $validated['photo_path'] = $request->file('photo')->store('customers', 'public');
+        }
+
+        unset($validated['photo'], $validated['remove_photo']);
+
+        if (isset($validated['verification_status'])) {
+            if ($validated['verification_status'] === 'verified' && $customer->verification_status !== 'verified') {
+                $validated['verified_at'] = now();
+                $validated['verified_by'] = Auth::id();
+            } elseif ($validated['verification_status'] === 'pending_verification') {
+                $validated['verified_at'] = null;
+                $validated['verified_by'] = null;
+            }
+        }
+
         $customer->update($validated);
 
         return redirect()->route('customers.index')
             ->with('success', "Data customer {$customer->name} berhasil diperbarui.");
+    }
+
+    /**
+     * Quick verification by company admin.
+     */
+    public function verify(Customer $customer): RedirectResponse
+    {
+        $customer->update([
+            'verification_status' => 'verified',
+            'verified_at' => now(),
+            'verified_by' => Auth::id(),
+        ]);
+
+        return redirect()->back()
+            ->with('success', "Status customer {$customer->name} berhasil diverifikasi oleh perusahaan.");
     }
 
     /**
@@ -181,10 +277,101 @@ class CustomerController extends Controller
                 ->with('error', "Customer {$customer->name} tidak dapat dihapus karena memiliki riwayat {$customer->orders()->count()} pesanan event.");
         }
 
+        if ($customer->photo_path) {
+            Storage::disk('public')->delete($customer->photo_path);
+        }
+
         $customerName = $customer->name;
         $customer->delete();
 
         return redirect()->route('customers.index')
             ->with('success', "Customer {$customerName} berhasil dihapus.");
+    }
+
+    /**
+     * Public self-registration form for clients.
+     */
+    public function showPublicRegisterForm(): View
+    {
+        $salutations = self::SALUTATIONS;
+        $provinces = self::PROVINCES;
+        $categories = self::CATEGORIES;
+
+        return view('customers.register_public', compact('salutations', 'provinces', 'categories'));
+    }
+
+    /**
+     * Store self-registered client data from public form.
+     */
+    public function storePublicRegister(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'salutation' => ['required', 'string', 'max:20'],
+            'name' => ['required', 'string', 'max:255'],
+            'full_name' => ['nullable', 'string', 'max:255'],
+            'phone' => ['required', 'string', 'max:50'],
+            'email' => ['nullable', 'email', 'max:255'],
+            'organization' => ['nullable', 'string', 'max:255'],
+            'category' => ['nullable', 'string', 'max:100'],
+            'photo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:4096'],
+            'address' => ['nullable', 'string'],
+            'province' => ['nullable', 'string', 'max:100'],
+            'city' => ['nullable', 'string', 'max:100'],
+            'pic_secondary_name' => ['nullable', 'string', 'max:255'],
+            'pic_secondary_phone' => ['nullable', 'string', 'max:50'],
+            'pic_secondary_relation' => ['nullable', 'string', 'max:100'],
+            'notes' => ['nullable', 'string'],
+        ]);
+
+        $validated['phone'] = WhatsAppHelper::normalizePhone($validated['phone'], null, true) ?? $validated['phone'];
+        if (! empty($validated['pic_secondary_phone'])) {
+            $validated['pic_secondary_phone'] = WhatsAppHelper::normalizePhone($validated['pic_secondary_phone'], null, true) ?? $validated['pic_secondary_phone'];
+        }
+
+        $photoPath = null;
+        if ($request->hasFile('photo')) {
+            $photoPath = $request->file('photo')->store('customers', 'public');
+        }
+
+        $nextNum = Customer::count() + 1;
+        do {
+            $code = 'CUST-'.str_pad((string) $nextNum, 4, '0', STR_PAD_LEFT);
+            $nextNum++;
+        } while (Customer::where('customer_code', $code)->exists());
+
+        $customer = Customer::create([
+            'customer_code' => $code,
+            'salutation' => $validated['salutation'],
+            'name' => $validated['name'],
+            'full_name' => $validated['full_name'] ?? null,
+            'phone' => $validated['phone'],
+            'email' => $validated['email'] ?? null,
+            'organization' => $validated['organization'] ?? null,
+            'category' => $validated['category'] ?? 'Event Organizer (EO)',
+            'photo_path' => $photoPath,
+            'address' => $validated['address'] ?? null,
+            'province' => $validated['province'] ?? null,
+            'city' => $validated['city'] ?? null,
+            'pic_secondary_name' => $validated['pic_secondary_name'] ?? null,
+            'pic_secondary_phone' => $validated['pic_secondary_phone'] ?? null,
+            'pic_secondary_relation' => $validated['pic_secondary_relation'] ?? null,
+            'registration_date' => now()->toDateString(),
+            'verification_status' => 'pending_verification',
+            'notes' => $validated['notes'] ?? 'Pendaftaran mandiri via form online client.',
+        ]);
+
+        return redirect()->route('customers.public-register.success', ['code' => $customer->customer_code])
+            ->with('registered_name', $customer->salutation.' '.$customer->name);
+    }
+
+    /**
+     * Confirmation view for successful self-registration.
+     */
+    public function publicRegisterSuccess(Request $request): View
+    {
+        $code = $request->query('code');
+        $customer = Customer::where('customer_code', $code)->first();
+
+        return view('customers.register_success', compact('customer'));
     }
 }

@@ -74,54 +74,75 @@
     </div>
 
     <!-- Filters & Search Bar -->
-    <div class="p-4 rounded-2xl bg-slate-900/60 border border-slate-800 shadow-md">
-        <form method="GET" action="{{ route('products.index') }}" class="grid grid-cols-1 sm:grid-cols-12 gap-3">
-            <!-- Search -->
-            <div class="sm:col-span-5 relative">
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama barang, kode SKU, atau seri model..."
-                    class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-all">
-                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                </div>
-            </div>
+    <div class="space-y-3">
+        <!-- Item Type Tabs (Operasional vs Internal) -->
+        <div class="flex flex-wrap items-center gap-2 border-b border-slate-800 pb-3">
+            <a href="{{ route('products.index', array_merge(request()->except('item_type', 'page'))) }}"
+                class="px-4 py-2 rounded-xl text-xs font-bold transition-all {{ !request('item_type') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30' : 'bg-slate-900/60 text-slate-400 hover:text-white border border-slate-800' }}">
+                Semua Barang ({{ $totalSku ?? 0 }})
+            </a>
+            <a href="{{ route('products.index', array_merge(request()->except('page'), ['item_type' => 'rental'])) }}"
+                class="px-4 py-2 rounded-xl text-xs font-bold transition-all {{ request('item_type') === 'rental' ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/30' : 'bg-slate-900/60 text-slate-400 hover:text-white border border-slate-800' }}">
+                ✨ Barang Sewa / Operasional ({{ $totalRentalSku ?? 0 }})
+            </a>
+            <a href="{{ route('products.index', array_merge(request()->except('page'), ['item_type' => 'internal'])) }}"
+                class="px-4 py-2 rounded-xl text-xs font-bold transition-all {{ request('item_type') === 'internal' ? 'bg-slate-700 text-white shadow-md shadow-slate-700/30' : 'bg-slate-900/60 text-slate-400 hover:text-white border border-slate-800' }}">
+                🏢 Aset Internal Kantor / Mess ({{ $totalInternalSku ?? 0 }})
+            </a>
+        </div>
 
-            <!-- Category Filter -->
-            <div class="sm:col-span-3">
-                <select name="category_id" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-sm text-white focus:outline-none focus:border-indigo-500 transition-all">
-                    <option value="">Semua Kategori</option>
-                    @foreach($categories as $cat)
-                        <option value="{{ $cat->id }}" {{ request('category_id') == $cat->id ? 'selected' : '' }}>
-                            {{ $cat->name }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-
-            <!-- Tracking Type Filter -->
-            <div class="sm:col-span-2">
-                <select name="tracking_type" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-sm text-white focus:outline-none focus:border-indigo-500 transition-all">
-                    <option value="">Semua Mode</option>
-                    <option value="individual" {{ request('tracking_type') == 'individual' ? 'selected' : '' }}>Individual (Serial)</option>
-                    <option value="quantity" {{ request('tracking_type') == 'quantity' ? 'selected' : '' }}>Kuantitas (Stok)</option>
-                </select>
-            </div>
-
-            <!-- Submit Filter -->
-            <div class="sm:col-span-2 flex items-center gap-2">
-                <button type="submit" class="w-full py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-semibold border border-slate-700 transition-all">
-                    Filter
-                </button>
-                @if(request()->hasAny(['search', 'category_id', 'tracking_type']))
-                    <a href="{{ route('products.index') }}" class="p-2.5 rounded-xl bg-slate-800 text-slate-400 hover:text-white transition-colors" title="Reset filter">
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </a>
+        <div class="p-4 rounded-2xl bg-slate-900/60 border border-slate-800 shadow-md">
+            <form method="GET" action="{{ route('products.index') }}" class="grid grid-cols-1 sm:grid-cols-12 gap-3">
+                @if(request('item_type'))
+                    <input type="hidden" name="item_type" value="{{ request('item_type') }}">
                 @endif
-            </div>
-        </form>
+                <!-- Search -->
+                <div class="sm:col-span-5 relative">
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama barang, kode SKU, atau seri model..."
+                        class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-all">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Category Filter -->
+                <div class="sm:col-span-3">
+                    <select name="category_id" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-sm text-white focus:outline-none focus:border-indigo-500 transition-all">
+                        <option value="">Semua Kategori</option>
+                        @foreach($categories as $cat)
+                            <option value="{{ $cat->id }}" {{ request('category_id') == $cat->id ? 'selected' : '' }}>
+                                {{ $cat->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <!-- Tracking Type Filter -->
+                <div class="sm:col-span-2">
+                    <select name="tracking_type" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-sm text-white focus:outline-none focus:border-indigo-500 transition-all">
+                        <option value="">Semua Mode</option>
+                        <option value="individual" {{ request('tracking_type') == 'individual' ? 'selected' : '' }}>Individual (Serial)</option>
+                        <option value="quantity" {{ request('tracking_type') == 'quantity' ? 'selected' : '' }}>Kuantitas (Stok)</option>
+                    </select>
+                </div>
+
+                <!-- Submit Filter -->
+                <div class="sm:col-span-2 flex items-center gap-2">
+                    <button type="submit" class="w-full py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-semibold border border-slate-700 transition-all">
+                        Filter
+                    </button>
+                    @if(request()->hasAny(['search', 'category_id', 'tracking_type', 'item_type']))
+                        <a href="{{ route('products.index') }}" class="p-2.5 rounded-xl bg-slate-800 text-slate-400 hover:text-white transition-colors" title="Reset filter">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </a>
+                    @endif
+                </div>
+            </form>
+        </div>
     </div>
 
     <!-- Product Table -->
@@ -153,7 +174,14 @@
                                         @endif
                                     </div>
                                     <div>
-                                        <span class="font-mono text-xs font-bold text-indigo-400 block">{{ $prod->code }}</span>
+                                        <div class="flex items-center gap-1.5 mb-0.5">
+                                            <span class="font-mono text-xs font-bold text-indigo-400">{{ $prod->code }}</span>
+                                            @if($prod->is_rental_item)
+                                                <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">SEWA / OPERASIONAL</span>
+                                            @else
+                                                <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-700/60 text-slate-300 border border-slate-600/40">INTERNAL KANTOR</span>
+                                            @endif
+                                        </div>
                                         <a href="{{ route('products.show', $prod) }}" class="font-semibold text-white hover:text-indigo-300 transition-colors block text-sm">
                                             {{ $prod->name }}
                                         </a>
@@ -191,8 +219,10 @@
                                         $readyCount = $prod->assets->where('condition', 'available')->where('status', 'in_storage')->count();
                                         $serviceCount = $prod->assets->whereIn('condition', ['in_service', 'damaged'])->count();
                                     @endphp
-                                    <span class="font-mono font-bold text-emerald-400 text-base">{{ $readyCount }}</span>
-                                    <span class="text-xs text-slate-400 block">siap sewa (dari {{ $prod->assets_count }})</span>
+                                    <div class="font-mono font-bold text-emerald-400 text-sm">
+                                        {{ $readyCount }} <span class="text-xs font-normal text-slate-400">/ {{ $prod->assets_count }} unit</span>
+                                    </div>
+                                    <span class="text-[11px] text-slate-400 block">Tersedia {{ $readyCount }} dari {{ $prod->assets_count }}</span>
                                     @if($serviceCount > 0)
                                         <span class="inline-block mt-0.5 px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30">
                                             {{ $serviceCount }} dalam servis
@@ -202,11 +232,12 @@
                                     @php
                                         $readyQty = (float) $prod->stockBalances->where('condition', 'available')->sum('quantity');
                                         $serviceQty = (float) $prod->stockBalances->where('condition', 'in_service')->sum('quantity');
+                                        $totalQty = (float) $prod->stockBalances->sum('quantity');
                                     @endphp
-                                    <span class="font-mono font-bold text-emerald-400 text-base">
-                                        {{ $readyQty }}
-                                    </span>
-                                    <span class="text-xs text-slate-400 block">{{ $prod->unit->symbol ?? 'unit' }} siap sewa</span>
+                                    <div class="font-mono font-bold text-emerald-400 text-sm">
+                                        {{ $readyQty }} <span class="text-xs font-normal text-slate-400">/ {{ $totalQty }} {{ $prod->unit->symbol ?? 'unit' }}</span>
+                                    </div>
+                                    <span class="text-[11px] text-slate-400 block">Tersedia {{ $readyQty }} dari {{ $totalQty }}</span>
                                     @if($serviceQty > 0)
                                         <span class="inline-block mt-0.5 px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30">
                                             {{ $serviceQty }} dalam servis

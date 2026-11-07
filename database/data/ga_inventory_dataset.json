@@ -1,0 +1,1736 @@
+{
+  "vehicles": [
+    {
+      "vehicle_code": "KND-001",
+      "name": "Isuzu Traga 01",
+      "plate_number": "W 8514 DV",
+      "frame_number": "532198",
+      "type": "Pick up",
+      "year": 2023,
+      "status": "tersedia"
+    },
+    {
+      "vehicle_code": "KND-002",
+      "name": "Isuzu Traga 02",
+      "plate_number": "N 8105 BK",
+      "frame_number": "547810",
+      "type": "Pick up",
+      "year": 2024,
+      "status": "tersedia"
+    },
+    {
+      "vehicle_code": "KND-003",
+      "name": "Isuzu Traga 03",
+      "plate_number": "N 8091 FC",
+      "frame_number": "572428",
+      "type": "Pick up",
+      "year": 2025,
+      "status": "tersedia"
+    },
+    {
+      "vehicle_code": "KND-004",
+      "name": "Isuzu Elf",
+      "plate_number": "N 8221 BK",
+      "frame_number": "127661",
+      "type": "Truck",
+      "year": 2024,
+      "status": "tersedia"
+    },
+    {
+      "vehicle_code": "KND-005",
+      "name": "Suzuki Carry 01",
+      "plate_number": "N 8052 EU",
+      "frame_number": "41864",
+      "type": "Pick up",
+      "year": 2023,
+      "status": "tersedia"
+    },
+    {
+      "vehicle_code": "KND-006",
+      "name": "Suzuki Carry 02",
+      "plate_number": "N 8308 EU",
+      "frame_number": "215578",
+      "type": "Pick up",
+      "year": 2024,
+      "status": "tersedia"
+    },
+    {
+      "vehicle_code": "KND-007",
+      "name": "Yamaha Nmax",
+      "plate_number": "N 3275 ABG",
+      "frame_number": "408071",
+      "type": "Motor",
+      "year": 2017,
+      "status": "tersedia"
+    },
+    {
+      "vehicle_code": "KND-008",
+      "name": "Honda Grand",
+      "plate_number": "N 2077 YA",
+      "frame_number": "21542",
+      "type": "Motor",
+      "year": 1977,
+      "status": "tersedia"
+    }
+  ],
+  "rental_products": [
+    {
+      "name": "Kabinet SAGA 100 x 50",
+      "subgroup": "P3.9 — SAGA LITE",
+      "qty": 264.0,
+      "unit": "Cabinet",
+      "sqm_per_unit": 0.5,
+      "category": "Komponen Videotron",
+      "keterangan": "132 Sqm",
+      "is_rental_item": true
+    },
+    {
+      "name": "Kabinet SAGA 50 x 50",
+      "subgroup": "P3.9 — SAGA LITE",
+      "qty": 72.0,
+      "unit": "Cabinet",
+      "sqm_per_unit": 0.25,
+      "category": "Komponen Videotron",
+      "keterangan": "18 Sqm",
+      "is_rental_item": true
+    },
+    {
+      "name": "Hardcase SAGA",
+      "subgroup": "P3.9 — SAGA LITE",
+      "qty": 50.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Penyimpanan & Hardcase",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Kabinet LITE 100 x 50",
+      "subgroup": "P3.9 — SAGA LITE",
+      "qty": 54.0,
+      "unit": "Cabinet",
+      "sqm_per_unit": 0.5,
+      "category": "Komponen Videotron",
+      "keterangan": "27 Sqm",
+      "is_rental_item": true
+    },
+    {
+      "name": "Kabinet LITE 50 x 50",
+      "subgroup": "P3.9 — SAGA LITE",
+      "qty": 36.0,
+      "unit": "Cabinet",
+      "sqm_per_unit": 0.25,
+      "category": "Komponen Videotron",
+      "keterangan": "9 Sqm",
+      "is_rental_item": true
+    },
+    {
+      "name": "Hardcase LITE",
+      "subgroup": "P3.9 — SAGA LITE",
+      "qty": 12.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Penyimpanan & Hardcase",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Power Jumper SAGA LITE",
+      "subgroup": "P3.9 — SAGA LITE",
+      "qty": 495.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Perkabelan",
+      "keterangan": "Qiangly",
+      "is_rental_item": true
+    },
+    {
+      "name": "LAN Jumper",
+      "subgroup": "P3.9 — SAGA LITE",
+      "qty": 422.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Perkabelan",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Power Awal SAGA LITE",
+      "subgroup": "P3.9 — SAGA LITE",
+      "qty": 35.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Perkabelan",
+      "keterangan": "Legrand To Corn",
+      "is_rental_item": true
+    },
+    {
+      "name": "Power Awal Steker",
+      "subgroup": "P3.9 — SAGA LITE",
+      "qty": 5.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Perkabelan",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Power Jumper Panjang",
+      "subgroup": "P3.9 — SAGA LITE",
+      "qty": 33.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Perkabelan",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Baut SAGA LITE",
+      "subgroup": "P3.9 — SAGA LITE",
+      "qty": 459.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Peralatan & Tools",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Kupu2 Curved",
+      "subgroup": "P3.9 — SAGA LITE",
+      "qty": 66.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Peralatan & Tools",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Kupu2 Flat",
+      "subgroup": "P3.9 — SAGA LITE",
+      "qty": 93.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Peralatan & Tools",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Standing Led (bartip Dpro)",
+      "subgroup": "P3.9 — SAGA LITE",
+      "qty": 4.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Komponen Videotron",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Kabinet LRS 100 x 50 cm",
+      "subgroup": "P2.6 — LRS",
+      "qty": 124.0,
+      "unit": "Cabinet",
+      "sqm_per_unit": 0.5,
+      "category": "Komponen Videotron",
+      "keterangan": "64 Sqm",
+      "is_rental_item": true
+    },
+    {
+      "name": "Kabinet LRS 50 x 50 cm",
+      "subgroup": "P2.6 — LRS",
+      "qty": 24.0,
+      "unit": "Cabinet",
+      "sqm_per_unit": 0.25,
+      "category": "Komponen Videotron",
+      "keterangan": "6 Sqm",
+      "is_rental_item": true
+    },
+    {
+      "name": "Hardcase LRS",
+      "subgroup": "P2.6 — LRS",
+      "qty": 24.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Penyimpanan & Hardcase",
+      "keterangan": "1 Hc isi 1 Sqm",
+      "is_rental_item": true
+    },
+    {
+      "name": "Power Jumper LRS",
+      "subgroup": "P2.6 — LRS",
+      "qty": 159.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Perkabelan",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "LAN Jumper LRS",
+      "subgroup": "P2.6 — LRS",
+      "qty": 160.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Perkabelan",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Baut LRS",
+      "subgroup": "P2.6 — LRS",
+      "qty": 97.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Peralatan & Tools",
+      "keterangan": "Titanium Crome",
+      "is_rental_item": true
+    },
+    {
+      "name": "Kupu2  Besar LRS",
+      "subgroup": "P2.6 — LRS",
+      "qty": 100.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Peralatan & Tools",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Kupu2  Kecil LRS",
+      "subgroup": "P2.6 — LRS",
+      "qty": 111.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Peralatan & Tools",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Power Awal Biru LRS",
+      "subgroup": "P2.6 — LRS",
+      "qty": 6.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Perkabelan",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Kabinet Mavic 100 x 50 cm",
+      "subgroup": "MAVIC — P3.9",
+      "qty": 100.0,
+      "unit": "Cabinet",
+      "sqm_per_unit": 0.5,
+      "category": "Komponen Videotron",
+      "keterangan": "50 Sqm",
+      "is_rental_item": true
+    },
+    {
+      "name": "Kabinet Mavic 50 x 50 cm",
+      "subgroup": "MAVIC — P3.9",
+      "qty": 24.0,
+      "unit": "Cabinet",
+      "sqm_per_unit": 0.25,
+      "category": "Komponen Videotron",
+      "keterangan": "6 Sqm",
+      "is_rental_item": true
+    },
+    {
+      "name": "Hardcase Mavic",
+      "subgroup": "MAVIC — P3.9",
+      "qty": 19.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Penyimpanan & Hardcase",
+      "keterangan": "1 Hc isi 2 Mtr",
+      "is_rental_item": true
+    },
+    {
+      "name": "Power Jumper Mavic",
+      "subgroup": "MAVIC — P3.9",
+      "qty": 128.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Perkabelan",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Power Jumper",
+      "subgroup": "MAVIC — P3.9",
+      "qty": 30.0,
+      "unit": "Pcs",
+      "sqm_per_unit": null,
+      "category": "Perkabelan",
+      "keterangan": "tambahan dr Mitra",
+      "is_rental_item": true
+    },
+    {
+      "name": "LAN Jumper",
+      "subgroup": "MAVIC — P3.9",
+      "qty": 100.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Perkabelan",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Baut Mavic",
+      "subgroup": "MAVIC — P3.9",
+      "qty": 136.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Peralatan & Tools",
+      "keterangan": "Kunci 14 Crome",
+      "is_rental_item": true
+    },
+    {
+      "name": "Power Jumper Panjang 5 mtr Mavic",
+      "subgroup": "MAVIC — P3.9",
+      "qty": 7.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Perkabelan",
+      "keterangan": "5 mtr",
+      "is_rental_item": true
+    },
+    {
+      "name": "Power Awal Putih Mavic",
+      "subgroup": "MAVIC — P3.9",
+      "qty": 16.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Perkabelan",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Female Corn Qiangly to Power Corn White",
+      "subgroup": "MAVIC — P3.9",
+      "qty": 5.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Perkabelan",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Kabel LAN Awal Pendek",
+      "subgroup": "DATA BARANG LAINNYA",
+      "qty": 48.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Perkabelan",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Kabel LAN Awal Panjang",
+      "subgroup": "DATA BARANG LAINNYA",
+      "qty": 50.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Perkabelan",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Kabe FOH",
+      "subgroup": "DATA BARANG LAINNYA",
+      "qty": 10.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Perkabelan",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Webbing Ungu + Clamp OHM",
+      "subgroup": "DATA BARANG LAINNYA",
+      "qty": 20.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Konstruksi & Rigging",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Webbing Hijau",
+      "subgroup": "DATA BARANG LAINNYA",
+      "qty": 10.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Konstruksi & Rigging",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Webbing Putih",
+      "subgroup": "DATA BARANG LAINNYA",
+      "qty": 2.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Konstruksi & Rigging",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Clamp",
+      "subgroup": "DATA BARANG LAINNYA",
+      "qty": 41.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Konstruksi & Rigging",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Grounding Tembaga",
+      "subgroup": "DATA BARANG LAINNYA",
+      "qty": 6.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Komponen Videotron",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Grounding Besi",
+      "subgroup": "DATA BARANG LAINNYA",
+      "qty": 2.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Konstruksi & Rigging",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Converter Legrand to Steker",
+      "subgroup": "DATA BARANG LAINNYA",
+      "qty": 14.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Komponen Videotron",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Corn Female Qiangly to Corn Female Qiangly",
+      "subgroup": "DATA BARANG LAINNYA",
+      "qty": 4.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Komponen Videotron",
+      "keterangan": "1,5 mtr",
+      "is_rental_item": true
+    },
+    {
+      "name": "Panel ISI 6",
+      "subgroup": "DATA BARANG LAINNYA",
+      "qty": 12.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Kelistrikan & Power",
+      "keterangan": "Include Kabel 1,5 Mtr",
+      "is_rental_item": true
+    },
+    {
+      "name": "Panel ISI 12",
+      "subgroup": "DATA BARANG LAINNYA",
+      "qty": 2.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Kelistrikan & Power",
+      "keterangan": "Include Kabel 1,5 Mtr",
+      "is_rental_item": true
+    },
+    {
+      "name": "Konektor Panel 6",
+      "subgroup": "DATA BARANG LAINNYA",
+      "qty": 12.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Kelistrikan & Power",
+      "keterangan": "Include Kabel 1,5 Mtr",
+      "is_rental_item": true
+    },
+    {
+      "name": "Konektor Panel 12",
+      "subgroup": "DATA BARANG LAINNYA",
+      "qty": 2.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Kelistrikan & Power",
+      "keterangan": "Include Kabel 1,5 Mtr",
+      "is_rental_item": true
+    },
+    {
+      "name": "Kabel babok",
+      "subgroup": "DATA BARANG LAINNYA",
+      "qty": 7.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Perkabelan",
+      "keterangan": "Nama barang kurang jelas",
+      "is_rental_item": true
+    },
+    {
+      "name": "Kabel Twist",
+      "subgroup": "DATA BARANG LAINNYA",
+      "qty": 2.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Perkabelan",
+      "keterangan": "50 mtr an",
+      "is_rental_item": true
+    },
+    {
+      "name": "Hardcase Kabel",
+      "subgroup": "DATA BARANG LAINNYA",
+      "qty": 4.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Penyimpanan & Hardcase",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Besi Profil 50 cm 12cm x 4cm",
+      "subgroup": "DATA BARANG LAINNYA",
+      "qty": 3.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Konstruksi & Rigging",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Besi Profil 100 cm 12cm x 4cm",
+      "subgroup": "DATA BARANG LAINNYA",
+      "qty": 22.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Konstruksi & Rigging",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Besi Profil 200 cm 12cm x 4cm",
+      "subgroup": "DATA BARANG LAINNYA",
+      "qty": 22.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Konstruksi & Rigging",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Besi H 1 mtr",
+      "subgroup": "DATA BARANG LAINNYA",
+      "qty": 9.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Konstruksi & Rigging",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Besi H 1 mtr 1x40cm",
+      "subgroup": "DATA BARANG LAINNYA",
+      "qty": 1.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Konstruksi & Rigging",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Besi H 1 mtr 1x50cm",
+      "subgroup": "DATA BARANG LAINNYA",
+      "qty": 5.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Konstruksi & Rigging",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Besi H 1,5 mtr",
+      "subgroup": "DATA BARANG LAINNYA",
+      "qty": 114.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Konstruksi & Rigging",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Besi H 2 mtr",
+      "subgroup": "DATA BARANG LAINNYA",
+      "qty": 11.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Konstruksi & Rigging",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Panggung Rangka 60 cm",
+      "subgroup": "DATA BARANG LAINNYA",
+      "qty": 3.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Konstruksi & Rigging",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Panggung Rangka 50 cm",
+      "subgroup": "DATA BARANG LAINNYA",
+      "qty": 3.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Konstruksi & Rigging",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Panggung Rangka 40 cm",
+      "subgroup": "DATA BARANG LAINNYA",
+      "qty": 2.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Konstruksi & Rigging",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Panggung SIlver",
+      "subgroup": "DATA BARANG LAINNYA",
+      "qty": 12.0,
+      "unit": "Mtr",
+      "sqm_per_unit": null,
+      "category": "Konstruksi & Rigging",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Panggung Hitam",
+      "subgroup": "DATA BARANG LAINNYA",
+      "qty": 12.0,
+      "unit": "Mtr",
+      "sqm_per_unit": null,
+      "category": "Konstruksi & Rigging",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Box Pluru Hijau Besi",
+      "subgroup": "DATA BARANG LAINNYA",
+      "qty": 0.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Konstruksi & Rigging",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Tackel 1 ton",
+      "subgroup": "DATA BARANG LAINNYA",
+      "qty": 0.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Komponen Videotron",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Takel 2 ton",
+      "subgroup": "DATA BARANG LAINNYA",
+      "qty": 0.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Konstruksi & Rigging",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Box Pluru Hijau Plastik",
+      "subgroup": "DATA BARANG LAINNYA",
+      "qty": 0.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Komponen Videotron",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Corn Female Qiangly to Corn Female Qiangly",
+      "subgroup": "DATA BARANG LAINNYA",
+      "qty": 7.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Komponen Videotron",
+      "keterangan": "25 Cm",
+      "is_rental_item": true
+    },
+    {
+      "name": "Legrand male to Stop Kontak",
+      "subgroup": "DATA BARANG LAINNYA",
+      "qty": 6.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Komponen Videotron",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Besi profil 6m",
+      "subgroup": "DATA BARANG LAINNYA",
+      "qty": 9.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Konstruksi & Rigging",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Besi profil 4m",
+      "subgroup": "DATA BARANG LAINNYA",
+      "qty": 1.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Konstruksi & Rigging",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Ballas",
+      "subgroup": "DATA BARANG LAINNYA",
+      "qty": 4.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Komponen Videotron",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Takel/Katrol kuning (prohex)",
+      "subgroup": "DATA BARANG LAINNYA",
+      "qty": 4.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Konstruksi & Rigging",
+      "keterangan": "1 ton",
+      "is_rental_item": true
+    },
+    {
+      "name": "Rigging 40x40 (2m)",
+      "subgroup": "DATA BARANG LAINNYA",
+      "qty": 4.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Konstruksi & Rigging",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Rigging 75x60 (3m)",
+      "subgroup": "DATA BARANG LAINNYA",
+      "qty": 8.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Konstruksi & Rigging",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Rigging 40x40 (4m)",
+      "subgroup": "DATA BARANG LAINNYA",
+      "qty": 4.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Konstruksi & Rigging",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Cincin",
+      "subgroup": "DATA BARANG LAINNYA",
+      "qty": 4.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Komponen Videotron",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Webbing Kuning",
+      "subgroup": "DATA BARANG LAINNYA",
+      "qty": 4.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Konstruksi & Rigging",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Anchor Tekel/Katrol",
+      "subgroup": "DATA BARANG LAINNYA",
+      "qty": 4.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Komponen Videotron",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Baut Anchor",
+      "subgroup": "DATA BARANG LAINNYA",
+      "qty": 15.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Peralatan & Tools",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Baut Rigging (UNS 4,6)",
+      "subgroup": "DATA BARANG LAINNYA",
+      "qty": 136.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Konstruksi & Rigging",
+      "keterangan": "10 tanpa mur",
+      "is_rental_item": true
+    },
+    {
+      "name": "Ujung ring bahan",
+      "subgroup": "DATA BARANG LAINNYA",
+      "qty": 9.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Komponen Videotron",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Clamp Cawl",
+      "subgroup": "DATA BARANG LAINNYA",
+      "qty": 8.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Konstruksi & Rigging",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Clamp Flat",
+      "subgroup": "DATA BARANG LAINNYA",
+      "qty": 11.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Konstruksi & Rigging",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Baut mur cadang cawl",
+      "subgroup": "DATA BARANG LAINNYA",
+      "qty": 10.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Peralatan & Tools",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Clamp tusukan ringging",
+      "subgroup": "DATA BARANG LAINNYA",
+      "qty": 20.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Konstruksi & Rigging",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Box Peluru Hijau Besi (rigging)",
+      "subgroup": "DATA BARANG LAINNYA",
+      "qty": 1.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Konstruksi & Rigging",
+      "keterangan": "",
+      "is_rental_item": true
+    },
+    {
+      "name": "Rigging setengah lingkaran",
+      "subgroup": "DATA BARANG LAINNYA",
+      "qty": 2.0,
+      "unit": "pcs",
+      "sqm_per_unit": null,
+      "category": "Konstruksi & Rigging",
+      "keterangan": "",
+      "is_rental_item": true
+    }
+  ],
+  "processors": [
+    {
+      "name": "Novastar Video Processor VX2",
+      "code": "PROC-VX2",
+      "brand": "NovaStar",
+      "model": "VX2"
+    },
+    {
+      "name": "Novastar Video Processor VX4",
+      "code": "PROC-VX4",
+      "brand": "NovaStar",
+      "model": "VX4"
+    },
+    {
+      "name": "Novastar Video Processor VX4S",
+      "code": "PROC-VX4S",
+      "brand": "NovaStar",
+      "model": "VX4S"
+    },
+    {
+      "name": "Novastar Video Processor VX6S",
+      "code": "PROC-VX6S",
+      "brand": "NovaStar",
+      "model": "VX6S"
+    },
+    {
+      "name": "Novastar Video Processor VX8",
+      "code": "PROC-VX8",
+      "brand": "NovaStar",
+      "model": "VX8"
+    },
+    {
+      "name": "Novastar Video Processor VX10",
+      "code": "PROC-VX10",
+      "brand": "NovaStar",
+      "model": "VX10"
+    },
+    {
+      "name": "Novastar Video Processor X20M",
+      "code": "PROC-X20M",
+      "brand": "NovaStar",
+      "model": "X20M"
+    }
+  ],
+  "laptops": [
+    {
+      "name": "Laptop 1 - LOQ (PIC: Apip)",
+      "serial_number": "LAP-01",
+      "pic": "Apip",
+      "model": "LOQ",
+      "condition": "damaged",
+      "status": "in_storage",
+      "notes": "Jakarta Utara"
+    },
+    {
+      "name": "Laptop 2 - LOQ (PIC: Bagus)",
+      "serial_number": "LAP-02",
+      "pic": "Bagus",
+      "model": "LOQ",
+      "condition": "available",
+      "status": "in_storage",
+      "notes": ""
+    },
+    {
+      "name": "Laptop 3 - LOQ (PIC: Yoga)",
+      "serial_number": "LAP-03",
+      "pic": "Yoga",
+      "model": "LOQ",
+      "condition": "available",
+      "status": "in_storage",
+      "notes": ""
+    },
+    {
+      "name": "Laptop 4 - LOQ (PIC: Andra)",
+      "serial_number": "LAP-04",
+      "pic": "Andra",
+      "model": "LOQ",
+      "condition": "available",
+      "status": "in_storage",
+      "notes": "UB"
+    },
+    {
+      "name": "Laptop 5 - TUF (PIC: Andika)",
+      "serial_number": "LAP-05",
+      "pic": "Andika",
+      "model": "TUF",
+      "condition": "damaged",
+      "status": "in_storage",
+      "notes": ""
+    },
+    {
+      "name": "Laptop 6 - LEGION (PIC: Bobi)",
+      "serial_number": "LAP-06",
+      "pic": "Bobi",
+      "model": "LEGION",
+      "condition": "damaged",
+      "status": "in_storage",
+      "notes": ""
+    },
+    {
+      "name": "Laptop 7 - LEGION (PIC: Rio)",
+      "serial_number": "LAP-07",
+      "pic": "Rio",
+      "model": "LEGION",
+      "condition": "damaged",
+      "status": "in_storage",
+      "notes": ""
+    },
+    {
+      "name": "Laptop 8 - TUF (PIC: Visal)",
+      "serial_number": "LAP-08",
+      "pic": "Visal",
+      "model": "TUF",
+      "condition": "damaged",
+      "status": "in_storage",
+      "notes": "Pakisjajar"
+    },
+    {
+      "name": "Laptop 9 - LOQ (PIC: Yudi)",
+      "serial_number": "LAP-09",
+      "pic": "Yudi",
+      "model": "LOQ",
+      "condition": "available",
+      "status": "in_storage",
+      "notes": ""
+    },
+    {
+      "name": "Laptop 10 - LOQ (PIC: Universal Laptop)",
+      "serial_number": "LAP-10",
+      "pic": "Universal Laptop",
+      "model": "LOQ",
+      "condition": "available",
+      "status": "in_storage",
+      "notes": ""
+    }
+  ],
+  "toolboxes": [
+    {
+      "code": "TB-01",
+      "name": "Tool Box TB-01 (Isi 14 Item)",
+      "completeness": "13/13",
+      "condition": "available",
+      "status": "in_storage"
+    },
+    {
+      "code": "TB-02",
+      "name": "Tool Box TB-02 (Isi 14 Item)",
+      "completeness": "13/13",
+      "condition": "available",
+      "status": "in_storage"
+    },
+    {
+      "code": "TB-03",
+      "name": "Tool Box TB-03 (Isi 14 Item)",
+      "completeness": "13/13",
+      "condition": "available",
+      "status": "in_storage"
+    },
+    {
+      "code": "TB-04",
+      "name": "Tool Box TB-04 (Isi 14 Item)",
+      "completeness": "13/13",
+      "condition": "available",
+      "status": "in_storage"
+    },
+    {
+      "code": "TB-05",
+      "name": "Tool Box TB-05 (Isi 14 Item)",
+      "completeness": "13/13",
+      "condition": "available",
+      "status": "in_storage"
+    },
+    {
+      "code": "TB-06",
+      "name": "Tool Box TB-06 (Isi 14 Item)",
+      "completeness": "13/13",
+      "condition": "available",
+      "status": "in_storage"
+    },
+    {
+      "code": "TB-07",
+      "name": "Tool Box TB-07 (Isi 14 Item)",
+      "completeness": "13/13",
+      "condition": "available",
+      "status": "in_storage"
+    }
+  ],
+  "toolkit_operators": [],
+  "internal_office_assets": [
+    {
+      "name": "Dispenser Arashi",
+      "qty": 1.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "PC",
+      "qty": 2.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "Monitor",
+      "qty": 11.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "AC",
+      "qty": 1.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "Lemari Alat Kebersihan",
+      "qty": 1.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "Loker Staff",
+      "qty": 1.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "15 loker",
+      "is_rental_item": false
+    },
+    {
+      "name": "Rak Hitam",
+      "qty": 1.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "4 susun",
+      "is_rental_item": false
+    },
+    {
+      "name": "Meja Bulat",
+      "qty": 1.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "Meja Portable Besar",
+      "qty": 1.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "Meja Kantor Besar",
+      "qty": 4.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "Kursi Kantor",
+      "qty": 14.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "3 tidak layak",
+      "is_rental_item": false
+    },
+    {
+      "name": "Kursi Terop",
+      "qty": 9.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "Printer Brother",
+      "qty": 1.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "Brankas",
+      "qty": 1.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "Meja Makan Krisbow",
+      "qty": 1.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "Kursi Makan Krisbow",
+      "qty": 3.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "TV 55\" + Remote",
+      "qty": 1.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "Kursi Kantor Informa",
+      "qty": 1.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "Kursi Kantor Abu2",
+      "qty": 1.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "Kursi Terop",
+      "qty": 1.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "Sofa Bed",
+      "qty": 1.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "Jam Dinding",
+      "qty": 1.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "Loker Karyawan",
+      "qty": 1.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "Isi 15",
+      "is_rental_item": false
+    },
+    {
+      "name": "Loker Coklat",
+      "qty": 2.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "Isi 5 dan Isi 4",
+      "is_rental_item": false
+    },
+    {
+      "name": "Loker Kebersihan",
+      "qty": 1.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "Laptop Finance",
+      "qty": 1.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "Laptop NOC",
+      "qty": 1.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "Laptop",
+      "qty": 1.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "Simplus Air Purifire",
+      "qty": 1.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "Kotak Obat",
+      "qty": 1.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "PS 3 Sony",
+      "qty": 1.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "Stik PS",
+      "qty": 3.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "Keranjang Jajan Kecil",
+      "qty": 2.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "Keset",
+      "qty": 3.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "Tempat Sampah Kecil",
+      "qty": 2.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "Tempat Pengharum Ruang",
+      "qty": 1.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "Cermin Bulat",
+      "qty": 1.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "Kamera CCTV",
+      "qty": 3.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "Hard Drive",
+      "qty": 9.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "Power Supply CCX",
+      "qty": 1.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "Finger Passlock",
+      "qty": 1.0,
+      "unit": "Set",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "beserta besi magnet kuncian",
+      "is_rental_item": false
+    },
+    {
+      "name": "Password Passlock",
+      "qty": 1.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "Fitting Lampu (hitam)",
+      "qty": 3.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "Stop Kontak Lantai Welt",
+      "qty": 1.0,
+      "unit": "Set",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "Toolbox Kuning",
+      "qty": 1.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "Power Adapter",
+      "qty": 1.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "Fiber Cleaver",
+      "qty": 1.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "Receiver Wire Tracher + Optical Time Domain",
+      "qty": 1.0,
+      "unit": "Set",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "Modem",
+      "qty": 1.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "Optical Fiber Fusion Splicer",
+      "qty": 1.0,
+      "unit": "Set",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "Ambalan Putih Tempel",
+      "qty": 1.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "Mouse Wireless",
+      "qty": 1.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "DVR CCTV",
+      "qty": 3.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "2 tidak terpakai",
+      "is_rental_item": false
+    },
+    {
+      "name": "Router",
+      "qty": 1.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "Switch",
+      "qty": 1.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "NAS Server",
+      "qty": 1.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "Palu Tekiro",
+      "qty": 1.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "Kunci Inggris",
+      "qty": 1.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "Cutter",
+      "qty": 1.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "Tang Kupas",
+      "qty": 2.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "Tang Potong",
+      "qty": 1.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "Kunci L",
+      "qty": 1.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "Gunting",
+      "qty": 2.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "Obeng -/+",
+      "qty": 1.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "Obeng +",
+      "qty": 1.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "Taspen",
+      "qty": 1.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "Optical Multi Meter",
+      "qty": 1.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "Optical Power Meter",
+      "qty": 1.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "Tang Crimping",
+      "qty": 1.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "Tang Potong",
+      "qty": 1.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    },
+    {
+      "name": "Invisible Laser Radiation",
+      "qty": 1.0,
+      "unit": "Unit",
+      "category": "Aset Kantor & Mess",
+      "keterangan": "",
+      "is_rental_item": false
+    }
+  ]
+}

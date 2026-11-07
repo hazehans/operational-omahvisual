@@ -22,6 +22,7 @@ class Customer extends Model
 
     protected $fillable = [
         'customer_code',
+        'salutation',
         'name',
         'full_name',
         'birth_date',
@@ -30,12 +31,16 @@ class Customer extends Model
         'phone',
         'email',
         'address',
+        'photo_path',
         'province',
         'city',
         'pic_secondary_name',
         'pic_secondary_phone',
         'pic_secondary_relation',
         'registration_date',
+        'verification_status',
+        'verified_at',
+        'verified_by',
         'notes',
         'created_by',
     ];
@@ -45,7 +50,13 @@ class Customer extends Model
         return [
             'birth_date' => 'date',
             'registration_date' => 'date',
+            'verified_at' => 'datetime',
         ];
+    }
+
+    public function verifier(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'verified_by');
     }
 
     public function orders(): HasMany

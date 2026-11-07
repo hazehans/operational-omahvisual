@@ -28,6 +28,11 @@ use Illuminate\Support\Facades\Route;
 // Public Customer Self-Service Order Tracking Portal (No login required)
 Route::get('/track/{token}', [CustomerTrackingController::class, 'show'])->name('orders.track');
 
+// Public Client Self-Registration (No login required)
+Route::get('/register-client', [CustomerController::class, 'showPublicRegisterForm'])->name('customers.public-register');
+Route::post('/register-client', [CustomerController::class, 'storePublicRegister'])->name('customers.public-register.store');
+Route::get('/register-client/success', [CustomerController::class, 'publicRegisterSuccess'])->name('customers.public-register.success');
+
 // Public Live Token Route for Crew Lapangan (No login required)
 Route::get('/spk/live/{token}', [SpkController::class, 'liveTokenView'])->name('spk.live');
 Route::post('/spk/live/{token}/qc', [SpkController::class, 'submitVenueQc'])->name('spk.submit-qc');
@@ -132,6 +137,7 @@ Route::middleware('auth')->group(function () {
     // Master Data Operasional (Customer, Kru, Armada)
     Route::middleware('can:view customers')->group(function () {
         Route::resource('customers', CustomerController::class);
+        Route::post('customers/{customer}/verify', [CustomerController::class, 'verify'])->name('customers.verify');
     });
     Route::middleware('can:view crews')->group(function () {
         Route::resource('crews', CrewController::class);

@@ -92,6 +92,15 @@
                         <span class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-800 text-slate-300">
                             {{ $product->category->name ?? 'Kategori Umum' }}
                         </span>
+                        @if($product->is_rental_item)
+                            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                                ✨ Barang Sewa / Operasional
+                            </span>
+                        @else
+                            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-700 text-slate-300 border border-slate-600">
+                                🏢 Aset Internal (Kantor / Mess)
+                            </span>
+                        @endif
                         @if($product->tracking_type === 'individual')
                             <span class="px-3 py-1 rounded-full text-xs font-semibold bg-indigo-500/15 text-indigo-400 border border-indigo-500/30">
                                 Unit Serial Individual
@@ -128,7 +137,7 @@
         </div>
 
         <!-- Metric Details -->
-        <div class="grid grid-cols-2 sm:grid-cols-5 gap-4 mt-8 pt-6 border-t border-slate-800/80 text-sm">
+        <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4 mt-8 pt-6 border-t border-slate-800/80 text-sm">
             <div>
                 <span class="text-slate-400 text-xs block mb-0.5">Brand / Merk:</span>
                 <span class="font-semibold text-slate-200">{{ $product->brand ?? '-' }}</span>
@@ -138,14 +147,22 @@
                 <span class="font-semibold text-slate-200 font-mono">{{ $product->model_series ?? '-' }}</span>
             </div>
             <div>
+                <span class="text-slate-400 text-xs block mb-0.5">Nilai Aset / Harga:</span>
+                <span class="font-semibold text-emerald-400">
+                    {{ $product->purchase_price ? 'Rp ' . number_format((float) $product->purchase_price, 0, ',', '.') : '-' }}
+                </span>
+            </div>
+            <div>
+                <span class="text-slate-400 text-xs block mb-0.5">Tarif Sewa Acuan:</span>
+                <span class="font-semibold text-sky-400">
+                    {{ $product->rental_rate_per_day ? 'Rp ' . number_format((float) $product->rental_rate_per_day, 0, ',', '.') . ' / hr' : '-' }}
+                </span>
+            </div>
+            <div>
                 <span class="text-slate-400 text-xs block mb-0.5">Luas Meter Persegi:</span>
                 <span class="font-semibold text-indigo-400">
                     {{ $product->sqm_per_unit ? number_format((float) $product->sqm_per_unit, 2) . ' m² / unit' : 'Bukan Kabinet' }}
                 </span>
-            </div>
-            <div>
-                <span class="text-slate-400 text-xs block mb-0.5">Batas Min Stok:</span>
-                <span class="font-semibold text-amber-400 font-mono">{{ (float) ($product->min_stock ?? 0) }} {{ $product->unit->symbol ?? 'unit' }}</span>
             </div>
             <div>
                 <span class="text-slate-400 text-xs block mb-0.5">Kondisi Rusak / Servis:</span>

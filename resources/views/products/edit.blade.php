@@ -30,6 +30,24 @@
             @csrf
             @method('PUT')
 
+            <!-- Klasifikasi Jenis Barang -->
+            <div class="p-4 rounded-xl bg-slate-950/50 border border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div>
+                    <label class="block text-sm font-semibold text-white">Klasifikasi Penggunaan Barang *</label>
+                    <p class="text-xs text-slate-400 mt-0.5">Tentukan apakah barang disewakan/operasional keluar, atau aset internal yang tidak boleh keluar gedung.</p>
+                </div>
+                <div class="flex items-center gap-4">
+                    <label class="inline-flex items-center gap-2 cursor-pointer">
+                        <input type="radio" name="is_rental_item" value="1" {{ old('is_rental_item', $product->is_rental_item ? '1' : '0') == '1' ? 'checked' : '' }} class="text-indigo-600 focus:ring-indigo-500">
+                        <span class="text-xs font-semibold text-emerald-400">✨ Barang Sewa / Operasional</span>
+                    </label>
+                    <label class="inline-flex items-center gap-2 cursor-pointer">
+                        <input type="radio" name="is_rental_item" value="0" {{ old('is_rental_item', $product->is_rental_item ? '1' : '0') == '0' ? 'checked' : '' }} class="text-indigo-600 focus:ring-indigo-500">
+                        <span class="text-xs font-semibold text-slate-400">🏢 Aset Internal Kantor/Mess</span>
+                    </label>
+                </div>
+            </div>
+
             <!-- Foto Barang Upload & Preview -->
             <div class="p-4 rounded-xl bg-slate-950/50 border border-slate-800/80">
                 <label class="block text-sm font-semibold text-slate-200 mb-2">
@@ -131,6 +149,22 @@
                     <label class="block text-sm font-semibold text-slate-200 mb-1.5">Batas Minimum Stok Alert</label>
                     <input type="number" step="0.01" name="min_stock" value="{{ old('min_stock', $product->min_stock) }}"
                         class="w-full px-4 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-sm text-white focus:outline-none focus:border-indigo-500 transition-colors">
+                </div>
+            </div>
+
+            <!-- Grid 2 Col: Harga Perolehan & Tarif Sewa -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-semibold text-slate-200 mb-1.5">Harga Perolehan / Nilai Aset (Rp)</label>
+                    <input type="number" step="1000" min="0" name="purchase_price" value="{{ old('purchase_price', $product->purchase_price) }}" placeholder="Contoh: 5000000"
+                        class="w-full px-4 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-sm text-white focus:outline-none focus:border-indigo-500 transition-colors">
+                    <p class="text-[11px] text-slate-500 mt-1">Estimasi nilai aset untuk pelaporan General Affair & Finance.</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-200 mb-1.5">Tarif Sewa Acuan (Rp)</label>
+                    <input type="number" step="1000" min="0" name="rental_rate_per_day" value="{{ old('rental_rate_per_day', $product->rental_rate_per_day) }}" placeholder="Contoh: 350000"
+                        class="w-full px-4 py-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-sm text-white focus:outline-none focus:border-indigo-500 transition-colors">
+                    <p class="text-[11px] text-slate-500 mt-1">Tarif acuan per hari atau per sqm untuk pembuatan penawaran SPK & invoice.</p>
                 </div>
             </div>
 
