@@ -39,8 +39,9 @@ class SpkController extends Controller
             ->with(['category', 'unit', 'stockBalances'])
             ->orderBy('name')
             ->get();
+        $technicalRouting = app(LedCalculationService::class)->calculateTechnicalRouting($assignment->eventOrder);
 
-        return view('spk.show', compact('assignment', 'users', 'crews', 'vehicles', 'products'));
+        return view('spk.show', compact('assignment', 'users', 'crews', 'vehicles', 'products', 'technicalRouting'));
     }
 
     /**
@@ -56,7 +57,9 @@ class SpkController extends Controller
             'assignedVehicles.vehicle',
         ]);
 
-        return view('spk.print', compact('assignment'));
+        $technicalRouting = app(LedCalculationService::class)->calculateTechnicalRouting($assignment->eventOrder);
+
+        return view('spk.print', compact('assignment', 'technicalRouting'));
     }
 
     /**

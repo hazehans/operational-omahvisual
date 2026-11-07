@@ -21,4 +21,3 @@ class GuideController extends Controller
         return view('guide.index', compact('sampleOrder', 'sampleAssignment', 'sampleTicket'));
     }
 }
-

@@ -112,23 +112,33 @@
         </div>
     </div>
 
-    <!-- 3-PAGE TABS -->
+    <!-- 5-PAGE TABS -->
     <div class="border-b border-slate-200 dark:border-slate-800 flex items-center gap-2 overflow-x-auto">
         <button @click="activeTab = 1" :class="activeTab === 1 ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 font-bold' : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 font-medium'" class="px-4 py-3 border-b-2 text-sm whitespace-nowrap transition-all flex items-center gap-2">
             <span class="w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-800 text-[11px] flex items-center justify-center font-bold">1</span>
-            <span>Halaman 1: Serah Terima & Penugasan</span>
+            <span>Halaman 1: SPK &amp; Penugasan</span>
         </button>
 
         <button @click="activeTab = 2" :class="activeTab === 2 ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 font-bold' : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 font-medium'" class="px-4 py-3 border-b-2 text-sm whitespace-nowrap transition-all flex items-center gap-2">
             <span class="w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-800 text-[11px] flex items-center justify-center font-bold">2</span>
-            <span>Halaman 2: Checklist Barang Kerja Team</span>
+            <span>Halaman 2: Checklist Kerja Team</span>
             <span class="text-xs px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600">{{ $assignment->checklistItems->where('page_number', 2)->count() }} Item</span>
         </button>
 
         <button @click="activeTab = 3" :class="activeTab === 3 ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 font-bold' : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 font-medium'" class="px-4 py-3 border-b-2 text-sm whitespace-nowrap transition-all flex items-center gap-2">
             <span class="w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-800 text-[11px] flex items-center justify-center font-bold">3</span>
-            <span>Halaman 3: Checklist PIC (Kit Operator & Spares)</span>
+            <span>Halaman 3: Checklist Lanjutan</span>
             <span class="text-xs px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600">{{ $assignment->checklistItems->where('page_number', 3)->count() }} Item</span>
+        </button>
+
+        <button @click="activeTab = 4" :class="activeTab === 4 ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 font-bold' : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 font-medium'" class="px-4 py-3 border-b-2 text-sm whitespace-nowrap transition-all flex items-center gap-2">
+            <span class="w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-800 text-[11px] flex items-center justify-center font-bold">4</span>
+            <span>Halaman 4: Routing Teknis 4A</span>
+        </button>
+
+        <button @click="activeTab = 5" :class="activeTab === 5 ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 font-bold' : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 font-medium'" class="px-4 py-3 border-b-2 text-sm whitespace-nowrap transition-all flex items-center gap-2">
+            <span class="w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-800 text-[11px] flex items-center justify-center font-bold">5</span>
+            <span>Halaman 5: Berita Acara (BAST)</span>
         </button>
     </div>
 
@@ -1038,6 +1048,185 @@
                         @endforeach
                     </tbody>
                 </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 4: ROUTING TEKNIS 4A & MASTER REKAP LAYAR -->
+    <div x-show="activeTab === 4" class="space-y-6">
+        <div class="bg-white dark:bg-slate-900/60 p-6 rounded-2xl border border-slate-200 dark:border-slate-800/80 shadow-xs space-y-6">
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-3">
+                <div>
+                    <h2 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                        <span>📐 4A Routing Teknis &amp; Distribusi Layar LED</span>
+                        <span class="text-xs px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 font-semibold">{{ $technicalRouting['total_screens'] }} Area Layar</span>
+                    </h2>
+                    <p class="text-xs text-slate-500">Rekap keseluruhan area layar, pembagian beban fasa R/S/T panel 16A, routing data NovaStar, dan pixel mapping VJ.</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <a href="{{ route('spk.print', $assignment) }}#page-4" target="_blank" class="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs flex items-center gap-1.5 shadow-xs transition-colors">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                        </svg>
+                        <span>Cetak Lembar 4A Saja</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- TABEL MASTER REKAP KESELURUHAN AREA DI SELURUH LAYAR -->
+            <div class="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800">
+                <table class="w-full text-left text-xs border-collapse">
+                    <thead class="bg-slate-50 dark:bg-slate-800/70 border-b border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 uppercase font-bold text-[10px] tracking-wider">
+                        <tr>
+                            <th class="p-3 text-center w-12">No</th>
+                            <th class="p-3">Area / Layar</th>
+                            <th class="p-3 text-center">Dimensi &amp; Luas</th>
+                            <th class="p-3 text-center">Resolusi VJ</th>
+                            <th class="p-3">Routing Data LAN</th>
+                            <th class="p-3">Distribusi Panel 16A</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-200 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
+                        @foreach($technicalRouting['screens'] as $rt)
+                            <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition-colors">
+                                <td class="p-3 text-center font-bold">{{ $rt['area_number'] }}</td>
+                                <td class="p-3">
+                                    <div class="font-bold text-slate-900 dark:text-white">{{ $rt['screen_name'] }}</div>
+                                    <div class="text-[11px] text-slate-500 font-mono">LED {{ $rt['brand_series'] }} • {{ $rt['total_cabinets'] }} Kabinet ({{ $rt['cabinets_detail'] }})</div>
+                                </td>
+                                <td class="p-3 text-center">
+                                    <div class="font-semibold">{{ $rt['dimension_text'] }}</div>
+                                    <div class="text-[11px] font-bold text-blue-600 dark:text-blue-400">{{ App\Services\LedCalculationService::formatDecimal($rt['total_sqm']) }} m²</div>
+                                </td>
+                                <td class="p-3 text-center">
+                                    <div class="font-mono font-bold text-slate-900 dark:text-white">{{ $rt['resolution_text'] }}</div>
+                                    <div class="text-[10px] text-slate-400">128px per 50cm</div>
+                                </td>
+                                <td class="p-3">
+                                    <div class="font-semibold text-slate-900 dark:text-white">{{ $rt['lan_routing_text'] }}</div>
+                                    <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">Prosesor: {{ $rt['processor_model'] }}</div>
+                                </td>
+                                <td class="p-3">
+                                    <div class="font-bold text-rose-600 dark:text-rose-400">{{ $rt['power_routing_text'] }}</div>
+                                    <div class="text-[10px] text-slate-400">Beban Rata-Rata: {{ number_format($rt['avg_watt']) }} Watt</div>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                    <tfoot class="bg-slate-100/70 dark:bg-slate-800/90 font-bold text-slate-900 dark:text-white border-t border-slate-300 dark:border-slate-700">
+                        <tr>
+                            <td colspan="2" class="p-3 text-right">TOTAL KESELURUHAN:</td>
+                            <td class="p-3 text-center text-blue-600 dark:text-blue-400">{{ App\Services\LedCalculationService::formatDecimal($technicalRouting['total_sqm']) }} m²</td>
+                            <td class="p-3 text-center">{{ $technicalRouting['total_screens'] }} Area</td>
+                            <td class="p-3">{{ $technicalRouting['total_lan_ports'] }} Port LAN Utama</td>
+                            <td class="p-3 text-rose-600 dark:text-rose-400">{{ number_format($technicalRouting['total_watts']) }} W (~{{ $technicalRouting['total_max_amperes'] }} A)</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <!-- DIAGRAM PANEL LISTRIK 16A (R - S - T) -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="p-4 rounded-xl border border-red-200 dark:border-red-900/50 bg-red-50/40 dark:bg-red-950/20 space-y-2">
+                    <div class="flex items-center justify-between font-bold text-xs text-red-700 dark:text-red-400">
+                        <span>🔴 FASA R (LINE 1)</span>
+                        <span class="text-[10px] px-1.5 py-0.5 rounded bg-red-200/60 dark:bg-red-900/60">MCB 1 - 4</span>
+                    </div>
+                    <ul class="text-xs text-slate-600 dark:text-slate-400 space-y-1 list-disc list-inside">
+                        <li>Beban Layar Area Utama</li>
+                        <li>Feeder Legrand 16A to PowerCon</li>
+                        <li>Maksimal 3.500 Watt / Fasa</li>
+                    </ul>
+                </div>
+
+                <div class="p-4 rounded-xl border border-amber-200 dark:border-amber-900/50 bg-amber-50/40 dark:bg-amber-950/20 space-y-2">
+                    <div class="flex items-center justify-between font-bold text-xs text-amber-700 dark:text-amber-400">
+                        <span>🟡 FASA S (LINE 2)</span>
+                        <span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-200/60 dark:bg-amber-900/60">MCB 5 - 8</span>
+                    </div>
+                    <ul class="text-xs text-slate-600 dark:text-slate-400 space-y-1 list-disc list-inside">
+                        <li>Beban Layar Sub / Sayap</li>
+                        <li>Feeder Legrand 16A to PowerCon</li>
+                        <li>Maksimal 3.500 Watt / Fasa</li>
+                    </ul>
+                </div>
+
+                <div class="p-4 rounded-xl border border-blue-200 dark:border-blue-900/50 bg-blue-50/40 dark:bg-blue-950/20 space-y-2">
+                    <div class="flex items-center justify-between font-bold text-xs text-blue-700 dark:text-blue-400">
+                        <span>🔵 FASA T (LINE 3)</span>
+                        <span class="text-[10px] px-1.5 py-0.5 rounded bg-blue-200/60 dark:bg-blue-900/60">MCB 9 - 12</span>
+                    </div>
+                    <ul class="text-xs text-slate-600 dark:text-slate-400 space-y-1 list-disc list-inside">
+                        <li>Beban Video Processor &amp; FOH Operator</li>
+                        <li>Grounding Wajib &lt; 2 Volt</li>
+                        <li>Jalur Spare Siap Cadangan</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 5: BERITA ACARA SERAH TERIMA (BAST / BAT) -->
+    <div x-show="activeTab === 5" class="space-y-6">
+        <div class="bg-white dark:bg-slate-900/60 p-6 rounded-2xl border border-slate-200 dark:border-slate-800/80 shadow-xs space-y-6">
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-3">
+                <div>
+                    <h2 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                        <span>📋 Berita Acara Serah Terima (BAST)</span>
+                        <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 font-semibold">Dokumen Resmi Lapangan</span>
+                    </h2>
+                    <p class="text-xs text-slate-500">Berita acara uji kelayakan instalasi layar LED di venue antara Omah Visual LED dan Klien/Vendor.</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <a href="{{ route('spk.print', $assignment) }}#page-5" target="_blank" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs flex items-center gap-1.5 shadow-xs transition-colors">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                        </svg>
+                        <span>Cetak Lembar BAST Saja</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/80 space-y-3 text-xs">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <div class="font-bold text-slate-800 dark:text-slate-200 uppercase text-[10px] tracking-wider mb-1">PIHAK PERTAMA (Penyedia):</div>
+                        <div class="font-semibold text-slate-900 dark:text-white">CV. HAN MEDIA TEKINDO (Omah Visual LED)</div>
+                        <div class="text-slate-500">PIC Lapangan: <strong class="text-indigo-600 dark:text-indigo-400">{{ $assignment->crew_pic_event_name ?: ($assignment->crewAssignments->where('role_label', 'PIC')->first()?->crew?->nickname ?? '-') }}</strong></div>
+                    </div>
+                    <div>
+                        <div class="font-bold text-slate-800 dark:text-slate-200 uppercase text-[10px] tracking-wider mb-1">PIHAK KEDUA (Penyewa / Client):</div>
+                        <div class="font-semibold text-slate-900 dark:text-white">{{ $assignment->eventOrder->customer->salutation ? $assignment->eventOrder->customer->salutation . ' ' : '' }}{{ $assignment->eventOrder->customer->name }}</div>
+                        <div class="text-slate-500">Instansi / Vendor: {{ $assignment->eventOrder->customer->organization ?: '-' }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5 CHECKLIST UJI KELAYAKAN BAST -->
+            <div class="space-y-2">
+                <h3 class="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">Hasil Pemeriksaan &amp; Pengujian Bersama:</h3>
+                <div class="space-y-2 text-xs">
+                    <div class="flex items-center gap-2 p-2.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/60 text-emerald-800 dark:text-emerald-300">
+                        <span class="font-bold">✓</span>
+                        <span><strong>Konstruksi &amp; Rigging:</strong> Struktur panggung kokoh, level permukaan rata, klem dan sambungan terkunci rapat.</span>
+                    </div>
+                    <div class="flex items-center gap-2 p-2.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/60 text-emerald-800 dark:text-emerald-300">
+                        <span class="font-bold">✓</span>
+                        <span><strong>Tampilan Visual:</strong> Modul LED menyala sempurna, pola warna Red/Green/Blue/White bersih tanpa dead pixel.</span>
+                    </div>
+                    <div class="flex items-center gap-2 p-2.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/60 text-emerald-800 dark:text-emerald-300">
+                        <span class="font-bold">✓</span>
+                        <span><strong>Sinyal &amp; VJ Mapping:</strong> Video feed lancar pada refresh rate 3840Hz tanpa flicker atau drop frame.</span>
+                    </div>
+                    <div class="flex items-center gap-2 p-2.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/60 text-emerald-800 dark:text-emerald-300">
+                        <span class="font-bold">✓</span>
+                        <span><strong>Kelistrikan &amp; Grounding:</strong> Panel 16A seimbang pada fasa R/S/T, grounding aman di bawah 2 Volt.</span>
+                    </div>
+                    <div class="flex items-center gap-2 p-2.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/60 text-emerald-800 dark:text-emerald-300">
+                        <span class="font-bold">✓</span>
+                        <span><strong>Kerapihan Area:</strong> Kabel tertata aman dengan protector/isolasi hitam, venue bersih dan siap acara.</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

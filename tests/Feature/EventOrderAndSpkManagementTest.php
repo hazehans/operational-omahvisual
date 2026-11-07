@@ -148,7 +148,7 @@ class EventOrderAndSpkManagementTest extends TestCase
 
         $printResponse = $this->actingAs($this->user)->get(route('spk.print', $assignment));
         $printResponse->assertOk();
-        $printResponse->assertSee('1 SERAH TERIMA');
+        $printResponse->assertSee('SURAT PERINTAH KERJA & IZIN BARANG KELUAR', false);
     }
 
     public function test_departure_gate_verification_works(): void

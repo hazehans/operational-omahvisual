@@ -119,4 +119,3 @@ class WipeSimulationDataCommand extends Command
         }
     }
 }
-

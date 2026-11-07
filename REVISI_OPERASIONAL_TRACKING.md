@@ -94,27 +94,27 @@
 ---
 
 ### 3. Modul Format SPK & Dokumen Lapangan (Printout & Digital)
-- [ ] **3.1 Halaman 1 SPK (100% Sesuai `referensi_halaman1_spk.png`)**:
-  - [ ] Header resmi: Logo CV Han Media Tekindo + Judul `SURAT PERINTAH KERJA & IZIN BARANG KELUAR`.
-  - [ ] No. Transaksi di pojok kiri atas.
-  - [ ] Kolom Kiri:
+- [x] **3.1 Halaman 1 SPK (100% Sesuai `referensi_halaman1_spk.png`)**:
+  - [x] Header resmi: Logo CV Han Media Tekindo + Judul `SURAT PERINTAH KERJA & IZIN BARANG KELUAR`.
+  - [x] No. Transaksi di pojok kiri atas.
+  - [x] Kolom Kiri:
     - *Informasi Customer*: Nama Client (dengan sapaan), Alamat, Nama Vendor/Instansi, No. Telp.
     - *Informasi Acara*: Lokasi Acara, Jenis Event, Tgl Loading, Tgl Acara, Jam Loading, Jam Acara.
-  - [ ] Kolom Kanan:
+  - [x] Kolom Kanan:
     - *Penanggung Jawab Lapangan*: Nama PJ, No. Telp PJ.
-    - *QR Share Lokasi*: Render QR Code dinamis yang langsung membuka tautan Google Maps venue.
-  - [ ] Tabel Spesifikasi Order Ringkas:
+    - *QR Share Lokasi*: Render QR Code dinamis yang langsung membuka tautan Google Maps venue (dukungan offline vector canvas + dynamic API).
+  - [x] Tabel Spesifikasi Order Ringkas:
     - Hanya uraian utama: Total Sqm Yang di-Order & Ukuran LED (format desimal rapi, e.g. 4,5 m²).
     - Bersihkan kolom kabinet, hardcase, dan prosesor dari Halaman 1.
     - Bersihkan detail kendaraan dari Halaman 1.
-  - [ ] Kotak Keterangan Detail (e.g. catatan level stage, rigging, instalasi khusus).
-  - [ ] Tabel Team Crew (No, Nama, Jabatan, No. Telp) hingga 10 baris.
-  - [ ] Bagian Tanda Tangan Ringkas (3 kolom):
+  - [x] Kotak Keterangan Detail (e.g. catatan level stage, rigging, instalasi khusus).
+  - [x] Tabel Team Crew (No, Nama, Jabatan, No. Telp) hingga 10 baris.
+  - [x] Bagian Tanda Tangan Ringkas (3 kolom):
     - Penanggung Jawab Barang Keluar (Pink/Red box) | Penanggung Jawab Barang Kembali (Blue box) | Bagian Operasional.
     - Hilangkan teks pernyataan disclaimer hukum yang panjang.
-- [ ] **3.2 Halaman 2 & 3: Checklist Barang Bawaan (Sesuai `spk_dari_mba_de.pdf`)**:
-  - [ ] Tabel Checklist Terstruktur dengan kolom: `NO`, `Barang Bawaan KE VENUE`, `Detail / Keterangan`, `QTY`, `Checklist Keluar`, `Checklist Kembali`.
-  - [ ] Kategori Barang:
+- [x] **3.2 Halaman 2 & 3: Checklist Barang Bawaan (Sesuai `spk_dari_mba_de.pdf`)**:
+  - [x] Tabel Checklist Terstruktur dengan kolom: `NO`, `Barang Bawaan KE VENUE`, `Detail / Keterangan`, `QTY`, `Checklist Keluar`, `Checklist Kembali`.
+  - [x] Kategori Barang:
     - LED (disamarkan dengan kode aman: `SAGA` $\rightarrow$ `SG`, `MAVIC` $\rightarrow$ `MV`, `LITE` $\rightarrow$ `LT`, `LAMPRO` $\rightarrow$ `LP`).
     - Kabel & Distribusi: Power Corn Jumper (1m & 1.5m checklist per area), Legrand, LAN Jumper, Grounding 50m, Panel Listrik 16A, Kabel FOH, Babok, Kupu-kupu, Baut.
     - Toolbox No: Checklist 14 item wajib (Tang, Obeng, Kunci L/Y, dll).
@@ -124,14 +124,15 @@
     - Peralatan Tidur & Stage Level: Tenda/kasur lipat/sleeping bag, Ukuran stage, triplek, galon air, panggung rangka.
     - Laptop & Kit Operator: Laptop no, mouse, HDMI 4K, splitter, capture card, HT, soundcard.
     - Tambahan Extra Perkabelan: Converter Legrand, ext jumper, terpal.
-  - [ ] Checklist Digital interaktif (bisa dicentang langsung via HP/tablet kru di lapangan) serta versi siap print.
-- [ ] **3.3 Dokumen Berita Acara Serah Terima (BAST)**:
-  - [ ] Buat template cetak dan digital BAST serah terima hasil pemasangan LED di venue ke pihak klien/vendor.
-- [ ] **3.4 Halaman Teknis & Routing (4A)**:
-  - [ ] Diagram pembagian panel listrik 16A.
-  - [ ] Routing power & kalkulasi beban daya listrik (Watt / Ampere).
-  - [ ] Routing data LAN & pengkabelan antar kabinet.
-  - [ ] Resolusi & Pixel Mapping layar.
+  - [x] Checklist Digital interaktif (bisa dicentang langsung via HP/tablet kru di lapangan) serta versi siap print.
+- [x] **3.3 Dokumen Berita Acara Serah Terima (BAST)**:
+  - [x] Buat template cetak dan digital BAST serah terima hasil pemasangan LED di venue ke pihak klien/vendor lengkap dengan 5 checklist uji kelayakan bersama dan tanda tangan kedua belah pihak.
+- [x] **3.4 Halaman Teknis & Routing (4A)**:
+  - [x] Diagram pembagian panel listrik 16A dan keseimbangan 3-fasa (Fasa R, S, T).
+  - [x] Routing power daisy-chain & kalkulasi beban daya listrik (Watt / Ampere).
+  - [x] Routing data LAN & pengkabelan antar kabinet NovaStar.
+  - [x] Resolusi & Pixel Mapping layar VJ.
+  - [x] Rekap master seluruh area layar dijadikan dalam satu tabel terpadu.
 
 ---
 
@@ -220,9 +221,9 @@
 |:---|:---|:---:|:---|
 | **1** | Master Data GA & Klasifikasi Barang Rental vs Internal | ✅ *Selesai* | 101 item rental + 69 aset internal + 8 armada tersinkron |
 | **2** | Modul Customer (Gelar, Emergency Contact, Foto, Verifikasi) | ✅ *Selesai* | Sapaan di atas UI, Foto profil, Self-Register publik, Verifikasi company |
-| **3** | SPK Halaman 1 (`referensi_halaman1_spk.png`) & Checklist 2-3 | ⏳ *Siap Dieksekusi* | Target Tahap 2 |
-| **4** | Dashboard `/orders` (Tipografi, Metrik Operasional, Filter) | ⏳ *Pending* | Menunggu Tahap 3 |
-| **5** | Kalender `/calendar` (Event Pill, Libur Nasional, Tab Monitoring)| ⏳ *Pending* | Menunggu Tahap 3 |
+| **3** | SPK Halaman 1 (`referensi_halaman1_spk.png`), Checklist 2-3, 4A Routing & BAST | ✅ *Selesai* | 100% presisi Hal 1, Checklist per area, Brand obfuscation, 4A Routing 3-Fasa, BAST resmi |
+| **4** | Dashboard `/orders` (Tipografi, Metrik Operasional, Filter) | ⏳ *Berikutnya (Tahap 3)* | Target Tahap 3 |
+| **5** | Kalender `/calendar` (Event Pill, Libur Nasional, Tab Monitoring)| ⏳ *Berikutnya (Tahap 3)* | Target Tahap 3 |
 | **6** | Form `/orders/create` (Multi-Area, Rute KM, Kelistrikan led.fyi) | ⏳ *Pending* | Menunggu Tahap 4 |
 | **7** | Finansial & Pricing Otomatis | ⏳ *Pending* | Menunggu Tahap 4 |
 

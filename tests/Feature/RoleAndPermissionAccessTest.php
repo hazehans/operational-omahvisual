@@ -4,7 +4,6 @@ namespace Tests\Feature;
 
 use App\Models\Customer;
 use App\Models\EventOrder;
-use App\Models\Invoice;
 use App\Models\SpkAssignment;
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
@@ -198,4 +197,3 @@ class RoleAndPermissionAccessTest extends TestCase
         $this->actingAs($this->teknisi)->get(route('invoices.index'))->assertStatus(403);
     }
 }
-

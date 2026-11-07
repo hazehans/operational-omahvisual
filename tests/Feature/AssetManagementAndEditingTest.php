@@ -96,4 +96,3 @@ class AssetManagementAndEditingTest extends TestCase
         $this->assertDatabaseMissing('assets', ['id' => $asset->id]);
     }
 }
-
